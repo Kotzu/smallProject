@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/live-observation-preflight.schema.json",
+  "title": "Read-only live observation preflight",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "status", "ready", "reasons",
+    "observed_monotonic_s", "now_monotonic_s", "observation_age_ms",
+    "maximum_observation_age_ms", "capture_latency_ms", "observation_latency_ms",
+    "checks", "provenance", "input_emitted", "execution_authority",
+    "server_truth_used"
+  ],
+  "properties": {
+    "record_type": { "const": "live_observation_preflight" },
+    "schema_version": { "const": "0.1" },
+    "status": { "enum": ["READY", "REJECTED"] },
+    "ready": { "type": "boolean" },
+    "reasons": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 128 }
+    },
+    "observed_monotonic_s": {
+      "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }]
+    },
+    "now_monotonic_s": {
+      "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }]
+    },
+    "observation_age_ms": {
+      "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }]
+    },
+    "maximum_observation_age_ms": {
+      "type": "number", "exclusiveMinimum": 0, "maximum": 5000
+    },
+    "capture_latency_ms": {
+      "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }]
+    },
+    "observation_latency_ms": {
+      "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }]
+    },
+    "checks": {
+      "type": "object",
+      "required": [
+        "coordinate_tracking_state", "position_available",
+        "camera_integrity_state", "camera_integrity_confidence",
+        "camera_integrity_ready", "client_facing_source", "heading_source",
+        "heading_integrity_state", "heading_integrity_ready",
+        "heading_is_current_visual", "body_yaw_observation_rad",
+        "camera_yaw_estimate_rad", "body_camera_yaw_delta_rad", "body_yaw_exact",
+        "camera_yaw_available", "foreground_matches_target",
+        "capture_latency_valid", "observation_latency_valid"
+      ],
+      "properties": {
+        "coordinate_tracking_state": {
+          "oneOf": [{ "type": "null" }, { "type": "string", "minLength": 1 }]
+        },
+        "position_available": { "type": "boolean" },
+        "camera_integrity_state": { "enum": ["VISIBLE", "LOST", "UNKNOWN", "MISSING"] },
+        "camera_integrity_confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "camera_integrity_ready": { "type": "boolean" },
+        "client_facing_source": { "type": "string", "minLength": 1 },
+        "heading_source": { "type": "string", "minLength": 1 },
+        "heading_integrity_state": { "enum": ["VISIBLE", "HELD", "MISSING", "STALE", "INVALID"] },
+        "heading_integrity_ready": { "type": "boolean" },
+        "heading_is_current_visual": { "type": "boolean" },
+        "body_yaw_observation_rad": {
+          "oneOf": [{ "type": "null" }, { "type": "number" }]
+        },
+        "camera_yaw_estimate_rad": {
+          "oneOf": [{ "type": "null" }, { "type": "number" }]
+        },
+        "body_camera_yaw_delta_rad": {
+          "oneOf": [{ "type": "null" }, { "type": "number", "minimum": 0 }]
+        },
+        "body_yaw_exact": { "type": "boolean" },
+        "camera_yaw_available": { "type": "boolean" },
+        "foreground_matches_target": {
+          "oneOf": [{ "type": "null" }, { "type": "boolean" }]
+        },
+        "capture_latency_valid": { "type": "boolean" },
+        "observation_latency_valid": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["origin", "capture_origin", "capability", "scope", "evidence_refs"],
+      "properties": {
+        "origin": { "const": "client_observation_preflight" },
+        "capture_origin": { "enum": ["window_capture", "replay_fixture"] },
+        "capability": { "const": "navigation_live_preflight" },
+        "scope": { "const": "unpromoted_evaluation_only" },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "input_emitted": { "const": false },
+    "execution_authority": { "const": false },
+    "server_truth_used": { "const": false }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "ready": { "const": true } }, "required": ["ready"] },
+      "then": {
+        "properties": {
+          "status": { "const": "READY" },
+          "reasons": { "maxItems": 0 }
+        }
+      },
+      "else": {
+        "properties": {
+          "status": { "const": "REJECTED" },
+          "reasons": { "minItems": 1 }
+        }
+      }
+    }
+  ]
+}

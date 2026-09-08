@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/world-map-area-profile.schema.json",
+  "title": "Client-asset WorldMapArea calibration profile",
+  "type": "object",
+  "required": [
+    "profile", "profile_version", "target_profile", "client_build",
+    "build_signature", "asset_name", "asset_relative_path", "asset_sha256",
+    "record_fingerprint_sha256", "map_bindings",
+    "coordinate_space", "provenance_origin", "asset_location_policy",
+    "execution_authority"
+  ],
+  "properties": {
+    "profile": { "const": "world_map_area_tbc243_8606" },
+    "profile_version": { "const": "0.2.0" },
+    "target_profile": { "const": "tbc_243_lab" },
+    "client_build": { "const": "2.4.3.8606" },
+    "build_signature": {
+      "const": "wow-tbc-2.4.3.8606-enGB:sha256:406DA0C1C22D6E9121FD3BC17740A0D013660A03748CFE2A235768B8C574D3E6"
+    },
+    "asset_name": { "const": "WorldMapArea.dbc" },
+    "asset_relative_path": { "const": "dbc/WorldMapArea.dbc" },
+    "asset_sha256": {
+      "const": "918BF402A83BAA78B0D35F0978BC760683291EE8CF48D7CE8C90E3814AA1BC7B"
+    },
+    "record_fingerprint_sha256": {
+      "const": "82CB76957FC8BB0A6DB94AC1F179BE5EA3B96033AEA02ED3B597D030D9A66215"
+    },
+    "map_bindings": {
+      "const": [
+        {
+          "continent_index": 2,
+          "zone_index": 25,
+          "internal_name": "Tirisfal",
+          "map_id": 0,
+          "area_id": 85
+        }
+      ]
+    },
+    "coordinate_space": { "const": "wow_world_map_2d" },
+    "provenance_origin": { "const": "client_asset_calibration" },
+    "asset_location_policy": { "const": "external_user_extracted" },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

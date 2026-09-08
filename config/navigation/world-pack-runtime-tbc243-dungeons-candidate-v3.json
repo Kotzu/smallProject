@@ -1,0 +1,32 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:dungeons-candidate:v3",
+  "pack_directory_name": "tbc243-dungeons-candidate-v3",
+  "pack_id": "wow.tbc.2.4.3.8606.dungeons-candidate-v3",
+  "content_sha256": "f6adc3e3a41686fc8e4710bacac073c2d905fc3bc0803514e15e34f21a13bfe9",
+  "catalog_id": "wow.tbc.2.4.3.8606.dungeons-candidate-v3",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-full-v3-candidate",
+  "maps": [
+    {
+      "map_id": 36,
+      "internal_name": "DeadminesInstance"
+    },
+    {
+      "map_id": 209,
+      "internal_name": "TanarisInstance"
+    },
+    {
+      "map_id": 289,
+      "internal_name": "SchoolofNecromancy"
+    },
+    {
+      "map_id": 543,
+      "internal_name": "HellfireRampart"
+    }
+  ],
+  "execution_authority": false
+}

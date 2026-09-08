@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/combat-hud.schema.json",
+  "title": "Visible combat HUD observation v1.0",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "observation_id", "frame_id", "session_id",
+    "target_profile", "actor_binding", "authorization_sha256", "decision_context",
+    "client_build", "build_signature", "tracking_state", "reason", "confidence",
+    "timing", "protocol", "player", "target", "combat", "actions", "provenance",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "combat_hud_observation" },
+    "schema_version": { "const": "1.0" },
+    "observation_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "frame_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "session_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "target_profile": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "actor_binding": { "$ref": "#/$defs/actor_binding" },
+    "authorization_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "decision_context": { "enum": ["champion", "lab_clone"] },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "build_signature": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "tracking_state": { "enum": ["VALID", "DEGRADED", "INVALID", "NOT_FOUND"] },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "timing": { "$ref": "#/$defs/timing" },
+    "protocol": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["magic", "version", "sequence", "crc_valid", "packet_hex"],
+          "properties": {
+            "magic": { "const": 198 },
+            "version": { "const": 6 },
+            "sequence": { "type": "integer", "minimum": 0, "maximum": 255 },
+            "crc_valid": { "const": true },
+            "packet_hex": { "type": "string", "pattern": "^[a-f0-9]{56}$" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "player": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["alive", "health_pct", "energy", "attack_power", "level"],
+          "properties": {
+            "alive": { "type": "boolean" },
+            "health_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+            "energy": { "type": "integer", "minimum": 0, "maximum": 100 },
+            "attack_power": { "type": "integer", "minimum": 0, "maximum": 65535 },
+            "level": { "type": "integer", "minimum": 1, "maximum": 255 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "target": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["identity_crc16", "hostile", "dead", "is_player", "health_pct", "health_current", "health_max", "level", "reaction", "bearing_code", "bearing_state", "bearing_direction", "bearing_offset_x_normalized", "interact_x_normalized", "interact_y_normalized"],
+          "properties": {
+            "identity_crc16": { "type": "integer", "minimum": 1, "maximum": 65535 },
+            "hostile": { "type": "boolean" },
+            "dead": { "type": "boolean" },
+            "is_player": { "type": "boolean" },
+            "health_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+            "health_current": { "type": "integer", "minimum": 0, "maximum": 16777215 },
+            "health_max": { "type": "integer", "minimum": 1, "maximum": 16777215 },
+            "level": {
+              "oneOf": [
+                { "type": "null" },
+                { "type": "integer", "minimum": 1, "maximum": 254 }
+              ]
+            },
+            "reaction": { "type": "integer", "minimum": 1, "maximum": 8 }
+            ,"bearing_code": { "type": "integer", "minimum": 0, "maximum": 7 }
+            ,"bearing_state": { "enum": ["VISIBLE", "LOST", "AMBIGUOUS"] }
+            ,"bearing_direction": { "oneOf": [{ "type": "null" }, { "enum": ["LEFT", "CENTER", "RIGHT"] }] }
+            ,"bearing_offset_x_normalized": { "oneOf": [{ "type": "null" }, { "type": "number", "minimum": -1, "maximum": 1 }] }
+            ,"interact_x_normalized": { "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 }] }
+            ,"interact_y_normalized": { "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 }] }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "combat": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["in_combat", "combo_points", "loot_event_sequence", "acquisition_bearing_code", "acquisition_bearing_state", "acquisition_bearing_direction", "acquisition_bearing_offset_x_normalized", "visible_attackable_candidate_count", "acquisition_x_normalized", "acquisition_y_normalized"],
+          "properties": {
+            "in_combat": { "type": "boolean" },
+            "combo_points": { "type": "integer", "minimum": 0, "maximum": 5 },
+            "loot_event_sequence": { "type": "integer", "minimum": 0, "maximum": 31 },
+            "acquisition_bearing_code": { "type": "integer", "minimum": 0, "maximum": 7 },
+            "acquisition_bearing_state": { "enum": ["VISIBLE", "LOST", "AMBIGUOUS"] },
+            "acquisition_bearing_direction": { "oneOf": [{ "type": "null" }, { "enum": ["LEFT", "CENTER", "RIGHT"] }] },
+            "acquisition_bearing_offset_x_normalized": { "oneOf": [{ "type": "null" }, { "type": "number", "minimum": -1, "maximum": 1 }] },
+            "visible_attackable_candidate_count": { "type": "integer", "minimum": 0, "maximum": 255 },
+            "acquisition_x_normalized": { "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 }] },
+            "acquisition_y_normalized": { "oneOf": [{ "type": "null" }, { "type": "number", "exclusiveMinimum": 0, "exclusiveMaximum": 1 }] }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "actions": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["slot1_attack", "slot2_sinister_strike", "slot3_eviscerate"],
+          "properties": {
+            "slot1_attack": { "$ref": "#/$defs/action_state" },
+            "slot2_sinister_strike": { "$ref": "#/$defs/action_state" },
+            "slot3_eviscerate": { "$ref": "#/$defs/action_state" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "origin", "capture_origin", "capability", "scope", "profile_id",
+        "profile_version", "profile_sha256", "profile_calibration_state", "evidence_refs"
+      ],
+      "properties": {
+        "origin": { "const": "visible_addon_hud" },
+        "capture_origin": { "enum": ["window_capture", "replay_fixture"] },
+        "capability": { "const": "combat_state_visible_hud" },
+        "scope": { "enum": ["synthetic_fixture", "lab_evaluation_only", "unpromoted_evaluation_only"] },
+        "profile_id": { "const": "combat_hud_tbc243_v6" },
+        "profile_version": { "const": "0.6.0" },
+        "profile_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+        "profile_calibration_state": { "enum": ["synthetic_verified", "controlled_live_verified"] },
+        "evidence_refs": {
+          "type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "execution_authority": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "tracking_state": { "const": "VALID" } }, "required": ["tracking_state"] },
+      "then": {
+        "properties": {
+          "protocol": { "type": "object" },
+          "player": { "type": "object" },
+          "combat": { "type": "object" },
+          "actions": { "type": "object" },
+          "confidence": { "exclusiveMinimum": 0 }
+        }
+      },
+      "else": {
+        "properties": {
+          "player": { "type": "null" },
+          "target": { "type": "null" },
+          "combat": { "type": "null" },
+          "actions": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "decision_context": { "const": "lab_clone" } }, "required": ["decision_context"] },
+      "then": { "properties": { "provenance": { "properties": { "scope": { "enum": ["synthetic_fixture", "lab_evaluation_only"] } } } } }
+    }
+  ],
+  "$defs": {
+    "actor_binding": {
+      "type": "object",
+      "required": [
+        "schema_version", "instance_id", "actor_role", "actor_id", "decision_context",
+        "memory_namespace", "expected_character_name", "credential_alias", "binding_assurance"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "instance_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "actor_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "memory_namespace": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "expected_character_name": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "credential_alias": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "binding_assurance": {
+          "type": "object",
+          "required": ["state", "evidence_refs"],
+          "properties": {
+            "state": { "const": "configured_expected_only" },
+            "evidence_refs": {
+              "type": "array", "minItems": 1, "maxItems": 4, "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "timing": {
+      "type": "object",
+      "required": [
+        "captured_at", "monotonic_timestamp_s", "frame_age_ms", "observed_monotonic_s",
+        "age_at_observation_ms", "freshness_limit_ms", "expires_monotonic_s"
+      ],
+      "properties": {
+        "captured_at": { "type": "string", "format": "date-time" },
+        "monotonic_timestamp_s": { "type": "number", "minimum": 0 },
+        "frame_age_ms": { "type": "number", "minimum": 0 },
+        "observed_monotonic_s": { "type": "number", "minimum": 0 },
+        "age_at_observation_ms": { "type": "number", "minimum": 0 },
+        "freshness_limit_ms": { "const": 600 },
+        "expires_monotonic_s": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "action_state": {
+      "type": "object",
+      "required": ["exact_binding", "usable", "current", "in_range", "cooldown_ready", "cooldown_remaining_ms"],
+      "properties": {
+        "exact_binding": { "type": "boolean" },
+        "usable": { "type": "boolean" },
+        "current": { "type": "boolean" },
+        "in_range": { "oneOf": [{ "type": "null" }, { "type": "boolean" }] },
+        "cooldown_ready": { "type": "boolean" },
+        "cooldown_remaining_ms": { "type": "integer", "minimum": 0, "maximum": 12750 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

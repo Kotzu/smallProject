@@ -1,0 +1,334 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/capture-frame.schema.json",
+  "title": "Perfect Assassin read-only capture frame manifest v2.0",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "frame_id", "session_id", "target_profile",
+    "actor_binding", "authorization_sha256", "decision_context", "client_build", "build_signature", "provider_id",
+    "provider_version", "backend", "source", "image", "timing", "provenance",
+    "artifact", "privacy", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "capture_frame_manifest" },
+    "schema_version": { "const": "2.0" },
+    "frame_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "target_profile": { "type": "string", "minLength": 1 },
+    "actor_binding": {
+      "type": "object",
+      "required": [
+        "schema_version", "instance_id", "actor_role", "actor_id",
+        "decision_context", "memory_namespace", "expected_character_name", "credential_alias",
+        "binding_assurance"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "instance_id": { "type": "string", "minLength": 1 },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "actor_id": { "type": "string", "minLength": 1 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "memory_namespace": { "type": "string", "minLength": 1 },
+        "expected_character_name": { "type": "string", "minLength": 1 },
+        "credential_alias": { "type": "string", "minLength": 1 },
+        "binding_assurance": {
+          "type": "object",
+          "required": ["state", "evidence_refs"],
+          "properties": {
+            "state": { "const": "configured_expected_only" },
+            "evidence_refs": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "champion_journey" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "champion" },
+              "memory_namespace": { "pattern": "^memory:champion:" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "lab_clone" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "memory_namespace": { "pattern": "^memory:lab:" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "authorization_sha256": {
+      "type": "string",
+      "pattern": "^[A-F0-9]{64}$"
+    },
+    "decision_context": { "enum": ["champion", "lab_clone"] },
+    "client_build": { "type": "string", "minLength": 1 },
+    "build_signature": { "type": "string", "minLength": 1 },
+    "provider_id": { "type": "string", "minLength": 1 },
+    "provider_version": { "type": "string", "minLength": 1 },
+    "backend": {
+      "enum": ["dxgi_desktop_duplication", "winrt_monitor_capture", "win32_print_window", "replay_fixture"]
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "source_kind", "device_index", "output_index", "coordinate_space", "region", "window_ref"
+      ],
+      "properties": {
+        "source_kind": { "enum": ["monitor", "window_region", "replay_fixture"] },
+        "device_index": { "type": ["integer", "null"], "minimum": 0 },
+        "output_index": { "type": ["integer", "null"], "minimum": 0 },
+        "coordinate_space": {
+          "enum": ["output_physical_pixels", "replay_fixture_pixels"]
+        },
+        "region": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["left", "top", "width", "height"],
+              "properties": {
+                "left": { "type": "integer" },
+                "top": { "type": "integer" },
+                "width": { "type": "integer", "minimum": 1 },
+                "height": { "type": "integer", "minimum": 1 }
+              },
+              "additionalProperties": false
+            },
+            { "type": "null" }
+          ]
+        },
+        "window_ref": { "type": ["string", "null"], "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "image": {
+      "type": "object",
+      "required": ["width", "height", "row_stride_bytes", "pixel_format", "orientation"],
+      "properties": {
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "row_stride_bytes": { "type": "integer", "minimum": 4 },
+        "pixel_format": { "const": "BGRA8" },
+        "orientation": { "const": "top_down" }
+      },
+      "additionalProperties": false
+    },
+    "timing": {
+      "type": "object",
+      "required": ["captured_at", "source_timestamp_s", "monotonic_timestamp_s", "frame_age_ms"],
+      "properties": {
+        "captured_at": { "type": "string", "format": "date-time" },
+        "source_timestamp_s": { "type": ["number", "null"], "minimum": 0 },
+        "monotonic_timestamp_s": { "type": "number", "minimum": 0 },
+        "frame_age_ms": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["origin", "capability", "scope", "confidence", "evidence_refs"],
+      "properties": {
+        "origin": { "enum": ["window_capture", "replay_fixture"] },
+        "capability": { "const": "screen_capture" },
+        "scope": { "enum": ["lab_evaluation_only", "synthetic_fixture", "unpromoted_evaluation_only"] },
+        "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["persisted", "media_type", "path", "sha256"],
+      "properties": {
+        "persisted": { "type": "boolean" },
+        "media_type": { "const": "application/x-perfect-assassin-bgra8" },
+        "path": { "type": ["string", "null"], "minLength": 1 },
+        "sha256": { "type": ["string", "null"], "pattern": "^[A-Fa-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "privacy": {
+      "type": "object",
+      "required": ["content_class", "redaction_state", "retention"],
+      "properties": {
+        "content_class": { "const": "game_client_pixels" },
+        "redaction_state": { "enum": ["in_memory_only", "redacted", "unredacted_restricted"] },
+        "retention": { "enum": ["none", "session_only", "replay_fixture"] }
+      },
+      "additionalProperties": false
+    },
+    "execution_authority": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "artifact": { "properties": { "persisted": { "const": false } } } } },
+      "then": {
+        "properties": {
+          "artifact": { "properties": { "path": { "type": "null" }, "sha256": { "type": "null" } } },
+          "privacy": {
+            "properties": {
+              "redaction_state": { "const": "in_memory_only" },
+              "retention": { "const": "none" }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "artifact": {
+            "properties": {
+              "path": { "type": "string", "minLength": 1 },
+              "sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+            }
+          },
+          "privacy": {
+            "properties": { "redaction_state": { "enum": ["redacted", "unredacted_restricted"] } }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "backend": { "const": "replay_fixture" } } },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "source_kind": { "const": "replay_fixture" },
+              "device_index": { "type": "null" },
+              "output_index": { "type": "null" },
+              "coordinate_space": { "const": "replay_fixture_pixels" }
+            }
+          },
+          "provenance": {
+            "properties": {
+              "origin": { "const": "replay_fixture" },
+              "scope": { "const": "synthetic_fixture" }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "source": {
+            "properties": {
+              "source_kind": { "enum": ["monitor", "window_region"] },
+              "coordinate_space": { "const": "output_physical_pixels" }
+            }
+          },
+          "provenance": { "properties": { "origin": { "const": "window_capture" } } }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "decision_context": { "const": "lab_clone" } },
+        "required": ["decision_context"]
+      },
+      "then": {
+        "properties": {
+          "actor_binding": {
+            "properties": {
+              "actor_role": { "const": "lab_clone" },
+              "decision_context": { "const": "lab_clone" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "decision_context": { "const": "champion" } },
+        "required": ["decision_context"]
+      },
+      "then": {
+        "properties": {
+          "actor_binding": {
+            "properties": {
+              "actor_role": { "const": "champion_journey" },
+              "decision_context": { "const": "champion" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_context": { "const": "lab_clone" },
+          "backend": { "enum": ["dxgi_desktop_duplication", "winrt_monitor_capture", "win32_print_window"] }
+        }
+      },
+      "then": {
+        "properties": {
+          "actor_binding": {
+            "properties": {
+              "actor_role": { "const": "lab_clone" },
+              "decision_context": { "const": "lab_clone" }
+            }
+          },
+          "provenance": { "properties": { "scope": { "const": "lab_evaluation_only" } } }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_context": { "const": "champion" },
+          "backend": { "enum": ["dxgi_desktop_duplication", "winrt_monitor_capture", "win32_print_window"] }
+        }
+      },
+      "then": {
+        "properties": {
+          "actor_binding": {
+            "properties": {
+              "actor_role": { "const": "champion_journey" },
+              "decision_context": { "const": "champion" }
+            }
+          },
+          "provenance": { "properties": { "scope": { "const": "unpromoted_evaluation_only" } } }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "source": { "properties": { "source_kind": { "const": "window_region" } } }
+        }
+      },
+      "then": {
+        "properties": {
+          "source": {
+            "properties": {
+              "region": { "type": "object" },
+              "window_ref": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

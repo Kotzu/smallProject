@@ -1,0 +1,1 @@
+"""Memory namespace isolation policy."""

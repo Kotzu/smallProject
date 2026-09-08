@@ -1,0 +1,492 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/world-steering-corpus-report.schema.json",
+  "title": "World steering corpus report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "schema_version",
+    "execution_authority",
+    "world_pack",
+    "policy",
+    "coverage",
+    "query_failures",
+    "corridors"
+  ],
+  "properties": {
+    "record_type": { "const": "world_steering_corpus_report" },
+    "schema_version": { "const": "1.0" },
+    "execution_authority": { "const": false },
+    "world_pack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_id",
+        "pack_id",
+        "content_sha256",
+        "catalog_id",
+        "client_version",
+        "client_build",
+        "map_id",
+        "map_name"
+      ],
+      "properties": {
+        "profile_id": { "type": "string", "minLength": 1 },
+        "pack_id": { "type": "string", "minLength": 1 },
+        "content_sha256": { "$ref": "#/$defs/sha256" },
+        "catalog_id": { "type": "string", "minLength": 1 },
+        "client_version": { "type": "string", "minLength": 1 },
+        "client_build": { "type": "string", "minLength": 1 },
+        "map_id": { "type": "integer", "minimum": 0 },
+        "map_name": { "type": "string", "minLength": 1 }
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "course_generator",
+        "runner_implementation_sha256",
+        "contract_sha256",
+        "controller_id",
+        "controller_configuration",
+        "candidate_patterns_per_tile",
+        "corridors_per_tile",
+        "base_runs",
+        "risk_runs",
+        "extreme_runs",
+        "tile_limit"
+      ],
+      "properties": {
+        "course_generator": { "const": "uniform-adt-local-patterns-v1" },
+        "runner_implementation_sha256": { "$ref": "#/$defs/sha256" },
+        "contract_sha256": { "$ref": "#/$defs/sha256" },
+        "controller_id": {
+          "enum": ["geometric_predictive_v1", "pa_mppi_v1"]
+        },
+        "controller_configuration": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "configuration_id",
+                "implementation_sha256",
+                "batch_size",
+                "time_steps",
+                "replan_interval_ticks"
+              ],
+              "properties": {
+                "configuration_id": { "const": "pa-mppi-v1-default-critics" },
+                "implementation_sha256": { "$ref": "#/$defs/sha256" },
+                "batch_size": {
+                  "type": "integer",
+                  "minimum": 32,
+                  "maximum": 20000
+                },
+                "time_steps": {
+                  "type": "integer",
+                  "minimum": 12,
+                  "maximum": 160
+                },
+                "replan_interval_ticks": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 20
+                }
+              }
+            }
+          ]
+        },
+        "candidate_patterns_per_tile": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "corridors_per_tile": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4
+        },
+        "base_runs": { "type": "integer", "minimum": 100, "maximum": 100000 },
+        "risk_runs": { "type": "integer", "minimum": 100, "maximum": 100000 },
+        "extreme_runs": { "type": "integer", "minimum": 100, "maximum": 100000 },
+        "tile_limit": {
+          "type": ["integer", "null"],
+          "minimum": 1
+        }
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "catalog_tile_count",
+        "selected_tile_count",
+        "available_candidate_request_count",
+        "attempted_request_count",
+        "resolved_complete_corridor_count",
+        "simulated_corridor_count",
+        "simulated_tile_count",
+        "query_or_eligibility_failure_count",
+        "quality_failed_corridor_count",
+        "total_simulated_trials"
+      ],
+      "properties": {
+        "catalog_tile_count": { "$ref": "#/$defs/count" },
+        "selected_tile_count": { "$ref": "#/$defs/count" },
+        "available_candidate_request_count": { "$ref": "#/$defs/count" },
+        "attempted_request_count": { "$ref": "#/$defs/count" },
+        "resolved_complete_corridor_count": { "$ref": "#/$defs/count" },
+        "simulated_corridor_count": { "$ref": "#/$defs/count" },
+        "simulated_tile_count": { "$ref": "#/$defs/count" },
+        "query_or_eligibility_failure_count": { "$ref": "#/$defs/count" },
+        "quality_failed_corridor_count": { "$ref": "#/$defs/count" },
+        "total_simulated_trials": { "$ref": "#/$defs/count" }
+      }
+    },
+    "query_failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["request_id", "grid_x", "grid_y", "state", "detail"],
+        "properties": {
+          "request_id": { "type": "string", "minLength": 1 },
+          "grid_x": { "$ref": "#/$defs/grid" },
+          "grid_y": { "$ref": "#/$defs/grid" },
+          "state": {
+            "enum": [
+              "ENDPOINT_UNAVAILABLE",
+              "QUERY_FAILED",
+              "PARTIAL_CORRIDOR",
+              "INELIGIBLE_CORRIDOR"
+            ]
+          },
+          "detail": { "type": ["string", "null"], "maxLength": 512 }
+        }
+      }
+    },
+    "corridors": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/corridor" }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "controller_id": { "const": "geometric_predictive_v1" }
+            },
+            "required": ["controller_id"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "controller_configuration": { "type": "null" }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "controller_configuration": { "type": "object" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "grid": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 63
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tier",
+        "reasons",
+        "maximum_turn_degrees",
+        "minimum_portal_width_world",
+        "maximum_slope_degrees"
+      ],
+      "properties": {
+        "tier": { "enum": ["BASE", "RISK", "EXTREME"] },
+        "reasons": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "HAIRPIN_TURN",
+              "SHARP_TURN",
+              "ACTOR_SCALE_PORTAL",
+              "NARROW_PORTAL",
+              "STEEP_GEOMETRY",
+              "DOODAD_DETOUR",
+              "CLEARANCE_INSET",
+              "CONFINED_OR_TRANSITION_SPACE"
+            ]
+          }
+        },
+        "maximum_turn_degrees": { "type": "number", "minimum": 0, "maximum": 180 },
+        "minimum_portal_width_world": {
+          "type": ["number", "null"],
+          "exclusiveMinimum": 0
+        },
+        "maximum_slope_degrees": { "type": "number", "minimum": 0, "maximum": 90.001 }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_id",
+        "runs",
+        "completed_runs",
+        "quality_passed_runs",
+        "quality_pass_rate",
+        "maximum_steering_sign_changes",
+        "p95_steering_sign_changes",
+        "maximum_pivot_fraction",
+        "p95_pivot_fraction",
+        "maximum_cross_track_world",
+        "p95_cross_track_world",
+        "maximum_path_stretch",
+        "collision_runs",
+        "minimum_obstacle_clearance_world",
+        "mppi_active_observations",
+        "geometric_fallback_observations",
+        "mppi_active_fraction"
+      ],
+      "properties": {
+        "scenario_id": { "type": "string", "minLength": 1 },
+        "runs": { "type": "integer", "minimum": 100, "maximum": 100000 },
+        "completed_runs": { "$ref": "#/$defs/count" },
+        "quality_passed_runs": { "$ref": "#/$defs/count" },
+        "quality_pass_rate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maximum_steering_sign_changes": { "$ref": "#/$defs/count" },
+        "p95_steering_sign_changes": { "$ref": "#/$defs/count" },
+        "maximum_pivot_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "p95_pivot_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "maximum_cross_track_world": { "type": "number", "minimum": 0 },
+        "p95_cross_track_world": { "type": "number", "minimum": 0 },
+        "maximum_path_stretch": { "type": "number", "minimum": 0 },
+        "collision_runs": { "$ref": "#/$defs/count" },
+        "minimum_obstacle_clearance_world": {
+          "type": ["number", "null"]
+        },
+        "mppi_active_observations": { "$ref": "#/$defs/count" },
+        "geometric_fallback_observations": { "$ref": "#/$defs/count" },
+        "mppi_active_fraction": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "trial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trial_index",
+        "completed",
+        "observations",
+        "pivot_observations",
+        "steering_sign_changes",
+        "maximum_cross_track_world",
+        "traveled_world",
+        "final_goal_distance_world",
+        "terminal_state",
+        "minimum_obstacle_clearance_world",
+        "mppi_active_observations",
+        "geometric_fallback_observations"
+      ],
+      "properties": {
+        "trial_index": { "$ref": "#/$defs/count" },
+        "completed": { "type": "boolean" },
+        "observations": { "$ref": "#/$defs/count" },
+        "pivot_observations": { "$ref": "#/$defs/count" },
+        "steering_sign_changes": { "$ref": "#/$defs/count" },
+        "maximum_cross_track_world": { "type": "number", "minimum": 0 },
+        "traveled_world": { "type": "number", "minimum": 0 },
+        "final_goal_distance_world": { "type": "number", "minimum": 0 },
+        "terminal_state": { "type": "string", "minLength": 1 },
+        "minimum_obstacle_clearance_world": { "type": ["number", "null"] }
+        ,
+        "mppi_active_observations": { "$ref": "#/$defs/count" },
+        "geometric_fallback_observations": { "$ref": "#/$defs/count" }
+      }
+    },
+    "corridor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_id",
+        "map_id",
+        "map_name",
+        "grid_x",
+        "grid_y",
+        "resolved_start",
+        "resolved_stop",
+        "guidance_point_count",
+        "polygon_count",
+        "portal_count",
+        "replay_geometry",
+        "risk",
+        "quality_limits",
+        "summary",
+        "sample_quality_failures"
+      ],
+      "properties": {
+        "request_id": { "type": "string", "minLength": 1 },
+        "map_id": { "type": "integer", "minimum": 0 },
+        "map_name": { "type": "string", "minLength": 1 },
+        "grid_x": { "$ref": "#/$defs/grid" },
+        "grid_y": { "$ref": "#/$defs/grid" },
+        "resolved_start": { "$ref": "#/$defs/point" },
+        "resolved_stop": { "$ref": "#/$defs/point" },
+        "guidance_point_count": { "type": "integer", "minimum": 2 },
+        "polygon_count": { "$ref": "#/$defs/count" },
+        "portal_count": { "$ref": "#/$defs/count" },
+        "replay_geometry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "raw_points",
+            "guidance_points",
+            "polygons",
+            "portals",
+            "steering_attributes"
+          ],
+          "properties": {
+            "raw_points": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 4096,
+              "items": { "$ref": "#/$defs/point" }
+            },
+            "guidance_points": {
+              "type": "array",
+              "minItems": 2,
+              "maxItems": 4096,
+              "items": { "$ref": "#/$defs/point" }
+            },
+            "polygons": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 8192,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "index",
+                  "area",
+                  "polygon_type",
+                  "slope_degrees",
+                  "centroid",
+                  "vertices",
+                  "physical_surfaces"
+                ],
+                "properties": {
+                  "index": { "$ref": "#/$defs/count" },
+                  "area": { "type": "integer", "minimum": 0, "maximum": 63 },
+                  "polygon_type": { "type": "integer", "minimum": 0, "maximum": 1 },
+                  "slope_degrees": { "type": "number", "minimum": 0, "maximum": 90.001 },
+                  "centroid": { "$ref": "#/$defs/point" },
+                  "vertices": {
+                    "type": "array",
+                    "minItems": 3,
+                    "maxItems": 6,
+                    "items": { "$ref": "#/$defs/point" }
+                  },
+                  "physical_surfaces": {
+                    "type": "array",
+                    "uniqueItems": true,
+                    "items": { "enum": ["ground", "wmo", "doodad"] }
+                  }
+                }
+              }
+            },
+            "portals": {
+              "type": "array",
+              "maxItems": 8192,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["from_index", "to_index", "left", "right", "width"],
+                "properties": {
+                  "from_index": { "$ref": "#/$defs/count" },
+                  "to_index": { "$ref": "#/$defs/count" },
+                  "left": { "$ref": "#/$defs/point" },
+                  "right": { "$ref": "#/$defs/point" },
+                  "width": { "type": "number", "exclusiveMinimum": 0 }
+                }
+              }
+            },
+            "steering_attributes": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "doodad_avoidance_applied",
+                "doodad_detour_count",
+                "clearance_inset_count"
+              ],
+              "properties": {
+                "doodad_avoidance_applied": { "type": "boolean" },
+                "doodad_detour_count": { "$ref": "#/$defs/count" },
+                "clearance_inset_count": { "$ref": "#/$defs/count" }
+              }
+            }
+          }
+        },
+        "risk": { "$ref": "#/$defs/risk" },
+        "quality_limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "maximum_cross_track_world",
+            "maximum_pivot_fraction",
+            "maximum_steering_sign_changes"
+          ],
+          "properties": {
+            "maximum_cross_track_world": { "type": "number", "minimum": 0.1 },
+            "maximum_pivot_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+            "maximum_steering_sign_changes": { "$ref": "#/$defs/count" }
+          }
+        },
+        "summary": { "$ref": "#/$defs/summary" },
+        "sample_quality_failures": {
+          "type": "array",
+          "maxItems": 20,
+          "items": { "$ref": "#/$defs/trial" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "record_type": "movement_live_trial_set",
+  "schema_version": "1.0",
+  "baseline_id": "crypt-egress-me452-v1",
+  "required_trial_count": 10,
+  "execution_authority": false,
+  "trials": []
+}

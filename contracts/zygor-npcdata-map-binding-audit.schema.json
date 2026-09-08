@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/zygor-npcdata-map-binding-audit.schema.json",
+  "title": "Content-minimal Zygor NPCData map binding audit v1",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "npcdata_source_reference",
+    "npcdata_source_sha256", "npcdata_source_size_bytes",
+    "map_source_reference", "map_source_sha256", "map_source_size_bytes",
+    "provider_version", "client_version", "client_build", "map_area_count",
+    "bound_map_area_count", "ambiguous_map_area_count",
+    "unresolved_map_area_count", "binding_status", "map_areas",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "zygor_npcdata_map_binding_audit" },
+    "schema_version": { "const": "1.0" },
+    "npcdata_source_reference": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "npcdata_source_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "npcdata_source_size_bytes": { "type": "integer", "minimum": 1 },
+    "map_source_reference": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "map_source_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "map_source_size_bytes": { "type": "integer", "minimum": 1 },
+    "provider_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "map_area_count": { "type": "integer", "minimum": 1 },
+    "bound_map_area_count": { "type": "integer", "minimum": 0 },
+    "ambiguous_map_area_count": { "type": "integer", "minimum": 0 },
+    "unresolved_map_area_count": { "type": "integer", "minimum": 0 },
+    "binding_status": { "enum": ["COMPLETE", "PARTIAL", "UNRESOLVED"] },
+    "map_areas": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "required": ["map_id", "row_count", "binding_status"],
+        "properties": {
+          "map_id": { "type": "integer", "minimum": 0 },
+          "row_count": { "type": "integer", "minimum": 1 },
+          "binding_status": { "enum": ["BOUND", "AMBIGUOUS", "UNRESOLVED"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

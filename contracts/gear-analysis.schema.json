@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/gear-analysis.schema.json",
+  "title": "Perfect Assassin gear analysis v0.1",
+  "$defs": {
+    "availability": {
+      "enum": [
+        "observed_equipped", "observed_bag", "observed_reward_option",
+        "researched_only", "unknown"
+      ]
+    },
+    "item_candidate": {
+      "type": "object",
+      "required": ["item_ref", "semantic_slot", "availability", "evidence_refs"],
+      "properties": {
+        "item_ref": { "type": "string", "minLength": 1 },
+        "semantic_slot": { "type": "string", "minLength": 1 },
+        "availability": { "$ref": "#/$defs/availability" },
+        "observed_stats": { "type": "object" },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "request": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "analysis_id", "champion_id",
+        "target_profile", "optimization_profile", "snapshot_hash",
+        "observation_event_ids", "candidates", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "gear_analysis_request" },
+        "schema_version": { "const": "0.1" },
+        "analysis_id": { "type": "string", "minLength": 1 },
+        "champion_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "optimization_profile": {
+          "enum": ["leveling_balanced", "pve_sustained", "pve_burst", "pvp_opener", "pvp_survival"]
+        },
+        "snapshot_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "observation_event_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "candidates": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/item_candidate" }
+        },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "ranked_item": {
+      "type": "object",
+      "required": ["item_ref", "score", "metrics", "reasons"],
+      "properties": {
+        "item_ref": { "type": "string", "minLength": 1 },
+        "score": { "type": "number" },
+        "metrics": { "type": "object" },
+        "reasons": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "result": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "analysis_id", "analysis_kind",
+        "analyzer_id", "analyzer_version", "target_profile", "assumptions",
+        "ranking", "recommended_item_ref", "confidence", "warnings",
+        "evidence_refs", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "gear_analysis_result" },
+        "schema_version": { "const": "0.1" },
+        "analysis_id": { "type": "string", "minLength": 1 },
+        "analysis_kind": { "const": "counterfactual_analysis" },
+        "analyzer_id": { "type": "string", "minLength": 1 },
+        "analyzer_version": { "type": "string", "minLength": 1 },
+        "simulator_commit": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "assumptions": { "type": "object" },
+        "ranking": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ranked_item" }
+        },
+        "recommended_item_ref": { "type": ["string", "null"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "warnings": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/request" },
+    { "$ref": "#/$defs/result" }
+  ]
+}

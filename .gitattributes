@@ -1,0 +1,32 @@
+* text=auto
+
+.gitattributes text eol=lf
+*.lock text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.lua text eol=lf
+*.toc text eol=lf
+integrations/tbc243-addon/PerfectAssassinObserver/*.lua text eol=lf
+integrations/tbc243-addon/PerfectAssassinObserver/*.toc text eol=lf
+
+*.ps1 text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+*.bin binary
+*.dbc binary
+*.dll binary
+*.exe binary
+*.jpg binary
+*.mp4 binary
+*.mpq binary
+*.nav binary
+*.pgeom binary
+*.pnav binary
+*.png binary
+*.webp binary
+*.zip binary

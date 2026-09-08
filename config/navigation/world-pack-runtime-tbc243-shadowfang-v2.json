@@ -1,0 +1,17 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:shadowfang:v2",
+  "pack_directory_name": "tbc243-shadowfang-worldpack-v2",
+  "pack_id": "wow.tbc.2.4.3.8606.shadowfang-worldpack-v2",
+  "content_sha256": "eac9ec0b7677115767101f5814533cef06fbadfc84a6830c1874c917d813dbd5",
+  "catalog_id": "wow.tbc.2.4.3.8606.shadowfang-v2",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-shadowfang-v2",
+  "maps": [
+    { "map_id": 33, "internal_name": "Shadowfang" }
+  ],
+  "execution_authority": false
+}

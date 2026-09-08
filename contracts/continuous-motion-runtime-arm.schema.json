@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/continuous-motion-runtime-arm.schema.json",
+  "title": "Perfect Assassin continuous navigation runtime arm v0.1",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "arm_nonce", "authorization_id",
+    "authorization_sha256", "session_receipt_sha256", "realm_revalidation_sha256", "target_profile",
+    "target_instance_id", "actor_binding", "pid", "hwnd",
+    "process_creation_filetime_utc", "window_title", "window_class",
+    "executable_path", "executable_sha256", "clock_id",
+    "issued_at_monotonic_ms", "expires_at_monotonic_ms", "allowed_controls",
+    "max_hold_duration_ms", "max_execution_envelope_ms", "max_primitives",
+    "lease_timeout_ms", "manual_takeover_required", "release_all_required",
+    "combat_authorized", "economy_authorized", "active", "scope",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "continuous_motion_runtime_arm" },
+    "schema_version": { "const": "0.1" },
+    "arm_nonce": { "$ref": "#/$defs/uuid" },
+    "authorization_id": { "const": "execution:tbc243-lab:movement-f4a-continuous-navmesh" },
+    "authorization_sha256": { "$ref": "#/$defs/sha256" },
+    "session_receipt_sha256": { "$ref": "#/$defs/sha256" },
+    "realm_revalidation_sha256": { "$ref": "#/$defs/sha256" },
+    "target_profile": { "const": "tbc_243_lab" },
+    "target_instance_id": { "$ref": "#/$defs/identifier" },
+    "actor_binding": { "$ref": "#/$defs/actorBinding" },
+    "pid": { "type": "integer", "minimum": 1, "maximum": 4294967295 },
+    "hwnd": { "type": "string", "pattern": "^0x[0-9A-F]+$" },
+    "process_creation_filetime_utc": { "type": "string", "pattern": "^[0-9]{17,20}$" },
+    "window_title": { "const": "World of Warcraft" },
+    "window_class": { "const": "GxWindowClassD3d" },
+    "executable_path": { "type": "string", "minLength": 3, "maxLength": 32767 },
+    "executable_sha256": { "$ref": "#/$defs/sha256" },
+    "clock_id": { "$ref": "#/$defs/identifier" },
+    "issued_at_monotonic_ms": { "type": "number", "minimum": 0 },
+    "expires_at_monotonic_ms": { "type": "number", "exclusiveMinimum": 0 },
+    "allowed_controls": {
+      "type": "array", "uniqueItems": true, "minItems": 4, "maxItems": 4,
+      "items": { "enum": ["MOVE_FORWARD", "MOVE_BACKWARD", "STRAFE_LEFT", "STRAFE_RIGHT"] }
+    },
+    "max_hold_duration_ms": { "const": 450 },
+    "max_execution_envelope_ms": { "const": 500 },
+    "max_primitives": { "const": 4096 },
+    "lease_timeout_ms": { "const": 450 },
+    "manual_takeover_required": { "const": true },
+    "release_all_required": { "const": true },
+    "combat_authorized": { "const": false },
+    "economy_authorized": { "const": false },
+    "active": { "const": true },
+    "scope": { "const": "lab_movement_continuous_navmesh" },
+    "execution_authority": { "const": true }
+  },
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$" },
+    "uuid": { "type": "string", "pattern": "^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$" },
+    "sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "actorBinding": {
+      "type": "object",
+      "required": [
+        "schema_version", "instance_id", "actor_role", "actor_id",
+        "decision_context", "memory_namespace", "expected_character_name",
+        "credential_alias", "binding_assurance"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "instance_id": { "$ref": "#/$defs/identifier" },
+        "actor_role": { "const": "lab_clone" },
+        "actor_id": { "$ref": "#/$defs/identifier" },
+        "decision_context": { "const": "lab_clone" },
+        "memory_namespace": { "type": "string", "pattern": "^memory:lab:" },
+        "expected_character_name": { "const": "Predator" },
+        "credential_alias": { "const": "credential:lab:pa_observer" },
+        "binding_assurance": {
+          "type": "object", "required": ["state", "evidence_refs"],
+          "properties": {
+            "state": { "const": "configured_expected_only" },
+            "evidence_refs": {
+              "type": "array", "minItems": 1, "maxItems": 4,
+              "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

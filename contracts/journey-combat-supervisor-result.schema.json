@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/journey-combat-supervisor-result.schema.json",
+  "title": "Journey and combat supervisor result v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type", "schema_version", "supervisor_id", "status",
+    "destination_mode", "semantic_destination_id", "semantic_destination_ids",
+    "destination_sequence_file", "operator_path",
+    "combat_handoffs_used", "steps", "recorded_at", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "journey_combat_supervisor_result" },
+    "schema_version": { "const": "1.0" },
+    "supervisor_id": {
+      "type": "string",
+      "pattern": "^journey-combat:[0-9a-f-]{36}$"
+    },
+    "map_id": { "type": "integer", "minimum": 0, "maximum": 65535 },
+    "status": {
+      "enum": [
+        "STARTING", "RUNNING", "ARRIVED", "STOPPED_OPERATOR",
+        "STOPPED_COMBAT_BUDGET", "STOPPED_NAVIGATION_BUDGET",
+        "STOPPED_COMBAT_FAILED", "STOPPED_CHILD_ERROR",
+        "STOPPED_FAIL_CLOSED"
+      ]
+    },
+    "destination_mode": { "enum": ["SEMANTIC", "SEMANTIC_SEQUENCE", "OPERATOR_PATH", "NORMALIZED_GOAL"] },
+    "semantic_destination_id": { "type": ["string", "null"] },
+    "semantic_destination_ids": {
+      "type": ["array", "null"],
+      "minItems": 1,
+      "maxItems": 16,
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+    },
+    "destination_sequence_file": { "type": ["string", "null"] },
+    "operator_path": { "type": ["string", "null"] },
+    "combat_handoffs_used": { "type": "integer", "minimum": 0, "maximum": 64 },
+    "steps": {
+      "type": "array",
+      "maxItems": 512,
+      "items": {
+        "type": "object",
+        "required": ["kind", "cycle", "status", "execution_authority"],
+        "properties": {
+          "kind": {
+            "enum": ["NAVIGATION_CYCLE", "COMBAT_CYCLE", "CHILD_ERROR", "DESTINATION_TRANSITION"]
+          },
+          "cycle": { "type": "integer", "minimum": 1, "maximum": 128 },
+          "run_id": { "type": ["string", "null"] },
+          "encounter_id": { "type": ["string", "null"] },
+          "status": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "action": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "final_world": {
+            "oneOf": [
+              {
+                "type": "array",
+                "prefixItems": [
+                  { "type": "number" },
+                  { "type": "number" }
+                ],
+                "items": false,
+                "minItems": 2,
+                "maxItems": 2
+              },
+              { "type": "null" }
+            ]
+          },
+          "in_combat": { "type": "boolean" },
+          "health_fraction": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "minimum_travel_health_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+          "resume_policy": { "type": ["string", "null"] },
+          "resume_navigation": { "type": "boolean" },
+          "from_destination_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "to_destination_id": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "destination_index": { "type": "integer", "minimum": 1, "maximum": 512 },
+          "escaped_risk_recorded": { "type": "boolean" },
+          "runner": { "enum": ["NAVIGATION", "COMBAT"] },
+          "error_type": { "type": "string", "minLength": 1, "maxLength": 160 },
+          "detail": { "type": "string", "minLength": 1, "maxLength": 1000 },
+          "execution_authority": { "const": false }
+        },
+        "additionalProperties": false
+      }
+    },
+    "recorded_at": { "type": "string", "format": "date-time" },
+    "execution_authority": { "const": false }
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/semantic-destination-sequence.schema.json",
+  "title": "Semantic destination sequence v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "schema_version", "sequence_id", "destination_ids", "loop_count", "execution_authority"],
+  "properties": {
+    "record_type": { "const": "semantic_destination_sequence" },
+    "schema_version": { "const": "1.0" },
+    "sequence_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "destination_ids": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 160 }
+    },
+    "loop_count": { "type": "integer", "minimum": 1, "maximum": 32 },
+    "map_id": { "type": ["integer", "null"], "minimum": 0, "maximum": 65535 },
+    "close_loop": { "type": "boolean" },
+    "execution_authority": { "const": false }
+  }
+}

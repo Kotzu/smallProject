@@ -1,0 +1,30 @@
+{
+  "profile": "tbc_243_lab",
+  "version": "0.1.0",
+  "default": "deny",
+  "capabilities": {
+    "combat_log": "available",
+    "target_state": "available",
+    "self_state": "available",
+    "self_spellbook": "available",
+    "player_action_bars": "available",
+    "focus_state": "available",
+    "mouseover_state": "available",
+    "quest_state": "available",
+    "loot_observation": "available",
+    "level_progress": "available",
+    "world_location": "available",
+    "self_map_position": "available",
+    "inspect_enemy": "restricted",
+    "global_player_positions": "unavailable",
+    "server_patrol_paths": "unavailable",
+    "server_spawn_state": "unavailable",
+    "wowhead_lookup_in_combat": "unavailable",
+    "zygor_route_guidance": "restricted",
+    "window_capture": "available",
+    "client_process_memory_read": "unavailable",
+    "kernel_hid_input": "unavailable",
+    "user_mode_synthetic_input": "restricted",
+    "autonomous_input": "restricted"
+  }
+}

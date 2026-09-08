@@ -1,0 +1,24 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:dungeons-candidate:v1",
+  "pack_directory_name": "tbc243-dungeons-candidate-v1",
+  "pack_id": "wow.tbc.2.4.3.8606.dungeons-candidate-v1",
+  "content_sha256": "ad384aa521a9437ff438ef707b56779294fcf7cc2d7b7a85ab6c98f47665c8df",
+  "catalog_id": "wow.tbc.2.4.3.8606.dungeons-candidate-v1",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-full-v3-candidate",
+  "maps": [
+    {
+      "map_id": 36,
+      "internal_name": "DeadminesInstance"
+    },
+    {
+      "map_id": 289,
+      "internal_name": "SchoolofNecromancy"
+    }
+  ],
+  "execution_authority": false
+}

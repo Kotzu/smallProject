@@ -1,0 +1,322 @@
+{
+  "record_type": "client_world_catalog",
+  "schema_version": "1.0",
+  "catalog_id": "wow.tbc.2.4.3.8606.razorfen-downs-candidate-v1",
+  "target_profile": "tbc_243_lab",
+  "product": "wow",
+  "expansion": "the_burning_crusade",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "asset_container": "mpq",
+  "asset_parser_profile": "wow-wdbc-map-v1",
+  "world_catalog_asset": "DBFilesClient/Map.dbc",
+  "world_catalog_asset_sha256": "fadae9835a1180641d2eb2f811fa7fc905694a3563a8a0208a47488d4a42b9f2",
+  "nav_profile_id": "tbc243-razorfen-downs-candidate-v1",
+  "maps": [
+    {
+      "map_id": 129,
+      "internal_name": "RazorfenDowns",
+      "classification": "instance",
+      "map_artifact": "RazorfenDowns.map",
+      "map_artifact_sha256": "abfc3a211ca063c6f0ea1da8ba89972f09783b346cb7614f6aac282a22a9c8a1",
+      "nav_tiles_sha256": "1ed14cac5aae2e941f56ccd6e5a99f4c5be7f92d6c48999e83be031fbb7675d0",
+      "coverage_state": "complete",
+      "interior_coverage": "complete",
+      "road_semantic_coverage": "complete",
+      "road_semantics_sha256": "872833f4696ae6aba47612b4a360f85a57c73295ff9c0242a15e203df22e4d32",
+      "tiles": [
+        {
+          "grid_x": 27,
+          "grid_y": 26,
+          "artifact": "27_26.nav",
+          "sha256": "5f15a6fb9bd4f8ce522afef1cc01dad8bee6c2950501e957a4338f3887b70b59"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 27,
+          "artifact": "27_27.nav",
+          "sha256": "3c70f207a3d61d13f0d7e473186561776d1fce9c420c03c587ed6fc0a35963e8"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 28,
+          "artifact": "27_28.nav",
+          "sha256": "4909bf0ebc1f25cd6dc02485e42a8ce5daed6e21ff60ca7414a177235c6fd998"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 29,
+          "artifact": "27_29.nav",
+          "sha256": "1113a72739cda5e0624307e8f48814297cba8cafa0b3e0d9cd799c1a59108896"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 26,
+          "artifact": "28_26.nav",
+          "sha256": "8528991db3025324b4219f21778703d0beec10f5c07991e09cb1f027ad1e5b79"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 27,
+          "artifact": "28_27.nav",
+          "sha256": "9028af4a182a29c3a7b800bbd30021ddb87bebae2401d537cb494f95a1891e71"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 28,
+          "artifact": "28_28.nav",
+          "sha256": "01bdc969bab447fa3d48f13e3de560dd6f3dcdc962e1489fbae5b1540da58ee9"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 29,
+          "artifact": "28_29.nav",
+          "sha256": "1857a9b14f718832c04a4020e09bb9900c198bffdd47f4dd7bfd177ebdf2d691"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 26,
+          "artifact": "29_26.nav",
+          "sha256": "84ab5c0b5380d94dd476e22769b1a8df45ec000fa14d2a4dfc28a94a20e1c82c"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 27,
+          "artifact": "29_27.nav",
+          "sha256": "dd5c1c178ac74aa136808625be20aa86edaf2da40819824d4ba8a4813bae0f32"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 28,
+          "artifact": "29_28.nav",
+          "sha256": "3daee8e6c60df3e5c2bc5483b58a443b166d55832f7b60c24a009144f5b413d6"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 29,
+          "artifact": "29_29.nav",
+          "sha256": "a02f7ae45951e35132f88095a5a40caaef206558452e5b4cb12e3aa3764b97bc"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 26,
+          "artifact": "30_26.nav",
+          "sha256": "2c11862fe5683c1e598f0ecc6e9906dca2a0e9ede0c0eb37c40dcb44b28d70a0"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 27,
+          "artifact": "30_27.nav",
+          "sha256": "9e3187e6ab4f3e111fbe11d94d60deba04296d342116e4fbb7b162456612e1bb"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 28,
+          "artifact": "30_28.nav",
+          "sha256": "42435632cfc24031909b26f8d745a1ae5cf577c85b97f2d23a4d98ef1ab6e6d5"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 29,
+          "artifact": "30_29.nav",
+          "sha256": "ffc12db2d8c661ac6f5551d57558ca46049b420790f8fc136235950ac9eadf8f"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 26,
+          "artifact": "31_26.nav",
+          "sha256": "a233246bf44c49dbf682a9b6a3a00cf7ecdb5f36062d02aa8a8b22edf3bfbea9"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 27,
+          "artifact": "31_27.nav",
+          "sha256": "3faf0fbc6285649932a0cb9cdb6e48cace40734d15d74677e4978ef7bb61e380"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 28,
+          "artifact": "31_28.nav",
+          "sha256": "5a12a57a60f188a86808bddf3146e553b3d9d2947a4fbae34ea528e0a4c0909b"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 29,
+          "artifact": "31_29.nav",
+          "sha256": "ca02d8393746047c8e127e9fbd3489cd48d3291e73b09639ce98a6444c049bdc"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 26,
+          "artifact": "32_26.nav",
+          "sha256": "6ebaf86c55c7b21a17f41e45242374a5082c79bba37c37aafa86dead2e3b5460"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 27,
+          "artifact": "32_27.nav",
+          "sha256": "42e1cbfd024fab08941973cf7f26a95e99a18aad2c2719c2b225252a48e1a77d"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 28,
+          "artifact": "32_28.nav",
+          "sha256": "e863a812280b3c01ef0ad3912824af6b1e465c2febe2bf82c712c3d001b68c11"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 29,
+          "artifact": "32_29.nav",
+          "sha256": "d2c92d25ee906afa96f3d1d745ccf22f8915d869af0e376d875be846fec4ec8f"
+        }
+      ],
+      "road_semantics": [
+        {
+          "grid_x": 27,
+          "grid_y": 26,
+          "artifact": "RazorfenDowns_27_26.road",
+          "sha256": "ec72ee06f6f416ac5b98894bcd2e7fbec4a8ea7c9c660d948166de9124230ea9"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 27,
+          "artifact": "RazorfenDowns_27_27.road",
+          "sha256": "8cf49fb3c051f7d4d9686d07f373b598cabdcbcfdea2a981845d2996ac942d91"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 28,
+          "artifact": "RazorfenDowns_27_28.road",
+          "sha256": "7a8f138611df521c81f6c08e53554ac666313010b1fb3f22c23de5e4ae68a9e3"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 29,
+          "artifact": "RazorfenDowns_27_29.road",
+          "sha256": "66fbc8e57dfc86abb2640ac8bb8b8128bd6f928afc41e0969bbfc2411e6c485c"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 26,
+          "artifact": "RazorfenDowns_28_26.road",
+          "sha256": "500adbc2ca8c43eac7e94c36bcb9500fcc28af10816715006580f3ae3d616ad0"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 27,
+          "artifact": "RazorfenDowns_28_27.road",
+          "sha256": "0879c4eb0dcd7a87ccdb562900fec2686571c03a4c08d374cc910d0c98831083"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 28,
+          "artifact": "RazorfenDowns_28_28.road",
+          "sha256": "7160dba0396498f6241cf9b8cfb5e7baa73e411bc1db03778e024fc51e01309e"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 29,
+          "artifact": "RazorfenDowns_28_29.road",
+          "sha256": "0eab3e31a601c3348a34f768bffb83d007cbf366b89110f726753077e04d9bb4"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 26,
+          "artifact": "RazorfenDowns_29_26.road",
+          "sha256": "b5325079f3094ad205b75562a521ad7cf8cc43c1407e66bb666c3737a00229cd"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 27,
+          "artifact": "RazorfenDowns_29_27.road",
+          "sha256": "fef5f6abdedbe55dcd358c63965c69feaa9aadfb0aeb962f172c08e92a2ddb8a"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 28,
+          "artifact": "RazorfenDowns_29_28.road",
+          "sha256": "1335dea2a071a444581d746755381c0d12d1f0459b3503157ab83530be8229e5"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 29,
+          "artifact": "RazorfenDowns_29_29.road",
+          "sha256": "bbc0c8f18c8f9b8552be9e66c7ba57e8c27a3d258f8a50ddb6d1be893f72eda2"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 26,
+          "artifact": "RazorfenDowns_30_26.road",
+          "sha256": "74113dbf1b0fe4763374c71bf865f901951060515fc607871f6eb2c7001cd40c"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 27,
+          "artifact": "RazorfenDowns_30_27.road",
+          "sha256": "e594a28bfd55cde474a54d023a24c47eb88aaa299c5bd3a81b1d084299363b86"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 28,
+          "artifact": "RazorfenDowns_30_28.road",
+          "sha256": "9704c42d29088b8f7b6cb7d69d1a6391e86c258cb79df404acb1cfa631a18b67"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 29,
+          "artifact": "RazorfenDowns_30_29.road",
+          "sha256": "444585a9cf9e53e9bab280609adba59ecce0cc2b6bb4de9f0cc295a32d8d0789"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 26,
+          "artifact": "RazorfenDowns_31_26.road",
+          "sha256": "7616630ab82272757f5fe93d7805cc3903ac4e2913881e1fc35e4fdee1a33f3b"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 27,
+          "artifact": "RazorfenDowns_31_27.road",
+          "sha256": "3f89e63b9169fd4fe018a5a42e61a539320aae9fcf6308509355527586ca2707"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 28,
+          "artifact": "RazorfenDowns_31_28.road",
+          "sha256": "638df41224dd4d63b5e50f15a24abde9dfd45be75d5a349944df6e0183411246"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 29,
+          "artifact": "RazorfenDowns_31_29.road",
+          "sha256": "b1caaee7e7a32e372ba293cc8da8918f4a19e51878a139fd56c789a97e43b661"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 26,
+          "artifact": "RazorfenDowns_32_26.road",
+          "sha256": "7ca4c2cc38b2e3b174169925b2f5d3c167afa068a2869478e8158212e06305c9"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 27,
+          "artifact": "RazorfenDowns_32_27.road",
+          "sha256": "6045b9348944d735d7e01bff026891aabdd7b7de65efa7cad95a7edfafa7d7c5"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 28,
+          "artifact": "RazorfenDowns_32_28.road",
+          "sha256": "895c451126320eb1dc5b5591066135e91d4d12be46fc711e597b9469aca6f7c2"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 29,
+          "artifact": "RazorfenDowns_32_29.road",
+          "sha256": "99c026ad32b0c2057ff91140aeb4300544c767fdae77d35abf3b27eab36fe366"
+        }
+      ]
+    }
+  ],
+  "execution_authority": false
+}

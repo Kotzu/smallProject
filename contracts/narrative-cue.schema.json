@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/narrative-cue.schema.json",
+  "title": "Perfect Assassin NarrativeCue v0.1",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "cue_id", "session_id", "champion_id",
+    "source_kind", "text_evidence_ref", "coverage", "execution_authority",
+    "created_at"
+  ],
+  "properties": {
+    "record_type": { "const": "narrative_cue" },
+    "schema_version": { "const": "0.1" },
+    "cue_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "champion_id": { "type": "string", "minLength": 1 },
+    "source_kind": { "enum": ["quest", "gossip", "gameobject", "item", "predator_reflection"] },
+    "npc_ref": { "type": "string", "minLength": 1 },
+    "quest_ref": { "type": "string", "minLength": 1 },
+    "text_evidence_ref": { "type": "string", "minLength": 1 },
+    "audio_module": { "type": "string", "minLength": 1 },
+    "audio_started_at": { "type": "string", "format": "date-time" },
+    "audio_duration_ms": { "type": "integer", "minimum": 0 },
+    "coverage": { "enum": ["available", "missing", "not_checked"] },
+    "clip_marker_ref": { "type": "string", "minLength": 1 },
+    "execution_authority": { "const": false },
+    "created_at": { "type": "string", "format": "date-time" }
+  },
+  "additionalProperties": false
+}

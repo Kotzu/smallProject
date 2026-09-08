@@ -1,0 +1,25 @@
+{
+  "record_type": "client_world_coverage_profile",
+  "schema_version": "1.0",
+  "catalog_id": "wow.tbc.2.4.3.8606.azeroth-full-v2",
+  "target_profile": "tbc_243_lab",
+  "product": "wow",
+  "expansion": "the_burning_crusade",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "asset_container": "mpq",
+  "asset_parser_profile": "wow-wdbc-map-v1",
+  "world_catalog_asset": "DBFilesClient/Map.dbc",
+  "nav_profile_id": "tbc243-azeroth-full-v2",
+  "maps": [
+    {
+      "map_id": 0,
+      "internal_name": "Azeroth",
+      "classification": "continent",
+      "coverage_state": "complete",
+      "interior_coverage": "partial",
+      "road_semantic_coverage": "complete"
+    }
+  ],
+  "execution_authority": false
+}

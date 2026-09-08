@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/raw-fixture.schema.json",
+  "title": "Synthetic observation fixture",
+  "type": "object",
+  "required": ["fixture_version", "label", "synthetic", "target_profile", "adapter", "session_id", "champion_id", "events"],
+  "properties": {
+    "fixture_version": { "const": "0.1" },
+    "label": { "type": "string", "minLength": 1 },
+    "synthetic": { "const": true },
+    "target_profile": { "type": "string", "minLength": 1 },
+    "adapter": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "champion_id": { "type": "string", "minLength": 1 },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["raw_event_id", "kind", "game_time_ms", "captured_at", "facts"],
+        "properties": {
+          "raw_event_id": { "type": "string", "minLength": 1 },
+          "kind": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+          "game_time_ms": { "type": "integer", "minimum": 0 },
+          "captured_at": { "type": "string", "format": "date-time" },
+          "facts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["raw_key", "value", "source", "capability", "confidence", "observed_at"],
+              "properties": {
+                "raw_key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+                "value": true,
+                "source": { "type": "string", "minLength": 1 },
+                "capability": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+                "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+                "observed_at": { "type": "string", "format": "date-time" },
+                "expires_at": { "type": "string", "format": "date-time" },
+                "restriction_evidence": { "type": "string", "minLength": 1 }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

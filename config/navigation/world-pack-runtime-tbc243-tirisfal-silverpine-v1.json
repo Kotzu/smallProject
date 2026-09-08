@@ -1,0 +1,17 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:tirisfal-silverpine:v1",
+  "pack_directory_name": "tbc243-tirisfal-silverpine-worldpack-v1",
+  "pack_id": "wow.tbc.2.4.3.8606.tirisfal-silverpine-worldpack-v1",
+  "content_sha256": "7676618fd8e86140a4258ba15ac9ba20fe6808622d46be88ddaaf33adcd429d1",
+  "catalog_id": "wow.tbc.2.4.3.8606.tirisfal-silverpine-v1",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-tirisfal-silverpine-v1",
+  "maps": [
+    { "map_id": 0, "internal_name": "Azeroth" }
+  ],
+  "execution_authority": false
+}

@@ -1,0 +1,55 @@
+{
+  "record_type": "minimap_roi_profile",
+  "schema_version": "0.1",
+  "profile_id": "tbc243_8606_default_minimap",
+  "profile_version": "0.3.0",
+  "target_profile": "tbc_243_lab",
+  "client_build": "2.4.3.8606",
+  "build_signature": "wow-tbc-2.4.3.8606-enGB:sha256:406DA0C1C22D6E9121FD3BC17740A0D013660A03748CFE2A235768B8C574D3E6",
+  "pixel_format": "BGRA8",
+  "search_region": {
+    "x": 0.76,
+    "y": 0.0,
+    "width": 0.24,
+    "height": 0.28
+  },
+  "circle": {
+    "radius_fraction_min": 0.055,
+    "radius_fraction_max": 0.1,
+    "radius_step_fraction": 0.004,
+    "center_step_fraction": 0.008,
+    "ring_samples": 96,
+    "gradient_percentile": 90,
+    "min_ring_coverage": 0.52,
+    "min_confidence": 0.48
+  },
+  "marker": {
+    "color_bgr_min": [0, 115, 155],
+    "color_bgr_max": [150, 255, 255],
+    "central_radius_fraction": 0.42,
+    "min_pixels": 8,
+    "max_pixels": 1200,
+    "min_confidence": 0.35,
+    "neutral_model": {
+      "central_radius_fraction": 0.25,
+      "minimum_channel_value": 130,
+      "maximum_channel_spread": 25,
+      "min_pixels": 40,
+      "max_pixels": 400,
+      "min_anisotropy": 0.25,
+      "min_confidence": 0.55,
+      "maximum_center_offset_fraction": 0.65
+    }
+  },
+  "heading_calibration": {
+    "screen_orientation_sign": -1,
+    "offset_rad": -0.30820644145168874,
+    "minimum_marker_confidence": 0.55,
+    "evidence_refs": [
+      "data/runtime/operator/20260825T183658192Z-manual-checkpoint.png",
+      "data/runtime/operator/20260825T183037264Z-manual-checkpoint.png",
+      "data/runtime/navigation-f3b/results/navmesh-roaming-d77a0605-dac1-486a-a96e-27284e6e091f.json"
+    ]
+  },
+  "calibration_state": "controlled_live_verified"
+}

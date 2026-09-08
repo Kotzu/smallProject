@@ -1,0 +1,8 @@
+## Interface: 20400
+## Title: Perfect Assassin Observer
+## Notes: TBC 2.4.3 visual observer plus explicit reversible UI setup for the Rogue Predator
+## Author: Perfect Assassin Project
+## Version: 0.5.10
+## SavedVariables: PerfectAssassinObserverDB
+
+PerfectAssassinObserver.lua

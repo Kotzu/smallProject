@@ -1,0 +1,370 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/tbc243-addon-export.schema.json",
+  "title": "Perfect Assassin Observer TBC 2.4.3 SavedVariables export",
+  "type": "object",
+  "$defs": {
+    "questReference": {
+      "type": "object",
+      "required": ["title", "trivial"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "level": { "type": "number" },
+        "trivial": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "questObjective": {
+      "type": "object",
+      "required": ["finished"],
+      "properties": {
+        "text": { "type": "string", "maxLength": 2048 },
+        "objective_type": { "type": "string", "maxLength": 256 },
+        "finished": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "questLogEntry": {
+      "type": "object",
+      "required": ["title", "complete", "daily", "objectives"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "level": { "type": "number" },
+        "tag": { "type": "string", "maxLength": 256 },
+        "suggested_group": { "type": "number" },
+        "complete": { "type": "boolean" },
+        "daily": { "type": "boolean" },
+        "objectives": { "type": "array", "maxItems": 10, "items": { "$ref": "#/$defs/questObjective" } }
+      },
+      "additionalProperties": false
+    },
+    "spellbookEntry": {
+      "type": "object",
+      "required": ["book_index", "name", "passive"],
+      "properties": {
+        "book_index": { "type": "integer", "minimum": 1, "maximum": 1024 },
+        "tab": { "type": "string", "maxLength": 256 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 256 },
+        "rank": { "type": "string", "maxLength": 256 },
+        "passive": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "actionBarEntry": {
+      "type": "object",
+      "required": ["slot", "page", "button", "surface", "binding_command", "directly_addressable", "has_action"],
+      "properties": {
+        "slot": { "type": "integer", "minimum": 1, "maximum": 72 },
+        "page": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "button": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "surface": { "enum": ["main_page_1", "main_page_2", "right", "left", "bottom_right", "bottom_left"] },
+        "binding_command": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "binding_key_1": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "binding_key_2": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "directly_addressable": { "type": "boolean" },
+        "has_action": { "type": "boolean" },
+        "action_type": { "type": "string", "maxLength": 256 },
+        "action_id": { "oneOf": [{ "type": "integer" }, { "type": "string", "maxLength": 256 }] },
+        "action_subtype": { "type": "string", "maxLength": 256 },
+        "action_text": { "type": "string", "maxLength": 256 },
+        "texture": { "type": "string", "maxLength": 256 }
+      },
+      "additionalProperties": false
+    },
+    "actionBarSnapshot": {
+      "type": "object",
+      "required": ["profile_id", "current_page", "total_slots", "directly_bound_slots", "slots"],
+      "properties": {
+        "profile_id": { "const": "tbc243_default_24_direct_v1" },
+        "current_page": { "type": "integer", "minimum": 1, "maximum": 6 },
+        "total_slots": { "const": 72 },
+        "directly_bound_slots": { "const": 24 },
+        "visible_bars": {
+          "type": "object",
+          "required": ["bottom_left", "bottom_right", "right", "left"],
+          "properties": {
+            "bottom_left": { "type": "boolean" },
+            "bottom_right": { "type": "boolean" },
+            "right": { "type": "boolean" },
+            "left": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        },
+        "slots": { "type": "array", "minItems": 0, "maxItems": 72, "items": { "$ref": "#/$defs/actionBarEntry" } }
+      },
+      "additionalProperties": false
+    },
+    "focusSnapshot": {
+      "type": "object",
+      "required": ["focus_exists"],
+      "properties": {
+        "focus_exists": { "type": "boolean" },
+        "focus_guid": { "type": "string", "maxLength": 256 },
+        "focus_name": { "type": "string", "maxLength": 256 },
+        "focus_kind": { "enum": ["player", "npc"] },
+        "focus_health_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "focus_health_current": { "type": "number", "minimum": 0 },
+        "focus_health_max": { "type": "number", "minimum": 0 },
+        "focus_hostile": { "type": "boolean" },
+        "focus_dead": { "type": "boolean" },
+        "focus_casting": { "type": "boolean" },
+        "focus_cast_name": { "type": "string", "maxLength": 256 },
+        "focus_cast_rank": { "type": "string", "maxLength": 256 },
+        "focus_cast_display_name": { "type": "string", "maxLength": 256 },
+        "focus_cast_icon": { "type": "string", "maxLength": 256 },
+        "focus_cast_start_ms": { "type": "number", "minimum": 0 },
+        "focus_cast_end_ms": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "operatorUiBackup": {
+      "type": "object",
+      "required": ["version", "binding_set", "action_bar_toggles", "bindings"],
+      "properties": {
+        "version": { "const": "1.0" },
+        "binding_set": { "type": "integer", "minimum": 1, "maximum": 2 },
+        "action_bar_toggles": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "type": "boolean" } },
+        "bindings": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "required": ["key", "command"],
+            "properties": {
+              "key": { "type": "string", "minLength": 1, "maxLength": 64 },
+              "command": { "type": "string", "maxLength": 128 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "mouseoverSnapshot": {
+      "type": "object",
+      "required": ["mouseover_exists"],
+      "properties": {
+        "mouseover_exists": { "type": "boolean" },
+        "mouseover_guid": { "type": "string", "maxLength": 256 },
+        "mouseover_name": { "type": "string", "maxLength": 256 },
+        "mouseover_kind": { "enum": ["player", "npc"] },
+        "mouseover_health_pct": { "type": "number", "minimum": 0, "maximum": 100 },
+        "mouseover_health_current": { "type": "number", "minimum": 0 },
+        "mouseover_health_max": { "type": "number", "minimum": 0 },
+        "mouseover_hostile": { "type": "boolean" },
+        "mouseover_dead": { "type": "boolean" }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "mouseover_exists": { "const": true } }, "required": ["mouseover_exists"] },
+          "then": { "required": ["mouseover_name", "mouseover_kind"] },
+          "else": {
+            "not": { "anyOf": [
+              { "required": ["mouseover_guid"] },
+              { "required": ["mouseover_name"] },
+              { "required": ["mouseover_kind"] },
+              { "required": ["mouseover_health_pct"] },
+              { "required": ["mouseover_health_current"] },
+              { "required": ["mouseover_health_max"] },
+              { "required": ["mouseover_hostile"] },
+              { "required": ["mouseover_dead"] }
+            ] }
+          }
+        }
+      ]
+    },
+    "mapPosition": {
+      "type": "object",
+      "required": ["available", "reason", "coordinate_space"],
+      "properties": {
+        "available": { "type": "boolean" },
+        "reason": { "enum": ["position_observed", "api_unavailable", "world_map_visible", "map_context_unavailable", "position_unavailable"] },
+        "coordinate_space": { "const": "normalized_current_zone_map" },
+        "player_dead_or_ghost": { "type": "boolean" },
+        "player_ghost": { "type": "boolean" },
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "map_continent_index": { "type": "integer", "minimum": 0, "maximum": 64 },
+        "map_zone_index": { "type": "integer", "minimum": 0, "maximum": 4096 },
+        "map_info": { "type": "string", "maxLength": 256 },
+        "world_zone": { "type": "string", "maxLength": 256 },
+        "world_subzone": { "type": "string", "maxLength": 256 }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": { "properties": { "available": { "const": true } }, "required": ["available"] },
+          "then": { "required": ["x", "y"], "properties": { "reason": { "const": "position_observed" } } },
+          "else": { "not": { "anyOf": [{ "required": ["x"] }, { "required": ["y"] }] } }
+        }
+      ]
+    }
+  },
+  "required": ["schema_version", "target_profile", "adapter", "event_format", "session_id", "champion_id", "synthetic", "max_events", "dropped_events", "api_capabilities", "events"],
+  "properties": {
+    "schema_version": { "enum": ["0.1", "0.2", "0.3", "0.4"] },
+    "target_profile": { "const": "tbc_243_lab" },
+    "adapter": { "enum": ["tbc243_saved_variables:0.1.0", "tbc243_saved_variables:0.2.0", "tbc243_saved_variables:0.2.1", "tbc243_saved_variables:0.3.0", "tbc243_saved_variables:0.4.0"] },
+    "event_format": { "const": "tbc243-legacy-v1" },
+    "session_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "champion_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "synthetic": { "type": "boolean" },
+    "max_events": { "type": "integer", "minimum": 1, "maximum": 5000 },
+    "dropped_events": { "type": "integer", "minimum": 0 },
+    "api_capabilities": {
+      "type": "object",
+      "required": ["combat_log_event", "target_state", "loot_window", "world_location"],
+      "properties": {
+        "combat_log_event": { "type": "boolean" },
+        "target_state": { "type": "boolean" },
+        "loot_window": { "type": "boolean" },
+        "world_location": { "type": "boolean" },
+        "quest_dialog": { "type": "boolean" },
+        "quest_log": { "type": "boolean" },
+        "self_spellbook": { "type": "boolean" },
+        "map_coordinates": { "type": "boolean" },
+        "player_facing_api": { "type": "boolean" },
+        "action_bar_registry": { "type": "boolean" },
+        "focus_unit": { "type": "boolean" },
+        "mouseover_unit": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "operator_ui_backup": { "$ref": "#/$defs/operatorUiBackup" },
+    "events": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 5000,
+      "items": {
+        "type": "object",
+        "required": ["seq", "kind", "game_time_ms", "captured_epoch", "payload"],
+        "properties": {
+          "seq": { "type": "integer", "minimum": 1 },
+          "kind": { "enum": ["player_snapshot", "target_snapshot", "focus_snapshot", "mouseover_snapshot", "player_state", "combat_state", "level_progress", "loot_snapshot", "combat_log_raw", "quest_npc_snapshot", "quest_detail", "quest_log_snapshot", "spellbook_snapshot", "action_bar_snapshot", "map_position_snapshot"] },
+          "game_time_ms": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+          "captured_epoch": { "type": "integer", "minimum": 1, "maximum": 4102444800 },
+          "payload": { "type": "object" }
+        },
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": { "properties": { "kind": { "const": "quest_npc_snapshot" } }, "required": ["kind"] },
+            "then": {
+              "properties": {
+                "payload": {
+                  "type": "object",
+                  "required": ["source", "available_quests", "active_quests"],
+                  "properties": {
+                    "source": { "enum": ["gossip", "quest_greeting"] },
+                    "npc_guid": { "type": "string", "maxLength": 256 },
+                    "npc_name": { "type": "string", "maxLength": 256 },
+                    "dialog_text": { "type": "string", "maxLength": 2048 },
+                    "available_quests": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/questReference" } },
+                    "active_quests": { "type": "array", "maxItems": 32, "items": { "$ref": "#/$defs/questReference" } }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": { "properties": { "kind": { "const": "quest_detail" } }, "required": ["kind"] },
+            "then": {
+              "properties": {
+                "payload": {
+                  "type": "object",
+                  "properties": {
+                    "quest_title": { "type": "string", "maxLength": 256 },
+                    "quest_text": { "type": "string", "maxLength": 2048 },
+                    "quest_objective_text": { "type": "string", "maxLength": 2048 },
+                    "quest_suggested_group": { "type": "number" },
+                    "npc_guid": { "type": "string", "maxLength": 256 },
+                    "npc_name": { "type": "string", "maxLength": 256 }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": { "properties": { "kind": { "const": "quest_log_snapshot" } }, "required": ["kind"] },
+            "then": {
+              "properties": {
+                "payload": {
+                  "type": "object",
+                  "required": ["quests"],
+                  "properties": { "quests": { "type": "array", "maxItems": 25, "items": { "$ref": "#/$defs/questLogEntry" } } },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": { "properties": { "kind": { "const": "spellbook_snapshot" } }, "required": ["kind"] },
+            "then": {
+              "properties": {
+                "payload": {
+                  "type": "object",
+                  "required": ["spells"],
+                  "properties": { "spells": { "type": "array", "maxItems": 1024, "items": { "$ref": "#/$defs/spellbookEntry" } } },
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          {
+            "if": { "properties": { "kind": { "const": "action_bar_snapshot" } }, "required": ["kind"] },
+            "then": { "properties": { "payload": { "$ref": "#/$defs/actionBarSnapshot" } } }
+          },
+          {
+            "if": { "properties": { "kind": { "const": "focus_snapshot" } }, "required": ["kind"] },
+            "then": { "properties": { "payload": { "$ref": "#/$defs/focusSnapshot" } } }
+          },
+          {
+            "if": { "properties": { "kind": { "const": "mouseover_snapshot" } }, "required": ["kind"] },
+            "then": { "properties": { "payload": { "$ref": "#/$defs/mouseoverSnapshot" } } }
+          },
+          {
+            "if": { "properties": { "kind": { "const": "map_position_snapshot" } }, "required": ["kind"] },
+            "then": { "properties": { "payload": { "$ref": "#/$defs/mapPosition" } } }
+          }
+        ]
+      }
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "schema_version": { "const": "0.2" } }, "required": ["schema_version"] },
+      "then": {
+        "properties": {
+          "api_capabilities": {
+            "required": ["combat_log_event", "target_state", "loot_window", "world_location", "quest_dialog", "quest_log", "self_spellbook"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "0.3" } }, "required": ["schema_version"] },
+      "then": {
+        "properties": {
+          "api_capabilities": {
+            "required": ["combat_log_event", "target_state", "loot_window", "world_location", "quest_dialog", "quest_log", "self_spellbook", "map_coordinates"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "schema_version": { "const": "0.4" } }, "required": ["schema_version"] },
+      "then": {
+        "properties": {
+          "api_capabilities": {
+            "required": ["combat_log_event", "target_state", "loot_window", "world_location", "quest_dialog", "quest_log", "self_spellbook", "map_coordinates", "action_bar_registry", "focus_unit"]
+          }
+        }
+      }
+    }
+  ]
+}

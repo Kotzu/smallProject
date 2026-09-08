@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "profile_id": "hunt:tirisfal:deathknell:mindless-zombie",
+  "client_build": "2.4.3.8606",
+  "map_id": "map:tirisfal_glades",
+  "zone_index": 25,
+  "goal_kind": "hostile_mob",
+  "target_names": ["Mindless Zombie"],
+  "regions": [
+    {
+      "region_id": "region:tirisfal:deathknell:north-town",
+      "anchor": {"x": 0.33, "y": 0.645},
+      "radius": 0.025,
+      "prior_confidence": 0.82,
+      "source_origin": "external_research",
+      "evidence_refs": [
+        "wowhead:tbc:quest:3902:coords-33-63-to-34-66",
+        "warcraft-wiki:mindless-zombie:pre-cataclysm-deathknell"
+      ],
+      "patrol_points": [
+        {"x": 0.328, "y": 0.651},
+        {"x": 0.340, "y": 0.640},
+        {"x": 0.340, "y": 0.655},
+        {"x": 0.330, "y": 0.665},
+        {"x": 0.320, "y": 0.650},
+        {"x": 0.330, "y": 0.635}
+      ]
+    }
+  ],
+  "semantics": {
+    "coordinates_are": "spawn_prior_search_region",
+    "not": "live_unit_position",
+    "engagement_requires": [
+      "client_confirmed_exact_target",
+      "current_visible_target_bearing",
+      "non_player_attackable_npc"
+    ]
+  }
+}

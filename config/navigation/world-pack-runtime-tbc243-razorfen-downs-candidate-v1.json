@@ -1,0 +1,17 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:razorfen-downs:candidate-v1",
+  "pack_directory_name": "tbc243-razorfen-downs-candidate-v1",
+  "pack_id": "wow.tbc.2.4.3.8606.razorfen-downs-candidate-v1",
+  "content_sha256": "1f7304951212b44858c3a86be1baadb21a7ee30544b084b54427c19f54be1e35",
+  "catalog_id": "wow.tbc.2.4.3.8606.razorfen-downs-candidate-v1",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-razorfen-downs-candidate-v1",
+  "maps": [
+    { "map_id": 129, "internal_name": "RazorfenDowns" }
+  ],
+  "execution_authority": false
+}

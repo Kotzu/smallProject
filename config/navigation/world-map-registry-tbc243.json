@@ -1,0 +1,153 @@
+{
+  "record_type": "tbc243_world_map_registry",
+  "schema_version": "1.0",
+  "client_build": "2.4.3.8606",
+  "client_world_inventory": "../../data/runtime/client-catalog/tbc243-8606/asset-inventory.json",
+  "maps": [
+    {
+      "map_id": 0,
+      "internal_name": "Azeroth",
+      "runtime_profile": "world-pack-runtime-tbc243-azeroth-full-v3.json",
+      "semantic_catalog": "../movement-lab/semantic-destinations-tbc243.json",
+      "structure_index": "../../data/runtime/client-catalog/tbc243-8606/azeroth-full-v3-world-structure-index-v1.json",
+      "structure_access_graph": "../../data/runtime/client-catalog/tbc243-8606/azeroth-full-v3-structure-access-graph-v1.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 1,
+      "internal_name": "Kalimdor",
+      "runtime_profile": "world-pack-runtime-tbc243-world-continents-v1.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/kalimdor-candidate-world-structure-index-v1.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/kalimdor-candidate-structure-access-partial-v14.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 33,
+      "internal_name": "Shadowfang",
+      "runtime_profile": "world-pack-runtime-tbc243-shadowfang-v2.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/client-catalog/tbc243-8606/shadowfang-worldpack-v2-world-structure-index-v1.json",
+      "structure_access_graph": "../../data/runtime/client-catalog/tbc243-8606/shadowfang-worldpack-v2-structure-access-graph-v1.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 36,
+      "internal_name": "DeadminesInstance",
+      "runtime_profile": "world-pack-runtime-tbc243-deadmines-v2.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/client-catalog/tbc243-8606/deadmines-v2-world-structure-index-v1.json",
+      "structure_access_graph": "../../data/runtime/client-catalog/tbc243-8606/deadmines-v2-structure-access-graph-v1.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 47,
+      "internal_name": "RazorfenKraulInstance",
+      "runtime_profile": "world-pack-runtime-tbc243-razorfen-v2.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/client-catalog/tbc243-8606/razorfen-v2-world-structure-index-v1.json",
+      "structure_access_graph": "../../data/runtime/client-catalog/tbc243-8606/razorfen-v2-structure-access-graph-v1.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 129,
+      "internal_name": "RazorfenDowns",
+      "runtime_profile": "world-pack-runtime-tbc243-razorfen-downs-candidate-v1.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/client-catalog/tbc243-8606/razorfen-downs-candidate-v1-world-structure-index.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/razorfen-downs-candidate-v1-structure-access-partial-v2.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 189,
+      "internal_name": "MonasteryInstances",
+      "runtime_profile": "world-pack-runtime-tbc243-monastery-candidate-v1.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/client-catalog/tbc243-8606/monastery-candidate-v1-world-structure-index.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/monastery-candidate-v1-structure-access-partial-v2.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 209,
+      "internal_name": "TanarisInstance",
+      "runtime_profile": "world-pack-runtime-tbc243-dungeons-candidate-v3.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/tanaris-instance-structure-index-me440.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/tanaris-instance-structure-access-partial-me440.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 289,
+      "internal_name": "SchoolofNecromancy",
+      "runtime_profile": "world-pack-runtime-tbc243-dungeons-candidate-v1.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/dungeons-candidate-v1-schoolofnecromancy-structure-index-me436.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/schoolofnecromancy-structure-access-partial-me436.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 329,
+      "internal_name": "Stratholme",
+      "runtime_profile": "world-pack-runtime-tbc243-stratholme-candidate-v1.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/client-catalog/tbc243-8606/stratholme-candidate-v1-world-structure-index.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/stratholme-candidate-v1-structure-access-partial-v1.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 530,
+      "internal_name": "Expansion01",
+      "runtime_profile": "world-pack-runtime-tbc243-world-continents-v1.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/expansion01-candidate-world-structure-index-v1.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/expansion01-candidate-structure-access-partial-v12.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 532,
+      "internal_name": "Karazahn",
+      "runtime_profile": "world-pack-runtime-tbc243-proof-v3.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/karazahn-proof-v3-world-structure-index-v1.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/karazahn-proof-v3-structure-access-partial-v2.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 543,
+      "internal_name": "HellfireRampart",
+      "runtime_profile": "world-pack-runtime-tbc243-dungeons-candidate-v2.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/hellfire-rampart-structure-index-me438.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/hellfire-rampart-structure-access-partial-me438.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 568,
+      "internal_name": "ZulAman",
+      "runtime_profile": "world-pack-runtime-tbc243-dungeons-candidate-v6.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/zulaman-structure-index-me448.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/zulaman-structure-access-partial-me448.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 580,
+      "internal_name": "SunwellPlateau",
+      "runtime_profile": "world-pack-runtime-tbc243-dungeons-candidate-v5.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/sunwell-plateau-structure-index-me444.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/sunwell-plateau-structure-access-partial-me444.json",
+      "execution_authority": false
+    },
+    {
+      "map_id": 585,
+      "internal_name": "Sunwell5ManFix",
+      "runtime_profile": "world-pack-runtime-tbc243-dungeons-candidate-v4.json",
+      "semantic_catalog": null,
+      "structure_index": "../../data/runtime/navigation-f3b/sunwell5manfix-structure-index-me442.json",
+      "structure_access_graph": "../../data/runtime/navigation-f3b/sunwell5manfix-structure-access-partial-me442.json",
+      "execution_authority": false
+    }
+  ],
+  "execution_authority": false
+}

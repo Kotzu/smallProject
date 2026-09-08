@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/client-world-batch-bake-result.schema.json",
+  "title": "Perfect Assassin sequential client-world batch bake result v1",
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "path": { "type": "string", "minLength": 1, "maxLength": 4096 },
+    "map_result": {
+      "type": "object",
+      "required": [
+        "internal_name", "return_code", "result", "result_sha256",
+        "status", "final_state"
+      ],
+      "properties": {
+        "internal_name": { "type": "string", "minLength": 1, "maxLength": 96 },
+        "return_code": { "type": "integer", "minimum": -2147483648, "maximum": 2147483647 },
+        "result": { "$ref": "#/$defs/path" },
+        "result_sha256": {
+          "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/sha256" }]
+        },
+        "status": {
+          "anyOf": [{ "type": "null" }, { "enum": ["PASS", "FAIL"] }]
+        },
+        "final_state": {
+          "anyOf": [
+            { "type": "null" },
+            {
+              "enum": [
+                "READY_FOR_EXTRACTION", "EXTRACTION_PARTIAL",
+                "READY_FOR_SEMANTICS", "SEMANTICS_PARTIAL",
+                "READY_FOR_NAVMESH", "NAVMESH_PARTIAL",
+                "INCONSISTENT_DOWNSTREAM_ARTIFACTS", "COMPLETE"
+              ]
+            }
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "status", "catalog_id", "client_build",
+    "requested_maps", "completed_maps", "map_builder", "map_builder_sha256",
+    "nav_root", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "client_world_batch_bake_result" },
+    "schema_version": { "const": "1.0" },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "catalog_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "requested_maps": {
+      "type": "array", "minItems": 1, "maxItems": 4096, "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 96 }
+    },
+    "completed_maps": {
+      "type": "array", "maxItems": 4096,
+      "items": { "$ref": "#/$defs/map_result" }
+    },
+    "map_builder": { "$ref": "#/$defs/path" },
+    "map_builder_sha256": { "$ref": "#/$defs/sha256" },
+    "nav_root": { "$ref": "#/$defs/path" },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

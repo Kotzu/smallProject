@@ -1,0 +1,19 @@
+{
+  "record_type": "lab_client_window_profile",
+  "schema_version": "0.1",
+  "profile_id": "remote-observation-large-window",
+  "auto_apply_on_launch": true,
+  "windowed": true,
+  "render_resolution": {
+    "width": 3840,
+    "height": 2160,
+    "refresh_hz": 120
+  },
+  "outer_bounds": {
+    "left": 1353,
+    "top": 2,
+    "width": 3643,
+    "height": 2093
+  },
+  "captured_at": "2026-08-27T22:46:00+03:00"
+}

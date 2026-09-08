@@ -1,0 +1,393 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/minimap-vision.schema.json",
+  "title": "Perfect Assassin minimap profile v0.1 and observation v1.0",
+  "$defs": {
+    "normalized_rect": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "width": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "height": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "minimap_geometry": {
+      "type": "object",
+      "required": [
+        "center_x_px", "center_y_px", "radius_px", "ring_coverage", "confidence"
+      ],
+      "properties": {
+        "center_x_px": { "type": "number", "minimum": 0 },
+        "center_y_px": { "type": "number", "minimum": 0 },
+        "radius_px": { "type": "number", "exclusiveMinimum": 0 },
+        "ring_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+        "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "player_marker": {
+      "type": "object",
+      "required": [
+        "center_x_px", "center_y_px", "orientation_deg_screen",
+        "orientation_reference", "detection_model", "pixel_count", "confidence"
+      ],
+      "properties": {
+        "center_x_px": { "type": "number", "minimum": 0 },
+        "center_y_px": { "type": "number", "minimum": 0 },
+        "orientation_deg_screen": {
+          "type": ["number", "null"], "minimum": -180, "maximum": 180
+        },
+        "orientation_reference": { "const": "clockwise_from_screen_up" },
+        "detection_model": { "enum": ["neutral_mdx", "profile_color"] },
+        "pixel_count": { "type": "integer", "minimum": 1 },
+        "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "actor_binding": {
+      "type": "object",
+      "required": [
+        "schema_version", "instance_id", "actor_role", "actor_id",
+        "decision_context", "memory_namespace", "expected_character_name",
+        "credential_alias", "binding_assurance"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "instance_id": { "type": "string", "minLength": 1 },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "actor_id": { "type": "string", "minLength": 1 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "memory_namespace": { "type": "string", "minLength": 1 },
+        "expected_character_name": { "type": "string", "minLength": 1 },
+        "credential_alias": { "type": "string", "minLength": 1 },
+        "binding_assurance": {
+          "type": "object",
+          "required": ["state", "evidence_refs"],
+          "properties": {
+            "state": { "const": "configured_expected_only" },
+            "evidence_refs": {
+              "type": "array", "minItems": 1, "maxItems": 4,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "roi_profile": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "profile_id", "profile_version",
+        "target_profile", "client_build", "build_signature", "pixel_format",
+        "search_region", "circle", "marker", "heading_calibration",
+        "calibration_state"
+      ],
+      "properties": {
+        "record_type": { "const": "minimap_roi_profile" },
+        "schema_version": { "const": "0.1" },
+        "profile_id": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]+$" },
+        "profile_version": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "client_build": { "type": "string", "minLength": 1 },
+        "build_signature": { "type": "string", "minLength": 1 },
+        "pixel_format": { "const": "BGRA8" },
+        "search_region": { "$ref": "#/$defs/normalized_rect" },
+        "circle": {
+          "type": "object",
+          "required": [
+            "radius_fraction_min", "radius_fraction_max", "radius_step_fraction",
+            "center_step_fraction", "ring_samples", "gradient_percentile",
+            "min_ring_coverage", "min_confidence"
+          ],
+          "properties": {
+            "radius_fraction_min": { "type": "number", "exclusiveMinimum": 0, "maximum": 0.5 },
+            "radius_fraction_max": { "type": "number", "exclusiveMinimum": 0, "maximum": 0.5 },
+            "radius_step_fraction": { "type": "number", "exclusiveMinimum": 0, "maximum": 0.1 },
+            "center_step_fraction": { "type": "number", "exclusiveMinimum": 0, "maximum": 0.1 },
+            "ring_samples": { "type": "integer", "minimum": 24, "maximum": 720 },
+            "gradient_percentile": { "type": "number", "minimum": 50, "maximum": 99.9 },
+            "min_ring_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+            "min_confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "marker": {
+          "type": "object",
+          "required": [
+            "color_bgr_min", "color_bgr_max", "central_radius_fraction",
+            "min_pixels", "max_pixels", "min_confidence", "neutral_model"
+          ],
+          "properties": {
+            "color_bgr_min": {
+              "type": "array", "minItems": 3, "maxItems": 3,
+              "items": { "type": "integer", "minimum": 0, "maximum": 255 }
+            },
+            "color_bgr_max": {
+              "type": "array", "minItems": 3, "maxItems": 3,
+              "items": { "type": "integer", "minimum": 0, "maximum": 255 }
+            },
+            "central_radius_fraction": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+            "min_pixels": { "type": "integer", "minimum": 3 },
+            "max_pixels": { "type": "integer", "minimum": 4 },
+            "min_confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+            "neutral_model": {
+              "type": "object",
+              "required": [
+                "central_radius_fraction", "minimum_channel_value",
+                "maximum_channel_spread", "min_pixels", "max_pixels",
+                "min_anisotropy", "min_confidence",
+                "maximum_center_offset_fraction"
+              ],
+              "properties": {
+                "central_radius_fraction": {
+                  "type": "number", "exclusiveMinimum": 0, "maximum": 1
+                },
+                "minimum_channel_value": {
+                  "type": "integer", "minimum": 0, "maximum": 255
+                },
+                "maximum_channel_spread": {
+                  "type": "integer", "minimum": 0, "maximum": 255
+                },
+                "min_pixels": { "type": "integer", "minimum": 3 },
+                "max_pixels": { "type": "integer", "minimum": 4 },
+                "min_anisotropy": {
+                  "type": "number", "minimum": 0, "exclusiveMaximum": 1
+                },
+                "min_confidence": {
+                  "type": "number", "exclusiveMinimum": 0, "maximum": 1
+                },
+                "maximum_center_offset_fraction": {
+                  "type": "number", "exclusiveMinimum": 0, "maximum": 1
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "heading_calibration": {
+          "type": "object",
+          "required": [
+            "screen_orientation_sign", "offset_rad",
+            "minimum_marker_confidence", "evidence_refs"
+          ],
+          "properties": {
+            "screen_orientation_sign": { "enum": [-1, 1] },
+            "offset_rad": {
+              "type": "number", "minimum": -3.141592653589793,
+              "maximum": 3.141592653589793
+            },
+            "minimum_marker_confidence": {
+              "type": "number", "exclusiveMinimum": 0, "maximum": 1
+            },
+            "evidence_refs": {
+              "type": "array", "minItems": 2, "maxItems": 8,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 512 }
+            }
+          },
+          "additionalProperties": false
+        },
+        "calibration_state": {
+          "enum": ["synthetic_only", "replay_calibrated", "controlled_live_verified"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "visual_observation": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "observation_id", "session_id",
+        "target_profile", "authorization_sha256", "actor_binding", "decision_context", "client_build", "build_signature",
+        "frame_id", "profile_id", "profile_version", "detector_id",
+        "detector_version", "tracking_state", "minimap", "player_marker",
+        "absolute_pose_available", "confidence", "reason_codes", "provenance",
+        "execution_authority", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "minimap_visual_observation" },
+        "schema_version": { "const": "1.0" },
+        "observation_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "authorization_sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+        "actor_binding": { "$ref": "#/$defs/actor_binding" },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "client_build": { "type": "string", "minLength": 1 },
+        "build_signature": { "type": "string", "minLength": 1 },
+        "frame_id": { "type": "string", "minLength": 1 },
+        "profile_id": { "type": "string", "minLength": 1 },
+        "profile_version": { "type": "string", "minLength": 1 },
+        "detector_id": { "type": "string", "minLength": 1 },
+        "detector_version": { "type": "string", "minLength": 1 },
+        "tracking_state": { "enum": ["FOUND", "DEGRADED", "NOT_FOUND"] },
+        "minimap": {
+          "oneOf": [
+            { "$ref": "#/$defs/minimap_geometry" },
+            { "type": "null" }
+          ]
+        },
+        "player_marker": {
+          "oneOf": [
+            { "$ref": "#/$defs/player_marker" },
+            { "type": "null" }
+          ]
+        },
+        "absolute_pose_available": { "const": false },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "reason_codes": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" }
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["origin", "capability", "scope", "evidence_refs"],
+          "properties": {
+            "origin": { "enum": ["window_capture", "replay_fixture"] },
+            "capability": { "const": "minimap_visual_localization" },
+            "scope": {
+              "enum": [
+                "synthetic_fixture", "lab_evaluation_only",
+                "unpromoted_evaluation_only"
+              ]
+            },
+            "evidence_refs": {
+              "type": "array", "minItems": 1, "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution_authority": { "const": false },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "tracking_state": { "const": "FOUND" } } },
+          "then": {
+            "properties": {
+              "minimap": { "$ref": "#/$defs/minimap_geometry" },
+              "player_marker": { "$ref": "#/$defs/player_marker" },
+              "confidence": { "type": "number", "exclusiveMinimum": 0 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "tracking_state": { "const": "DEGRADED" } } },
+          "then": {
+            "properties": {
+              "minimap": { "$ref": "#/$defs/minimap_geometry" },
+              "confidence": { "type": "number", "exclusiveMinimum": 0 }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "tracking_state": { "const": "NOT_FOUND" } } },
+          "then": {
+            "properties": {
+              "minimap": { "type": "null" },
+              "player_marker": { "type": "null" },
+              "confidence": { "const": 0 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "decision_context": { "const": "lab_clone" } },
+            "required": ["decision_context"]
+          },
+          "then": {
+            "properties": {
+              "actor_binding": {
+                "properties": {
+                  "actor_role": { "const": "lab_clone" },
+                  "decision_context": { "const": "lab_clone" },
+                  "memory_namespace": { "pattern": "^memory:lab:" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "decision_context": { "const": "champion" } },
+            "required": ["decision_context"]
+          },
+          "then": {
+            "properties": {
+              "actor_binding": {
+                "properties": {
+                  "actor_role": { "const": "champion_journey" },
+                  "decision_context": { "const": "champion" },
+                  "memory_namespace": { "pattern": "^memory:champion:" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "provenance": {
+                "properties": { "origin": { "const": "replay_fixture" } }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": { "scope": { "const": "synthetic_fixture" } }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "provenance": {
+                "properties": { "origin": { "const": "window_capture" } }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": { "scope": { "const": "lab_evaluation_only" } }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision_context": { "const": "champion" },
+              "provenance": {
+                "properties": { "origin": { "const": "window_capture" } }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": {
+                  "scope": { "const": "unpromoted_evaluation_only" }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/roi_profile" },
+    { "$ref": "#/$defs/visual_observation" }
+  ]
+}

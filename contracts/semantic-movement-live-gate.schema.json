@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/semantic-movement-live-gate.schema.json",
+  "title": "Perfect Assassin semantic movement live gate v2",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "absolute_path": { "type": "string", "minLength": 3, "maxLength": 32767 }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "status", "validation_result",
+    "validation_result_sha256", "world_pack_profile",
+    "world_pack_profile_sha256", "world_pack_profile_id", "world_pack_id",
+    "world_pack_content_sha256", "target_profile", "client_version",
+    "client_build", "nav_profile_id", "worker", "worker_sha256",
+    "live_authority_enabled"
+  ],
+  "properties": {
+    "record_type": { "const": "semantic_movement_live_gate" },
+    "schema_version": { "const": "2.0" },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "validation_result": { "$ref": "#/$defs/absolute_path" },
+    "validation_result_sha256": { "$ref": "#/$defs/sha256" },
+    "world_pack_profile": { "$ref": "#/$defs/absolute_path" },
+    "world_pack_profile_sha256": { "$ref": "#/$defs/sha256" },
+    "world_pack_profile_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_content_sha256": { "$ref": "#/$defs/sha256" },
+    "target_profile": { "$ref": "#/$defs/identifier" },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "nav_profile_id": { "$ref": "#/$defs/identifier" },
+    "worker": { "$ref": "#/$defs/absolute_path" },
+    "worker_sha256": { "$ref": "#/$defs/sha256" },
+    "live_authority_enabled": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}

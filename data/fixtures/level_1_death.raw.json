@@ -1,0 +1,48 @@
+{
+  "fixture_version": "0.1",
+  "label": "level_1_death",
+  "synthetic": true,
+  "target_profile": "tbc_243_lab",
+  "adapter": "fixture_tbc_243:0.1.0",
+  "session_id": "fixture-session-death",
+  "champion_id": "fixture-not-champion",
+  "events": [
+    {
+      "raw_event_id": "event:death-target:001",
+      "kind": "target_acquired",
+      "game_time_ms": 0,
+      "captured_at": "2026-08-22T11:00:00Z",
+      "facts": [
+        { "raw_key": "target_guid", "value": "fixture-creature-elite", "source": "client_observed", "capability": "target_state", "confidence": 1.0, "observed_at": "2026-08-22T11:00:00Z" },
+        { "raw_key": "target_kind", "value": "npc", "source": "client_observed", "capability": "target_state", "confidence": 1.0, "observed_at": "2026-08-22T11:00:00Z" }
+      ]
+    },
+    {
+      "raw_event_id": "event:death-combat:002",
+      "kind": "combat_start",
+      "game_time_ms": 500,
+      "captured_at": "2026-08-22T11:00:00.500Z",
+      "facts": [
+        { "raw_key": "combat_state", "value": "started", "source": "client_observed", "capability": "combat_log", "confidence": 1.0, "observed_at": "2026-08-22T11:00:00.500Z" }
+      ]
+    },
+    {
+      "raw_event_id": "event:death-damage:003",
+      "kind": "damage",
+      "game_time_ms": 1200,
+      "captured_at": "2026-08-22T11:00:01.200Z",
+      "facts": [
+        { "raw_key": "damage_amount", "value": 80, "source": "client_observed", "capability": "combat_log", "confidence": 1.0, "observed_at": "2026-08-22T11:00:01.200Z" }
+      ]
+    },
+    {
+      "raw_event_id": "event:death:004",
+      "kind": "death",
+      "game_time_ms": 1400,
+      "captured_at": "2026-08-22T11:00:01.400Z",
+      "facts": [
+        { "raw_key": "player_dead", "value": true, "source": "client_observed", "capability": "self_state", "confidence": 1.0, "observed_at": "2026-08-22T11:00:01.400Z" }
+      ]
+    }
+  ]
+}

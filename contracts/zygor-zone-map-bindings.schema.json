@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/zygor-zone-map-bindings.schema.json",
+  "title": "Explicit Zygor zone to TBC WorldPack binding v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "schema_version", "client_build", "provenance", "bindings", "execution_authority"],
+  "properties": {
+    "record_type": {"const": "zygor_zone_map_bindings"},
+    "schema_version": {"const": "1.0"},
+    "client_build": {"const": "2.4.3.8606"},
+    "provenance": {"const": "client_world_map_area_reviewed"},
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["zone", "map_id", "map_name"],
+        "properties": {
+          "zone": {"type": "string", "minLength": 1, "maxLength": 96},
+          "map_id": {"type": "integer", "minimum": 0},
+          "map_name": {"type": "string", "minLength": 1, "maxLength": 96}
+        }
+      }
+    },
+    "execution_authority": {"const": false}
+  }
+}

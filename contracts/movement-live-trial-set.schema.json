@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/movement-live-trial-set.schema.json",
+  "title": "Movement live trial set",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "schema_version",
+    "baseline_id",
+    "required_trial_count",
+    "execution_authority",
+    "trials"
+  ],
+  "properties": {
+    "record_type": {"const": "movement_live_trial_set"},
+    "schema_version": {"const": "1.0"},
+    "baseline_id": {"type": "string", "minLength": 1},
+    "required_trial_count": {"const": 10},
+    "execution_authority": {"const": false},
+    "trials": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "trial_id",
+          "result",
+          "video",
+          "stationary_validation",
+          "operator_review",
+          "no_blockage",
+          "no_regression_against_reference"
+        ],
+        "properties": {
+          "trial_id": {"type": "string", "minLength": 1},
+          "result": {"$ref": "#/$defs/artifact"},
+          "video": {"$ref": "#/$defs/artifact"},
+          "stationary_validation": {"$ref": "#/$defs/artifact"},
+          "operator_review": {"enum": ["PASS", "FAIL", "PENDING"]},
+          "no_blockage": {"type": "boolean"},
+          "no_regression_against_reference": {"type": "boolean"}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "bytes", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "bytes": {"type": "integer", "minimum": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

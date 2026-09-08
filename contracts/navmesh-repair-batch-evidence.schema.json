@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/navmesh-repair-batch-evidence.schema.json",
+  "title": "Navmesh repair batch evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type",
+    "schema_version",
+    "status",
+    "map_name",
+    "source_root",
+    "destination_root",
+    "builder",
+    "builder_sha256",
+    "expected_artifact_count",
+    "validated_artifact_count",
+    "results",
+    "failures",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "navmesh_repair_batch_evidence" },
+    "schema_version": { "const": "1.0" },
+    "status": { "enum": ["PASS", "FAIL"] },
+    "map_name": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "source_root": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "destination_root": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "builder": { "type": "string", "minLength": 1, "maxLength": 1024 },
+    "builder_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "expected_artifact_count": { "type": "integer", "minimum": 1, "maximum": 4096 },
+    "validated_artifact_count": { "type": "integer", "minimum": 0, "maximum": 4096 },
+    "results": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "artifact",
+          "action",
+          "source_sha256",
+          "result_sha256",
+          "detour_tile_count",
+          "empty_inner_tile_count",
+          "elapsed_seconds"
+        ],
+        "properties": {
+          "artifact": { "type": "string", "pattern": "^[0-9]{2}_[0-9]{2}\\.nav$" },
+          "action": { "enum": ["copied_valid", "rebuilt", "recovered_valid", "resumed_valid"] },
+          "source_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "source_failure": { "type": "string", "minLength": 1, "maxLength": 4096 },
+          "result_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "detour_tile_count": { "type": "integer", "minimum": 0, "maximum": 256 },
+          "empty_inner_tile_count": { "type": "integer", "minimum": 0, "maximum": 256 },
+          "build_log": { "type": "string", "minLength": 1, "maxLength": 1024 },
+          "elapsed_seconds": { "type": "number", "minimum": 0 }
+        }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "maxItems": 4096,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["artifact", "error"],
+        "properties": {
+          "artifact": { "type": "string", "pattern": "^[0-9]{2}_[0-9]{2}\\.nav$" },
+          "error": { "type": "string", "minLength": 1, "maxLength": 4096 }
+        }
+      }
+    },
+    "execution_authority": { "const": false }
+  }
+}

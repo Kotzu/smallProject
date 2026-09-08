@@ -1,0 +1,581 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/motion-calibration.schema.json",
+  "title": "Perfect Assassin synchronized motion calibration contracts v0.1",
+  "$defs": {
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+    },
+    "actor_binding": {
+      "type": "object",
+      "required": [
+        "schema_version", "instance_id", "actor_role", "actor_id",
+        "decision_context", "memory_namespace", "expected_character_name",
+        "credential_alias", "binding_assurance"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "instance_id": { "type": "string", "minLength": 1 },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "actor_id": { "type": "string", "minLength": 1 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "memory_namespace": { "type": "string", "minLength": 1 },
+        "expected_character_name": { "type": "string", "minLength": 1 },
+        "credential_alias": { "type": "string", "minLength": 1 },
+        "binding_assurance": {
+          "type": "object",
+          "required": ["state", "evidence_refs"],
+          "properties": {
+            "state": { "const": "configured_expected_only" },
+            "evidence_refs": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "champion_journey" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "champion" },
+              "memory_namespace": { "pattern": "^memory:champion:" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "lab_clone" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "memory_namespace": { "pattern": "^memory:lab:" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "trace_provenance": {
+      "type": "object",
+      "required": [
+        "pose_origin", "action_origin", "capability", "scope",
+        "confidence", "evidence_refs"
+      ],
+      "properties": {
+        "pose_origin": {
+          "enum": [
+            "visible_addon_hud", "client_visible_api", "window_capture",
+            "replay_fixture", "lab_oracle", "server_ground_truth"
+          ]
+        },
+        "action_origin": {
+          "enum": ["manual_input_observation", "replay_fixture", "lab_oracle"]
+        },
+        "capability": { "const": "synchronized_pose_action_trace" },
+        "scope": {
+          "enum": [
+            "unpromoted_evaluation_only", "lab_evaluation_only", "synthetic_fixture"
+          ]
+        },
+        "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "evidence_refs": { "$ref": "#/$defs/evidence_refs" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "pose_origin": { "enum": ["lab_oracle", "server_ground_truth"] }
+            },
+            "required": ["pose_origin"]
+          },
+          "then": {
+            "properties": { "scope": { "const": "lab_evaluation_only" } }
+          }
+        },
+        {
+          "if": {
+            "properties": { "action_origin": { "const": "lab_oracle" } },
+            "required": ["action_origin"]
+          },
+          "then": {
+            "properties": { "scope": { "const": "lab_evaluation_only" } }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "model_provenance": {
+      "type": "object",
+      "required": [
+        "origin", "capability", "scope", "confidence", "input_trace_ids",
+        "evidence_refs"
+      ],
+      "properties": {
+        "origin": {
+          "enum": [
+            "deterministic_manual_trace_fit", "deterministic_synthetic_fit",
+            "deterministic_lab_oracle_fit"
+          ]
+        },
+        "capability": { "const": "calibrated_motion_model" },
+        "scope": {
+          "enum": [
+            "unpromoted_evaluation_only", "lab_evaluation_only", "synthetic_fixture"
+          ]
+        },
+        "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "input_trace_ids": { "$ref": "#/$defs/evidence_refs" },
+        "evidence_refs": { "$ref": "#/$defs/evidence_refs" }
+      },
+      "additionalProperties": false
+    },
+    "position": {
+      "type": "object",
+      "required": ["x", "y"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": ["number", "null"] }
+      },
+      "additionalProperties": false
+    },
+    "sample": {
+      "type": "object",
+      "required": [
+        "sample_index", "pose_observation_id", "action_observation_id",
+        "timing", "pose", "action", "uncertainty"
+      ],
+      "properties": {
+        "sample_index": { "type": "integer", "minimum": 0 },
+        "pose_observation_id": { "type": "string", "minLength": 1 },
+        "action_observation_id": { "type": "string", "minLength": 1 },
+        "timing": {
+          "type": "object",
+          "required": [
+            "sample_monotonic_s", "pose_monotonic_s", "action_monotonic_s",
+            "sync_skew_ms"
+          ],
+          "properties": {
+            "sample_monotonic_s": { "type": "number", "minimum": 0 },
+            "pose_monotonic_s": { "type": "number", "minimum": 0 },
+            "action_monotonic_s": { "type": "number", "minimum": 0 },
+            "sync_skew_ms": { "type": "number", "minimum": 0, "maximum": 1000 }
+          },
+          "additionalProperties": false
+        },
+        "pose": {
+          "type": "object",
+          "required": ["position", "body_yaw_deg"],
+          "properties": {
+            "position": { "$ref": "#/$defs/position" },
+            "body_yaw_deg": { "type": "number", "minimum": -180, "maximum": 180 }
+          },
+          "additionalProperties": false
+        },
+        "action": {
+          "type": "object",
+          "required": ["forward_axis", "turn_axis"],
+          "properties": {
+            "forward_axis": { "type": "number", "minimum": -1, "maximum": 1 },
+            "turn_axis": { "type": "number", "minimum": -1, "maximum": 1 }
+          },
+          "additionalProperties": false
+        },
+        "uncertainty": {
+          "type": "object",
+          "required": [
+            "position_radius_95", "yaw_error_95_deg", "timing_error_95_ms"
+          ],
+          "properties": {
+            "position_radius_95": { "type": "number", "minimum": 0 },
+            "yaw_error_95_deg": { "type": "number", "minimum": 0, "maximum": 180 },
+            "timing_error_95_ms": { "type": "number", "minimum": 0, "maximum": 1000 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "point_estimate": {
+      "type": "object",
+      "required": ["value", "uncertainty_95", "sample_count"],
+      "properties": {
+        "value": { "type": "number", "exclusiveMinimum": 0 },
+        "uncertainty_95": { "type": "number", "minimum": 0 },
+        "sample_count": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "latency_bounds": {
+      "type": "object",
+      "required": [
+        "lower_bound", "upper_bound", "midpoint", "uncertainty_95",
+        "transition_count"
+      ],
+      "properties": {
+        "lower_bound": { "type": "number", "minimum": 0 },
+        "upper_bound": { "type": "number", "minimum": 0 },
+        "midpoint": { "type": "number", "minimum": 0 },
+        "uncertainty_95": { "type": "number", "minimum": 0 },
+        "transition_count": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "motion_trace": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "trace_id", "session_id",
+        "target_profile", "actor_binding", "authorization_sha256",
+        "decision_context", "client_build", "build_signature", "map_ref",
+        "map_signature", "coordinate_space", "trace_kind", "timing",
+        "samples", "provenance", "execution_authority", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "motion_calibration_trace" },
+        "schema_version": { "const": "0.1" },
+        "trace_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "actor_binding": { "$ref": "#/$defs/actor_binding" },
+        "authorization_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "client_build": { "type": "string", "minLength": 1 },
+        "build_signature": { "type": "string", "minLength": 1 },
+        "map_ref": { "type": "string", "minLength": 1 },
+        "map_signature": { "type": "string", "minLength": 1 },
+        "coordinate_space": { "type": "string", "minLength": 1 },
+        "trace_kind": {
+          "enum": ["manual_trace", "synthetic_fixture", "lab_oracle_evaluation"]
+        },
+        "timing": {
+          "type": "object",
+          "required": [
+            "monotonic_clock_id", "started_monotonic_s", "ended_monotonic_s",
+            "duration_ms", "maximum_sync_skew_ms"
+          ],
+          "properties": {
+            "monotonic_clock_id": { "type": "string", "minLength": 1 },
+            "started_monotonic_s": { "type": "number", "minimum": 0 },
+            "ended_monotonic_s": { "type": "number", "minimum": 0 },
+            "duration_ms": { "type": "number", "exclusiveMinimum": 0 },
+            "maximum_sync_skew_ms": { "type": "number", "minimum": 0, "maximum": 1000 }
+          },
+          "additionalProperties": false
+        },
+        "samples": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 100000,
+          "items": { "$ref": "#/$defs/sample" }
+        },
+        "provenance": { "$ref": "#/$defs/trace_provenance" },
+        "execution_authority": { "const": false },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "decision_context": { "const": "champion" } },
+            "required": ["decision_context"]
+          },
+          "then": {
+            "properties": {
+              "actor_binding": {
+                "properties": {
+                  "actor_role": { "const": "champion_journey" },
+                  "decision_context": { "const": "champion" }
+                }
+              },
+              "trace_kind": { "const": "manual_trace" },
+              "provenance": {
+                "properties": {
+                  "pose_origin": {
+                    "not": { "enum": ["lab_oracle", "server_ground_truth", "replay_fixture"] }
+                  },
+                  "action_origin": { "const": "manual_input_observation" },
+                  "scope": { "const": "unpromoted_evaluation_only" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "decision_context": { "const": "lab_clone" } },
+            "required": ["decision_context"]
+          },
+          "then": {
+            "properties": {
+              "actor_binding": {
+                "properties": {
+                  "actor_role": { "const": "lab_clone" },
+                  "decision_context": { "const": "lab_clone" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "trace_kind": { "const": "manual_trace" } },
+            "required": ["trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": {
+                  "pose_origin": {
+                    "enum": ["visible_addon_hud", "client_visible_api", "window_capture"]
+                  },
+                  "action_origin": { "const": "manual_input_observation" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "trace_kind": { "const": "manual_trace" }
+            },
+            "required": ["decision_context", "trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": { "scope": { "const": "lab_evaluation_only" } }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "trace_kind": { "const": "synthetic_fixture" } },
+            "required": ["trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "provenance": {
+                "properties": {
+                  "pose_origin": { "const": "replay_fixture" },
+                  "action_origin": { "const": "replay_fixture" },
+                  "scope": { "const": "synthetic_fixture" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "trace_kind": { "const": "lab_oracle_evaluation" } },
+            "required": ["trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "provenance": {
+                "properties": {
+                  "pose_origin": { "enum": ["lab_oracle", "server_ground_truth"] },
+                  "action_origin": { "const": "lab_oracle" },
+                  "scope": { "const": "lab_evaluation_only" }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "motion_model": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "model_id", "session_id",
+        "target_profile", "actor_binding", "authorization_sha256",
+        "decision_context", "client_build", "build_signature", "map_ref",
+        "map_signature", "coordinate_space", "source_trace_kind", "fitter_id",
+        "fitter_version", "timing", "estimates", "provenance",
+        "execution_authority", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "calibrated_motion_model" },
+        "schema_version": { "const": "0.1" },
+        "model_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "actor_binding": { "$ref": "#/$defs/actor_binding" },
+        "authorization_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "client_build": { "type": "string", "minLength": 1 },
+        "build_signature": { "type": "string", "minLength": 1 },
+        "map_ref": { "type": "string", "minLength": 1 },
+        "map_signature": { "type": "string", "minLength": 1 },
+        "coordinate_space": { "type": "string", "minLength": 1 },
+        "source_trace_kind": {
+          "enum": ["manual_trace", "synthetic_fixture", "lab_oracle_evaluation"]
+        },
+        "fitter_id": { "type": "string", "minLength": 1 },
+        "fitter_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "timing": {
+          "type": "object",
+          "required": [
+            "monotonic_clock_id", "first_sample_monotonic_s",
+            "last_sample_monotonic_s", "covered_duration_ms", "trace_count",
+            "sample_count"
+          ],
+          "properties": {
+            "monotonic_clock_id": { "type": "string", "minLength": 1 },
+            "first_sample_monotonic_s": { "type": "number", "minimum": 0 },
+            "last_sample_monotonic_s": { "type": "number", "minimum": 0 },
+            "covered_duration_ms": { "type": "number", "exclusiveMinimum": 0 },
+            "trace_count": { "type": "integer", "minimum": 1 },
+            "sample_count": { "type": "integer", "minimum": 6 }
+          },
+          "additionalProperties": false
+        },
+        "estimates": {
+          "type": "object",
+          "required": [
+            "forward_speed_world_units_per_s", "turn_rate_deg_per_s",
+            "forward_input_latency_ms", "turn_input_latency_ms"
+          ],
+          "properties": {
+            "forward_speed_world_units_per_s": { "$ref": "#/$defs/point_estimate" },
+            "turn_rate_deg_per_s": { "$ref": "#/$defs/point_estimate" },
+            "forward_input_latency_ms": { "$ref": "#/$defs/latency_bounds" },
+            "turn_input_latency_ms": { "$ref": "#/$defs/latency_bounds" }
+          },
+          "additionalProperties": false
+        },
+        "provenance": { "$ref": "#/$defs/model_provenance" },
+        "execution_authority": { "const": false },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "decision_context": { "const": "champion" } },
+            "required": ["decision_context"]
+          },
+          "then": {
+            "properties": {
+              "actor_binding": {
+                "properties": {
+                  "actor_role": { "const": "champion_journey" },
+                  "decision_context": { "const": "champion" }
+                }
+              },
+              "source_trace_kind": { "const": "manual_trace" },
+              "provenance": {
+                "properties": {
+                  "origin": { "const": "deterministic_manual_trace_fit" },
+                  "scope": { "const": "unpromoted_evaluation_only" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "decision_context": { "const": "lab_clone" } },
+            "required": ["decision_context"]
+          },
+          "then": {
+            "properties": {
+              "actor_binding": {
+                "properties": {
+                  "actor_role": { "const": "lab_clone" },
+                  "decision_context": { "const": "lab_clone" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "source_trace_kind": { "const": "synthetic_fixture" } },
+            "required": ["source_trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "provenance": {
+                "properties": {
+                  "origin": { "const": "deterministic_synthetic_fit" },
+                  "scope": { "const": "synthetic_fixture" }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "source_trace_kind": { "const": "manual_trace" } },
+            "required": ["source_trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": { "origin": { "const": "deterministic_manual_trace_fit" } }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "source_trace_kind": { "const": "manual_trace" }
+            },
+            "required": ["decision_context", "source_trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "provenance": {
+                "properties": { "scope": { "const": "lab_evaluation_only" } }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "source_trace_kind": { "const": "lab_oracle_evaluation" } },
+            "required": ["source_trace_kind"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "provenance": {
+                "properties": {
+                  "origin": { "const": "deterministic_lab_oracle_fit" },
+                  "scope": { "const": "lab_evaluation_only" }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/motion_trace" },
+    { "$ref": "#/$defs/motion_model" }
+  ]
+}

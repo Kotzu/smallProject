@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/client-world-map-area-audit.schema.json",
+  "title": "Client WorldMapArea coverage audit v1",
+  "$defs": {
+    "area": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["record_id", "area_id", "internal_name", "bounds", "virtual_map_id"],
+      "properties": {
+        "record_id": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "area_id": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "internal_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "bounds": {
+          "type": "array",
+          "prefixItems": [
+            { "type": "number" }, { "type": "number" },
+            { "type": "number" }, { "type": "number" }
+          ],
+          "items": false,
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "virtual_map_id": { "type": "integer", "minimum": -1, "maximum": 65535 }
+      }
+    },
+    "map": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["map_id", "area_count", "areas"],
+      "properties": {
+        "map_id": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "area_count": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "areas": { "type": "array", "minItems": 1, "maxItems": 65535, "items": { "$ref": "#/$defs/area" } }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type", "schema_version", "client_build", "asset_reference",
+    "asset_sha256", "provenance_scope", "record_count", "map_count",
+    "map_ids", "maps", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "client_world_map_area_audit" },
+    "schema_version": { "const": "1.0" },
+    "client_build": { "const": "2.4.3.8606" },
+    "asset_reference": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "asset_sha256": { "type": "string", "pattern": "^[0-9a-fA-F]{64}$" },
+    "provenance_scope": { "const": "lab_evaluation_only" },
+    "record_count": { "type": "integer", "minimum": 1, "maximum": 65535 },
+    "map_count": { "type": "integer", "minimum": 1, "maximum": 65535 },
+    "map_ids": {
+      "type": "array", "minItems": 1, "maxItems": 65535,
+      "items": { "type": "integer", "minimum": 0, "maximum": 65535 },
+      "uniqueItems": true
+    },
+    "maps": { "type": "array", "minItems": 1, "maxItems": 65535, "items": { "$ref": "#/$defs/map" } },
+    "execution_authority": { "const": false }
+  }
+}

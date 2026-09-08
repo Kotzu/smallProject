@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/structure-access-graph.schema.json",
+  "title": "Perfect Assassin structure access graph v1",
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$" },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "point": { "type": "array", "minItems": 3, "maxItems": 3, "items": { "type": "number" } },
+    "structure_ids": { "type": "array", "maxItems": 64, "uniqueItems": true, "items": { "$ref": "#/$defs/identifier" } },
+    "observation": {
+      "type": "object",
+      "required": ["observation_sha256", "observed_monotonic_s", "position", "environment_state", "topology_complete", "containing_structure_ids", "boundary_count", "verified_egress_count"],
+      "properties": {
+        "observation_sha256": { "$ref": "#/$defs/sha256" },
+        "observed_monotonic_s": { "type": "number", "minimum": 0 },
+        "position": { "$ref": "#/$defs/point" },
+        "environment_state": { "enum": ["INSIDE_STATIC_WMO", "OPEN_GROUND", "CONFINED_STATIC_SPACE", "STATIC_TRANSITION", "WMO_TRANSITION_OR_UNRESOLVED"] },
+        "topology_complete": { "type": "boolean" },
+        "containing_structure_ids": { "$ref": "#/$defs/structure_ids" },
+        "boundary_count": { "type": "integer", "minimum": 0, "maximum": 128 },
+        "verified_egress_count": { "type": "integer", "minimum": 0, "maximum": 32 }
+      },
+      "additionalProperties": false
+    },
+    "boundary_chain": {
+      "type": "object",
+      "required": ["chain_id", "structure_ids", "floor_z_yards", "polyline", "length_yards", "minimum_observed_distance_yards", "barrier_semantics", "collision_corroboration_fraction", "physical_object_class", "source_observation_sha256", "execution_authority"],
+      "properties": {
+        "chain_id": { "$ref": "#/$defs/identifier" },
+        "structure_ids": { "$ref": "#/$defs/structure_ids" },
+        "floor_z_yards": { "type": "number" },
+        "polyline": { "type": "array", "minItems": 2, "maxItems": 129, "items": { "$ref": "#/$defs/point" } },
+        "length_yards": { "type": "number", "exclusiveMinimum": 0 },
+        "minimum_observed_distance_yards": { "type": "number", "minimum": 0 },
+        "barrier_semantics": { "enum": ["BVH_COLLISION_CORROBORATED_STATIC_BARRIER", "NAVMESH_BOUNDARY_CHAIN_ONLY"] },
+        "collision_corroboration_fraction": { "type": "number", "minimum": 0, "maximum": 1 },
+        "physical_object_class": { "const": "UNKNOWN_NOT_INFERRED" },
+        "source_observation_sha256": { "type": "array", "minItems": 1, "maxItems": 4096, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" } },
+        "execution_authority": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "opening_segment": {
+      "type": "object",
+      "required": ["left", "right", "width_yards"],
+      "properties": {
+        "left": { "$ref": "#/$defs/point" },
+        "right": { "$ref": "#/$defs/point" },
+        "width_yards": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "access_opening": {
+      "type": "object",
+      "required": ["opening_id", "structure_ids", "floor_z_yards", "midpoint", "segments", "connected_width_yards", "minimum_observed_route_distance_yards", "from_surfaces", "to_surfaces", "opening_kind", "physical_door_semantics", "dynamic_state", "source_observation_sha256", "execution_authority"],
+      "properties": {
+        "opening_id": { "$ref": "#/$defs/identifier" },
+        "structure_ids": { "$ref": "#/$defs/structure_ids" },
+        "floor_z_yards": { "type": "number" },
+        "midpoint": { "$ref": "#/$defs/point" },
+        "segments": { "type": "array", "minItems": 1, "maxItems": 256, "items": { "$ref": "#/$defs/opening_segment" } },
+        "connected_width_yards": { "type": "number", "exclusiveMinimum": 0 },
+        "minimum_observed_route_distance_yards": { "type": "number", "minimum": 0 },
+        "from_surfaces": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["ground", "wmo", "doodad"] } },
+        "to_surfaces": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "enum": ["ground", "wmo", "doodad"] } },
+        "opening_kind": { "const": "COVERED_TO_OPEN_ROUTE_VERIFIED" },
+        "physical_door_semantics": { "const": "UNKNOWN_NOT_INFERRED" },
+        "dynamic_state": { "const": "UNKNOWN_NOT_OBSERVED" },
+        "source_observation_sha256": { "type": "array", "minItems": 1, "maxItems": 4096, "uniqueItems": true, "items": { "$ref": "#/$defs/sha256" } },
+        "execution_authority": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": ["record_type", "schema_version", "graph_id", "world_pack_id", "world_pack_content_sha256", "catalog_id", "target_profile", "client_version", "client_build", "nav_profile_id", "map_id", "map_name", "structure_index_id", "structure_index_sha256", "map_artifact_sha256", "coverage_semantics", "probe_contract_id", "probe_worker_sha256", "coverage_state", "observations", "boundary_chains", "access_openings", "dynamic_entity_knowledge", "execution_authority", "content_sha256"],
+  "properties": {
+    "record_type": { "const": "structure_access_graph" },
+    "schema_version": { "const": "1.0" },
+    "graph_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_content_sha256": { "$ref": "#/$defs/sha256" },
+    "catalog_id": { "$ref": "#/$defs/identifier" },
+    "target_profile": { "$ref": "#/$defs/identifier" },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "nav_profile_id": { "$ref": "#/$defs/identifier" },
+    "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "map_name": { "type": "string", "minLength": 1, "maxLength": 96 },
+    "structure_index_id": { "$ref": "#/$defs/identifier" },
+    "structure_index_sha256": { "$ref": "#/$defs/sha256" },
+    "map_artifact_sha256": { "$ref": "#/$defs/sha256" },
+    "coverage_semantics": { "const": "LOCAL_IMMUTABLE_GEOMETRY_PROBE_AGGREGATE" },
+    "probe_contract_id": { "const": "detour-bvh-local-structure-access-v1" },
+    "probe_worker_sha256": { "$ref": "#/$defs/sha256" },
+    "coverage_state": { "enum": ["COMPLETE_FOR_OBSERVED_COMPONENTS", "PARTIAL_OBSERVED_COMPONENTS"] },
+    "observations": { "type": "array", "minItems": 1, "maxItems": 4096, "items": { "$ref": "#/$defs/observation" } },
+    "boundary_chains": { "type": "array", "maxItems": 65536, "items": { "$ref": "#/$defs/boundary_chain" } },
+    "access_openings": { "type": "array", "maxItems": 16384, "items": { "$ref": "#/$defs/access_opening" } },
+    "dynamic_entity_knowledge": { "const": "NONE" },
+    "execution_authority": { "const": false },
+    "content_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "additionalProperties": false
+}

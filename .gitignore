@@ -1,0 +1,23 @@
+# Runtime data and secrets
+data/runtime/
+data/telemetry/
+data/replays/
+data/clips/
+.env
+*.secret
+secrets.local.json
+*.local.json
+*.pem
+*.key
+*.log
+
+# Tooling
+.venv/
+node_modules/
+dist/
+coverage/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+*.egg-info/

@@ -1,0 +1,16 @@
+{
+  "profile": "tbc_243_lab",
+  "version": "0.1.0",
+  "default": "deny",
+  "capabilities": {
+    "combat_log": "available",
+    "target_state": "available",
+    "self_state": "available",
+    "self_spellbook": "available",
+    "inspect_enemy": "restricted",
+    "global_player_positions": "unavailable",
+    "server_patrol_paths": "unavailable",
+    "wowhead_lookup_in_combat": "unavailable",
+    "zygor_route_guidance": "restricted"
+  }
+}

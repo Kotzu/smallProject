@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/world-structure-index.schema.json",
+  "title": "Perfect Assassin immutable world structure index v1",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "bounds": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "$ref": "#/$defs/vector3" },
+        "max": { "$ref": "#/$defs/vector3" }
+      },
+      "additionalProperties": false
+    },
+    "structure": {
+      "type": "object",
+      "required": [
+        "structure_id", "kind", "instance_id", "asset_path", "asset_tokens",
+        "doodad_set", "name_set", "transform_matrix", "bounds", "center",
+        "extent", "horizontal_radius_yards", "collision_role",
+        "intersecting_terrain_tile_count", "covered_nav_tile_count",
+        "nav_coverage", "geometry_confidence", "provenance"
+      ],
+      "properties": {
+        "structure_id": { "$ref": "#/$defs/identifier" },
+        "kind": { "enum": ["WMO", "DOODAD"] },
+        "instance_id": { "type": "integer", "minimum": 0, "maximum": 4294967295 },
+        "asset_path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)[.][.]?(?:/|$))(?!.*\\\\).{1,512}$"
+        },
+        "asset_tokens": {
+          "type": "array",
+          "maxItems": 64,
+          "items": { "type": "string", "pattern": "^[a-z0-9]{1,64}$" }
+        },
+        "doodad_set": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "name_set": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "transform_matrix": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "items": { "type": "number" }
+        },
+        "bounds": { "$ref": "#/$defs/bounds" },
+        "center": { "$ref": "#/$defs/vector3" },
+        "extent": { "$ref": "#/$defs/vector3" },
+        "horizontal_radius_yards": { "type": "number", "minimum": 0 },
+        "collision_role": {
+          "enum": ["ENCLOSURE_OR_LARGE_STRUCTURE", "STATIC_OBSTACLE_CANDIDATE"]
+        },
+        "intersecting_terrain_tile_count": {
+          "type": "integer", "minimum": 0, "maximum": 4096
+        },
+        "covered_nav_tile_count": {
+          "type": "integer", "minimum": 0, "maximum": 4096
+        },
+        "nav_coverage": { "enum": ["FULL", "PARTIAL", "NONE", "GLOBAL_WMO"] },
+        "geometry_confidence": { "const": 1.0 },
+        "provenance": { "const": "PINNED_CLIENT_MAP_ARTIFACT" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "index_id", "pack_id", "catalog_id",
+    "source_pack_content_sha256", "client_version", "client_build", "map_id",
+    "map_name", "map_artifact", "map_artifact_sha256", "parser_profile",
+    "terrain_present", "terrain_tile_count", "nav_tile_count",
+    "navigation_coverage", "interior_navigation_coverage", "structure_count",
+    "wmo_count", "doodad_count", "static_knowledge_semantics",
+    "dynamic_entity_knowledge", "structures", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "world_structure_index" },
+    "schema_version": { "const": "1.0" },
+    "index_id": { "$ref": "#/$defs/identifier" },
+    "pack_id": { "$ref": "#/$defs/identifier" },
+    "catalog_id": { "$ref": "#/$defs/identifier" },
+    "source_pack_content_sha256": { "$ref": "#/$defs/sha256" },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "map_name": { "type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$" },
+    "map_artifact": { "type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}[.]map$" },
+    "map_artifact_sha256": { "$ref": "#/$defs/sha256" },
+    "parser_profile": { "const": "namigator-map1-v1" },
+    "terrain_present": { "type": "boolean" },
+    "terrain_tile_count": { "type": "integer", "minimum": 0, "maximum": 4096 },
+    "nav_tile_count": { "type": "integer", "minimum": 1, "maximum": 4096 },
+    "navigation_coverage": { "enum": ["partial", "complete"] },
+    "interior_navigation_coverage": { "enum": ["none", "partial", "complete"] },
+    "structure_count": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+    "wmo_count": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "doodad_count": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "static_knowledge_semantics": { "const": "PINNED_CLIENT_ASSET_BOUNDS" },
+    "dynamic_entity_knowledge": { "const": "NONE" },
+    "structures": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1000000,
+      "items": { "$ref": "#/$defs/structure" }
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

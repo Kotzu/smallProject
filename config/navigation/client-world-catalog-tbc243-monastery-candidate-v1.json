@@ -1,0 +1,466 @@
+{
+  "record_type": "client_world_catalog",
+  "schema_version": "1.0",
+  "catalog_id": "wow.tbc.2.4.3.8606.monastery-candidate-v1",
+  "target_profile": "tbc_243_lab",
+  "product": "wow",
+  "expansion": "the_burning_crusade",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "asset_container": "mpq",
+  "asset_parser_profile": "wow-wdbc-map-v1",
+  "world_catalog_asset": "DBFilesClient/Map.dbc",
+  "world_catalog_asset_sha256": "fadae9835a1180641d2eb2f811fa7fc905694a3563a8a0208a47488d4a42b9f2",
+  "nav_profile_id": "tbc243-monastery-candidate-v1",
+  "maps": [
+    {
+      "map_id": 189,
+      "internal_name": "MonasteryInstances",
+      "classification": "instance",
+      "map_artifact": "MonasteryInstances.map",
+      "map_artifact_sha256": "a46728a2dabb8e6df8897e1d9398634756715abb1a862aeca6db65fdcdc5297f",
+      "nav_tiles_sha256": "774bca8d0c0378f5629da9bed414bb0146fbc9d06d86bbc554960ff08864752e",
+      "coverage_state": "complete",
+      "interior_coverage": "complete",
+      "road_semantic_coverage": "complete",
+      "road_semantics_sha256": "5facfdcdf849cc8a0e0114bb22d137c01a903178cea9aa39e8c1bbe9933f45da",
+      "tiles": [
+        {
+          "grid_x": 28,
+          "grid_y": 27,
+          "artifact": "28_27.nav",
+          "sha256": "0474437e8f6793a5c1d18e7d18f98ef1097e9c36b05ef5ee29173276ef5964a7"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 28,
+          "artifact": "28_28.nav",
+          "sha256": "ade35cf7ba40e5f7e9717aa37fd9c3d67de393a8ce238e6da3cd0aaf58c6d891"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 29,
+          "artifact": "28_29.nav",
+          "sha256": "efede1539c0b36786760c85afb99deeafdcd11b96c20fa2b4272299e199a3037"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 30,
+          "artifact": "28_30.nav",
+          "sha256": "1f0756c82163b1d8ab2f3b4d467a7af5c1b911a34ae8031f1a5860cef2c67ed4"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 31,
+          "artifact": "28_31.nav",
+          "sha256": "dbcc14c64fbc4b5ab6e22490624ea460c4e56eb4c92897ce4d6f5817ee358ea2"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 32,
+          "artifact": "28_32.nav",
+          "sha256": "1c78fd3c9453344e25c1cbc2c05cb49f7997ee84c3e5b2a6f82b336df95db511"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 27,
+          "artifact": "29_27.nav",
+          "sha256": "542dc5fd242a451611c962d5b41443896ae76595004042589972dbb6169517f1"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 28,
+          "artifact": "29_28.nav",
+          "sha256": "4ba716ec91645e5274e3a38d6969883558cdfeedcd738157fa8dc23a07653b5d"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 29,
+          "artifact": "29_29.nav",
+          "sha256": "92be672bb8ffceff8c06a4218c0dd473c2ef8422eb8f9fdfbfbb2285e85ea101"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 30,
+          "artifact": "29_30.nav",
+          "sha256": "7554469c86d3a9cdc9da01c8d56f2f90fecf6e638331c181f462884ec1040c8d"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 31,
+          "artifact": "29_31.nav",
+          "sha256": "ce429a39adbdce2c6f7782e591c1852001ff528485b16dea12c330ff4bf90d2d"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 32,
+          "artifact": "29_32.nav",
+          "sha256": "dd655ce853639ef87671cdb263090c578ec69a2e82192ea85c186cd4cdff9fd8"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 27,
+          "artifact": "30_27.nav",
+          "sha256": "2a13a16702d7fa3d1b3caf9f2d2aa42ad202745c1738e4e836344c6fa188003a"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 28,
+          "artifact": "30_28.nav",
+          "sha256": "3740489a313b0215df8cb2a4e6aed1b2461271be616562c1dba42a8cbbd80049"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 29,
+          "artifact": "30_29.nav",
+          "sha256": "ce31bf707eb3d47e1fc4d148607a1c565e20027b801c31f1d5f726ec66f020fd"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 30,
+          "artifact": "30_30.nav",
+          "sha256": "17b0d3e6496cc7a0e65bf3025a261e0e18829d9c0dadf4431b8c17f6f61c602f"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 31,
+          "artifact": "30_31.nav",
+          "sha256": "11088a9e3547015481ebfef551bcfc63d6775cdcaaa1f79b3ed563c6c3670f33"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 32,
+          "artifact": "30_32.nav",
+          "sha256": "522a7e44a7771595a1ede5ccaa1bc6099d25533e94883338d8b21a3aa8ec7b16"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 27,
+          "artifact": "31_27.nav",
+          "sha256": "8d5840a13701dd633213775650fc3727036d65a96cdb352c3a8320efa3c7f75f"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 28,
+          "artifact": "31_28.nav",
+          "sha256": "896e7ef792d0c798077db0b8d11f31f1637c19eeb83c50ccce8e28c901c2bddb"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 29,
+          "artifact": "31_29.nav",
+          "sha256": "3069e4c3de58a48b45b575276980bf7e5b4c8685e0ccb310d14d7d3302a52ac4"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 30,
+          "artifact": "31_30.nav",
+          "sha256": "d0101b538f83192666dbfd892026f5f8e0762eb06ce4011dd42c404d09392bde"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 31,
+          "artifact": "31_31.nav",
+          "sha256": "47d45b09de097a53e04627471fb19dd1698704f598127aa426ffbb508f8d871e"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 32,
+          "artifact": "31_32.nav",
+          "sha256": "4708902bbf498461cf97252513e72678efc18742fa0e6f21b379ecd66aefaf6f"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 27,
+          "artifact": "32_27.nav",
+          "sha256": "631ce991901cea483b16a9f0b1bc0c606f39b9316003abf2bcf3b3de874723e5"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 28,
+          "artifact": "32_28.nav",
+          "sha256": "bf65ff124310e13b204b843852f3d3cd421c2fb6ae272e6cc5d4165a2e40de17"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 29,
+          "artifact": "32_29.nav",
+          "sha256": "412a7a60d8f7b1e2a6073a5d8498bcc0c0bea44a37e3a36998efcc14e89c2120"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 30,
+          "artifact": "32_30.nav",
+          "sha256": "bcd09e7697e4f80e18f778d376f231c4f802a1f007fab42a04e0ab5cc8fdcb2a"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 31,
+          "artifact": "32_31.nav",
+          "sha256": "8a34221084957fd2ff38cca83146ba3dd624f9b5b84eca280bfb9a8accc39e92"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 32,
+          "artifact": "32_32.nav",
+          "sha256": "7e9acbac222af7b18ad3facb52b056e6b36ffba8ed0875adf51cb40f5ac01e85"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 27,
+          "artifact": "33_27.nav",
+          "sha256": "f2566de0d1954b3f1b75abcf9e5c48dc66f13b307cb513bc92ad8c75e51e831e"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 28,
+          "artifact": "33_28.nav",
+          "sha256": "8d8e1159872061a61d932475be31c5335c08bec0938cf6972860f57d26be5b00"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 29,
+          "artifact": "33_29.nav",
+          "sha256": "a16dc23714fd74424b53921a7162b890be46e54b28c264782b3e82e62532649d"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 30,
+          "artifact": "33_30.nav",
+          "sha256": "622c737d0b0073ce8c12eda80f44e70723cd6c28cf694c7a802eefe6520d3e09"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 31,
+          "artifact": "33_31.nav",
+          "sha256": "58ba237f3425074b3e94a310ce4f66db062827782c25fe73d25577e91b1dd592"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 32,
+          "artifact": "33_32.nav",
+          "sha256": "b07706818d731fcb41343fe8150b82d654e6311ef1a849c77b161a3a07def1a7"
+        }
+      ],
+      "road_semantics": [
+        {
+          "grid_x": 28,
+          "grid_y": 27,
+          "artifact": "MonasteryInstances_28_27.road",
+          "sha256": "0879c4eb0dcd7a87ccdb562900fec2686571c03a4c08d374cc910d0c98831083"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 28,
+          "artifact": "MonasteryInstances_28_28.road",
+          "sha256": "7160dba0396498f6241cf9b8cfb5e7baa73e411bc1db03778e024fc51e01309e"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 29,
+          "artifact": "MonasteryInstances_28_29.road",
+          "sha256": "0eab3e31a601c3348a34f768bffb83d007cbf366b89110f726753077e04d9bb4"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 30,
+          "artifact": "MonasteryInstances_28_30.road",
+          "sha256": "b42a6a73d674050f802f20e33788207795f50146348087582804c1f6f88c7987"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 31,
+          "artifact": "MonasteryInstances_28_31.road",
+          "sha256": "05953a0df64a0ab9c5f2e25f379ba9a6695655e277ec097c5d721aa15c18e987"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 32,
+          "artifact": "MonasteryInstances_28_32.road",
+          "sha256": "9a5da4b6b85763d5b46f52cc2a5e8e6f5553c1b792eb68f4ead4f234a6b2182c"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 27,
+          "artifact": "MonasteryInstances_29_27.road",
+          "sha256": "fef5f6abdedbe55dcd358c63965c69feaa9aadfb0aeb962f172c08e92a2ddb8a"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 28,
+          "artifact": "MonasteryInstances_29_28.road",
+          "sha256": "1335dea2a071a444581d746755381c0d12d1f0459b3503157ab83530be8229e5"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 29,
+          "artifact": "MonasteryInstances_29_29.road",
+          "sha256": "bbc0c8f18c8f9b8552be9e66c7ba57e8c27a3d258f8a50ddb6d1be893f72eda2"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 30,
+          "artifact": "MonasteryInstances_29_30.road",
+          "sha256": "ea192eca9adbb1e7006645e61cd192da533cc142a446f9683053d7da22c9b611"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 31,
+          "artifact": "MonasteryInstances_29_31.road",
+          "sha256": "67aa313326d45c2fc80134ec2a67c04ba88a4035cfe5347d8b8d653f50a0eab8"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 32,
+          "artifact": "MonasteryInstances_29_32.road",
+          "sha256": "3cc07c3d920184038db0ea40236262283e9b616105e4b183ccf9ea5aff2847e2"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 27,
+          "artifact": "MonasteryInstances_30_27.road",
+          "sha256": "e594a28bfd55cde474a54d023a24c47eb88aaa299c5bd3a81b1d084299363b86"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 28,
+          "artifact": "MonasteryInstances_30_28.road",
+          "sha256": "9704c42d29088b8f7b6cb7d69d1a6391e86c258cb79df404acb1cfa631a18b67"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 29,
+          "artifact": "MonasteryInstances_30_29.road",
+          "sha256": "444585a9cf9e53e9bab280609adba59ecce0cc2b6bb4de9f0cc295a32d8d0789"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 30,
+          "artifact": "MonasteryInstances_30_30.road",
+          "sha256": "10b4d6fb2418966780aed5d98509380e6bc1ad565b56a10b94354c2476748ec1"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 31,
+          "artifact": "MonasteryInstances_30_31.road",
+          "sha256": "110b444a4eb9f86be461c45874abc5d67fbba5b71fc2c10e08652d95accffb6d"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 32,
+          "artifact": "MonasteryInstances_30_32.road",
+          "sha256": "ae65fe4a08500c8df2ecd49570661e8945da79f87446de508108ded24dd5e09b"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 27,
+          "artifact": "MonasteryInstances_31_27.road",
+          "sha256": "3f89e63b9169fd4fe018a5a42e61a539320aae9fcf6308509355527586ca2707"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 28,
+          "artifact": "MonasteryInstances_31_28.road",
+          "sha256": "638df41224dd4d63b5e50f15a24abde9dfd45be75d5a349944df6e0183411246"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 29,
+          "artifact": "MonasteryInstances_31_29.road",
+          "sha256": "b1caaee7e7a32e372ba293cc8da8918f4a19e51878a139fd56c789a97e43b661"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 30,
+          "artifact": "MonasteryInstances_31_30.road",
+          "sha256": "07abd42b4f71c4492418dab471e001ff586783aa8037881f67c69e314c9179be"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 31,
+          "artifact": "MonasteryInstances_31_31.road",
+          "sha256": "4325416a36ca140679f5d4196f045e055be9ae9dc0ad1e43d55bf18ccd8d2254"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 32,
+          "artifact": "MonasteryInstances_31_32.road",
+          "sha256": "4d9fbc0955a4507855cff8fba08a3b7463e8610b3082a554fe3384a8e869cb60"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 27,
+          "artifact": "MonasteryInstances_32_27.road",
+          "sha256": "6045b9348944d735d7e01bff026891aabdd7b7de65efa7cad95a7edfafa7d7c5"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 28,
+          "artifact": "MonasteryInstances_32_28.road",
+          "sha256": "895c451126320eb1dc5b5591066135e91d4d12be46fc711e597b9469aca6f7c2"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 29,
+          "artifact": "MonasteryInstances_32_29.road",
+          "sha256": "99c026ad32b0c2057ff91140aeb4300544c767fdae77d35abf3b27eab36fe366"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 30,
+          "artifact": "MonasteryInstances_32_30.road",
+          "sha256": "27c04bf5c0b4a6c56453d4c47248537856cafc7faeffb8f84f4635348e717c98"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 31,
+          "artifact": "MonasteryInstances_32_31.road",
+          "sha256": "a9e2e6c1359e982f55d1a8ee84124effca9360d8897a1ebe0b35032e9eaa0cc2"
+        },
+        {
+          "grid_x": 32,
+          "grid_y": 32,
+          "artifact": "MonasteryInstances_32_32.road",
+          "sha256": "1cadad433ed4c2a34e93e9ae6f98d62b0395b3c2b8e26c45435a661015e8c2e2"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 27,
+          "artifact": "MonasteryInstances_33_27.road",
+          "sha256": "3cbfbad3b499767045d10f4c38039d8191d2a07fa90bc2ba9a191b30f289f780"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 28,
+          "artifact": "MonasteryInstances_33_28.road",
+          "sha256": "6a820c6c4d346f592f20f6ed97a07c61945c19f5b65cb73c890ed93ceec1be71"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 29,
+          "artifact": "MonasteryInstances_33_29.road",
+          "sha256": "35247404bfb2dfaf7d33a061e38c94237aa6fbff95a8dafb61f923a8713b2e5f"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 30,
+          "artifact": "MonasteryInstances_33_30.road",
+          "sha256": "9bd6603d1319afeb1b2de99700df475fc98c5c8e68672cc18ea7e0ea2bca92f8"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 31,
+          "artifact": "MonasteryInstances_33_31.road",
+          "sha256": "3254a95a537aefb3860f6033e8a61977c61ab2eb05f1313450e0e0a27f9f43a0"
+        },
+        {
+          "grid_x": 33,
+          "grid_y": 32,
+          "artifact": "MonasteryInstances_33_32.road",
+          "sha256": "bedc26b8cf3a9b17ad785bb49a4a1ecfba618afde313b1398e9fc73f83fb6e1f"
+        }
+      ]
+    }
+  ],
+  "execution_authority": false
+}

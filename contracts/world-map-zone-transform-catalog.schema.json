@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/world-map-zone-transform-catalog.schema.json",
+  "title": "TBC 2.4.3 client WorldMapArea zone transform catalog",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "target_profile", "client_build",
+    "asset_name", "asset_sha256", "record_fingerprint_sha256",
+    "coordinate_space", "provenance_origin", "source_reference", "retrieved_at",
+    "zones", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "tbc243_world_map_zone_transform_catalog" },
+    "schema_version": { "const": "1.0" },
+    "target_profile": { "const": "tbc_243_lab" },
+    "client_build": { "const": "2.4.3.8606" },
+    "asset_name": { "const": "WorldMapArea.dbc" },
+    "asset_sha256": {
+      "type": "string", "pattern": "^[0-9A-Fa-f]{64}$"
+    },
+    "record_fingerprint_sha256": {
+      "type": "string", "pattern": "^[0-9A-Fa-f]{64}$"
+    },
+    "coordinate_space": { "const": "wow_world_map_2d" },
+    "provenance_origin": { "const": "client_asset_calibration" },
+    "source_reference": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "retrieved_at": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "zones": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["map_id", "area_id", "internal_name", "bounds"],
+        "properties": {
+          "map_id": { "type": "integer", "minimum": 0 },
+          "area_id": { "type": "integer", "minimum": 0 },
+          "internal_name": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "bounds": {
+            "type": "array", "minItems": 4, "maxItems": 4,
+            "items": { "type": "number" }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

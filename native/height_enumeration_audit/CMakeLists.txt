@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.20)
+project(pa_height_enumeration_audit LANGUAGES CXX)
+set(CMAKE_CXX_STANDARD 17)
+enable_testing()
+add_executable(pa_height_enumeration_audit main.cpp)
+add_test(NAME height_enumeration_branch COMMAND pa_height_enumeration_audit)

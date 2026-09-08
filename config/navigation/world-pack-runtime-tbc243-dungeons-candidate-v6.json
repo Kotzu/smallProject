@@ -1,0 +1,44 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:dungeons-candidate:v6",
+  "pack_directory_name": "tbc243-dungeons-candidate-v6",
+  "pack_id": "wow.tbc.2.4.3.8606.dungeons-candidate-v6",
+  "content_sha256": "6e2e4d3eddbaec9df86e8656e63f7f36106f61d65e9e89f90d2df7af642549f2",
+  "catalog_id": "wow.tbc.2.4.3.8606.dungeons-candidate-v6",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-full-v3-candidate",
+  "maps": [
+    {
+      "map_id": 36,
+      "internal_name": "DeadminesInstance"
+    },
+    {
+      "map_id": 209,
+      "internal_name": "TanarisInstance"
+    },
+    {
+      "map_id": 289,
+      "internal_name": "SchoolofNecromancy"
+    },
+    {
+      "map_id": 543,
+      "internal_name": "HellfireRampart"
+    },
+    {
+      "map_id": 568,
+      "internal_name": "ZulAman"
+    },
+    {
+      "map_id": 580,
+      "internal_name": "SunwellPlateau"
+    },
+    {
+      "map_id": 585,
+      "internal_name": "Sunwell5ManFix"
+    }
+  ],
+  "execution_authority": false
+}

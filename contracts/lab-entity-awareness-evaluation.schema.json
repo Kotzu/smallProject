@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/lab-entity-awareness-evaluation.schema.json",
+  "title": "LAB-only entity awareness evaluation v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type", "schema_version", "evaluation_id", "map_name",
+    "evaluation_scope", "ground_truth_origin", "witness_origin",
+    "ground_truth_count", "witness_count", "matched_identity_count",
+    "identity_recall", "identity_precision", "localized_match_count",
+    "unlocalized_match_count", "position_coverage", "mean_position_error_yards",
+    "max_position_error_yards", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "lab_entity_awareness_evaluation" },
+    "schema_version": { "const": "1.0" },
+    "evaluation_id": {
+      "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9:/._-]{0,159}$"
+    },
+    "map_name": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "evaluation_scope": { "const": "LAB_EVALUATION_ONLY" },
+    "ground_truth_origin": { "const": "server_ground_truth" },
+    "witness_origin": { "const": "client_observed" },
+    "ground_truth_count": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "witness_count": { "type": "integer", "minimum": 0, "maximum": 1000000 },
+    "matched_identity_count": { "type": "integer", "minimum": 0 },
+    "identity_recall": { "type": "number", "minimum": 0, "maximum": 1 },
+    "identity_precision": { "type": "number", "minimum": 0, "maximum": 1 },
+    "localized_match_count": { "type": "integer", "minimum": 0 },
+    "unlocalized_match_count": { "type": "integer", "minimum": 0 },
+    "position_coverage": { "type": "number", "minimum": 0, "maximum": 1 },
+    "mean_position_error_yards": {
+      "type": ["number", "null"], "minimum": 0
+    },
+    "max_position_error_yards": {
+      "type": ["number", "null"], "minimum": 0
+    },
+    "execution_authority": { "const": false }
+  }
+}

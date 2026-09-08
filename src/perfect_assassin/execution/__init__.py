@@ -1,0 +1,105 @@
+"""Deny-by-default execution contracts and pure gateway policy."""
+
+from perfect_assassin.execution.contracts import (
+    AuthorityBinding,
+    ExecutionAuthorization,
+    ExecutionLease,
+    ExecutionLeasePolicy,
+    ExecutionPoseState,
+    ExecutionResult,
+    MovementPrimitive,
+    RuntimeArmSnapshot,
+    validate_execution_record_semantics,
+)
+from perfect_assassin.execution.gateway import ExecutionGateway
+from perfect_assassin.execution.continuous_motion_authorization import (
+    ContinuousMotionAuthorizationError,
+    ContinuousMotionAuthorizationProfile,
+    issue_continuous_motion_authorization_snapshot,
+    load_continuous_motion_authorization_profile,
+)
+from perfect_assassin.execution.continuous_motion_runtime_arm import (
+    ContinuousMotionRuntimeArmError,
+    issue_continuous_motion_runtime_arm_snapshot,
+)
+from perfect_assassin.execution.continuous_motion_gateway import (
+    CONTINUOUS_NAVIGATION_ALLOWED_CONTROLS,
+    CONTINUOUS_NAVIGATION_AUTHORIZATION_ID,
+    ContinuousMotionAuthority,
+    ContinuousMotionAuthorityError,
+    ContinuousMotionExecutionGateway,
+    load_continuous_motion_authority,
+)
+from perfect_assassin.execution.single_forward_pulse import (
+    POSITION_RADIUS_95,
+    SingleForwardPulseCoordinator,
+    SingleForwardPulseError,
+    validate_single_forward_pulse_result_semantics,
+)
+from perfect_assassin.execution.ports import (
+    CooperativeCancellation,
+    EventWatchdogWaiter,
+    FakeInputSink,
+    InMemoryRuntimeArm,
+    InputCancelledError,
+    ManualMonotonicClock,
+    SinkExecutionBudget,
+    SystemMonotonicClock,
+    WatchdogWaiter,
+)
+from perfect_assassin.execution.windows_send_input import (
+    KeyHoldTiming,
+    WindowsHotTargetSnapshot,
+    WindowsInputDeadlineError,
+    WindowsInputSinkError,
+    WindowsInputTargetBinding,
+    WindowsSendInputSink,
+    WindowsTargetBindingError,
+    WindowsTargetIdentityReceipt,
+)
+
+__all__ = [
+    "AuthorityBinding",
+    "CONTINUOUS_NAVIGATION_ALLOWED_CONTROLS",
+    "CONTINUOUS_NAVIGATION_AUTHORIZATION_ID",
+    "CooperativeCancellation",
+    "ContinuousMotionAuthority",
+    "ContinuousMotionAuthorityError",
+    "ContinuousMotionAuthorizationError",
+    "ContinuousMotionAuthorizationProfile",
+    "ContinuousMotionExecutionGateway",
+    "ContinuousMotionRuntimeArmError",
+    "issue_continuous_motion_authorization_snapshot",
+    "issue_continuous_motion_runtime_arm_snapshot",
+    "ExecutionAuthorization",
+    "ExecutionGateway",
+    "ExecutionLease",
+    "ExecutionLeasePolicy",
+    "ExecutionPoseState",
+    "ExecutionResult",
+    "EventWatchdogWaiter",
+    "FakeInputSink",
+    "InMemoryRuntimeArm",
+    "InputCancelledError",
+    "KeyHoldTiming",
+    "load_continuous_motion_authority",
+    "load_continuous_motion_authorization_profile",
+    "ManualMonotonicClock",
+    "MovementPrimitive",
+    "POSITION_RADIUS_95",
+    "RuntimeArmSnapshot",
+    "SinkExecutionBudget",
+    "SingleForwardPulseCoordinator",
+    "SingleForwardPulseError",
+    "SystemMonotonicClock",
+    "WatchdogWaiter",
+    "WindowsHotTargetSnapshot",
+    "WindowsInputDeadlineError",
+    "WindowsInputSinkError",
+    "WindowsInputTargetBinding",
+    "WindowsSendInputSink",
+    "WindowsTargetBindingError",
+    "WindowsTargetIdentityReceipt",
+    "validate_execution_record_semantics",
+    "validate_single_forward_pulse_result_semantics",
+]

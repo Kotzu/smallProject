@@ -1,0 +1,507 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/execution-gateway.schema.json",
+  "title": "Perfect Assassin deny-by-default execution gateway contracts v1.0",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "pose_component": {
+      "enum": ["POSITION_2D", "YAW"]
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "actor_id", "actor_instance_id", "actor_role", "decision_context", "target_profile",
+        "target_instance_id", "authorization_id", "authorization_sha256"
+      ],
+      "properties": {
+        "actor_id": { "$ref": "#/$defs/identifier" },
+        "actor_instance_id": { "$ref": "#/$defs/identifier" },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "target_profile": { "$ref": "#/$defs/identifier" },
+        "target_instance_id": { "$ref": "#/$defs/identifier" },
+        "authorization_id": { "$ref": "#/$defs/identifier" },
+        "authorization_sha256": {
+          "type": "string",
+          "pattern": "^[A-F0-9]{64}$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "champion_journey" } },
+            "required": ["actor_role"]
+          },
+          "then": { "properties": { "decision_context": { "const": "champion" } } }
+        },
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "lab_clone" } },
+            "required": ["actor_role"]
+          },
+          "then": { "properties": { "decision_context": { "const": "lab_clone" } } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "execution_lease": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "lease_id", "binding", "owner_id",
+        "runtime_arm_nonce", "mode", "capability", "clock_id",
+        "issued_at_monotonic_ms", "expires_at_monotonic_ms", "first_sequence",
+        "max_hold_duration_ms", "max_execution_envelope_ms", "max_queue_depth",
+        "allowed_controls", "max_primitives", "min_pose_confidence",
+        "required_pose_components", "position_coordinate_space",
+        "max_position_radius_95", "max_yaw_error_95_deg", "execution_authority"
+      ],
+      "properties": {
+        "record_type": { "const": "execution_lease" },
+        "schema_version": { "const": "1.0" },
+        "lease_id": { "$ref": "#/$defs/identifier" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "owner_id": { "$ref": "#/$defs/identifier" },
+        "runtime_arm_nonce": { "$ref": "#/$defs/identifier" },
+        "mode": { "const": "MOVEMENT_ONLY" },
+        "capability": { "const": "MOVEMENT_EXECUTION" },
+        "clock_id": { "$ref": "#/$defs/identifier" },
+        "issued_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "expires_at_monotonic_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "first_sequence": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "max_hold_duration_ms": {
+          "type": "integer", "minimum": 1, "maximum": 1000,
+          "description": "Lease cap for the interval during which primitive controls may remain pressed."
+        },
+        "max_execution_envelope_ms": {
+          "type": "integer", "minimum": 6, "maximum": 1250,
+          "description": "Lease cap for total execution time from first input down through final release."
+        },
+        "max_queue_depth": {
+          "type": "integer", "minimum": 1, "maximum": 8
+        },
+        "allowed_controls": {
+          "type": "array", "minItems": 1, "maxItems": 7, "uniqueItems": true,
+          "items": {
+            "enum": [
+              "MOVE_FORWARD", "MOVE_BACKWARD", "STRAFE_LEFT", "STRAFE_RIGHT",
+              "TURN_LEFT", "TURN_RIGHT", "JUMP"
+            ]
+          }
+        },
+        "max_primitives": {
+          "type": "integer", "minimum": 1, "maximum": 4096
+        },
+        "min_pose_confidence": {
+          "type": "number", "exclusiveMinimum": 0, "maximum": 1
+        },
+        "required_pose_components": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pose_component" }
+        },
+        "position_coordinate_space": {
+          "oneOf": [
+            { "$ref": "#/$defs/identifier" },
+            { "type": "null" }
+          ]
+        },
+        "max_position_radius_95": {
+          "type": ["number", "null"], "exclusiveMinimum": 0, "maximum": 100
+        },
+        "max_yaw_error_95_deg": {
+          "type": ["number", "null"], "exclusiveMinimum": 0, "maximum": 90
+        },
+        "execution_authority": { "const": true }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "required_pose_components": { "contains": { "const": "POSITION_2D" } }
+            },
+            "required": ["required_pose_components"]
+          },
+          "then": {
+            "properties": {
+              "position_coordinate_space": { "$ref": "#/$defs/identifier" },
+              "max_position_radius_95": {
+                "type": "number", "exclusiveMinimum": 0, "maximum": 100
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "position_coordinate_space": { "type": "null" },
+              "max_position_radius_95": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "required_pose_components": { "contains": { "const": "YAW" } }
+            },
+            "required": ["required_pose_components"]
+          },
+          "then": {
+            "properties": {
+              "max_yaw_error_95_deg": {
+                "type": "number", "exclusiveMinimum": 0, "maximum": 90
+              }
+            }
+          },
+          "else": {
+            "properties": { "max_yaw_error_95_deg": { "type": "null" } }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "movement_primitive": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "primitive_id", "lease_id", "binding",
+        "owner_id", "runtime_arm_nonce", "mode", "capability", "sequence",
+        "controls", "hold_duration_ms", "max_execution_envelope_ms", "clock_id", "issued_at_monotonic_ms",
+        "expires_at_monotonic_ms", "execution_authority"
+      ],
+      "properties": {
+        "record_type": { "const": "movement_primitive" },
+        "schema_version": { "const": "1.0" },
+        "primitive_id": { "$ref": "#/$defs/identifier" },
+        "lease_id": { "$ref": "#/$defs/identifier" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "owner_id": { "$ref": "#/$defs/identifier" },
+        "runtime_arm_nonce": { "$ref": "#/$defs/identifier" },
+        "mode": { "const": "MOVEMENT_ONLY" },
+        "capability": { "const": "MOVEMENT_EXECUTION" },
+        "sequence": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "controls": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "MOVE_FORWARD", "MOVE_BACKWARD", "STRAFE_LEFT", "STRAFE_RIGHT",
+              "TURN_LEFT", "TURN_RIGHT", "JUMP"
+            ]
+          }
+        },
+        "hold_duration_ms": {
+          "type": "integer", "minimum": 1, "maximum": 1000,
+          "description": "Requested interval from first input down until the first corresponding release begins."
+        },
+        "max_execution_envelope_ms": {
+          "type": "integer", "minimum": 6, "maximum": 1250,
+          "description": "Maximum total interval from execution start through final release; semantic validation requires 5-250 ms of cleanup slack beyond hold_duration_ms."
+        },
+        "clock_id": { "$ref": "#/$defs/identifier" },
+        "issued_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "expires_at_monotonic_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "execution_authority": { "const": false }
+      },
+      "allOf": [
+        {
+          "not": {
+            "allOf": [
+              { "properties": { "controls": { "contains": { "const": "MOVE_FORWARD" } } } },
+              { "properties": { "controls": { "contains": { "const": "MOVE_BACKWARD" } } } }
+            ]
+          }
+        },
+        {
+          "not": {
+            "allOf": [
+              { "properties": { "controls": { "contains": { "const": "STRAFE_LEFT" } } } },
+              { "properties": { "controls": { "contains": { "const": "STRAFE_RIGHT" } } } }
+            ]
+          }
+        },
+        {
+          "not": {
+            "allOf": [
+              { "properties": { "controls": { "contains": { "const": "TURN_LEFT" } } } },
+              { "properties": { "controls": { "contains": { "const": "TURN_RIGHT" } } } }
+            ]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "execution_pose_state": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "pose_id", "actor_id",
+        "actor_instance_id", "actor_role", "decision_context", "target_profile",
+        "target_instance_id", "authorization_id", "authorization_sha256", "state",
+        "source_scope", "source_id", "capability",
+        "source_origins", "evidence_refs", "confidence", "freshness_status",
+        "available_pose_components", "position_coordinate_space",
+        "position_radius_95", "yaw_error_95_deg", "clock_id", "observed_at_monotonic_ms",
+        "expires_at_monotonic_ms", "execution_authority"
+      ],
+      "properties": {
+        "record_type": { "const": "execution_pose_state" },
+        "schema_version": { "const": "1.0" },
+        "pose_id": { "$ref": "#/$defs/identifier" },
+        "actor_id": { "$ref": "#/$defs/identifier" },
+        "actor_instance_id": { "$ref": "#/$defs/identifier" },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "target_profile": { "$ref": "#/$defs/identifier" },
+        "target_instance_id": { "$ref": "#/$defs/identifier" },
+        "authorization_id": { "$ref": "#/$defs/identifier" },
+        "authorization_sha256": {
+          "type": "string",
+          "pattern": "^[A-F0-9]{64}$"
+        },
+        "state": { "enum": ["VALID", "DEGRADED", "LOST"] },
+        "source_scope": { "enum": ["champion_eligible", "lab_evaluation_only"] },
+        "source_id": { "$ref": "#/$defs/identifier" },
+        "capability": { "$ref": "#/$defs/identifier" },
+        "source_origins": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "client_visible_api", "addon_observed", "window_capture",
+              "minimap_vision", "scene_vision", "optical_flow",
+              "dead_reckoning", "manual_anchor", "fused_client_observations",
+              "visible_addon_hud", "client_asset_calibration",
+              "coordinate_hud_world_map_transform"
+            ]
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "freshness_status": { "enum": ["FRESH", "STALE", "EXPIRED"] },
+        "available_pose_components": {
+          "type": "array",
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/pose_component" }
+        },
+        "position_coordinate_space": {
+          "oneOf": [
+            { "$ref": "#/$defs/identifier" },
+            { "type": "null" }
+          ]
+        },
+        "position_radius_95": {
+          "type": ["number", "null"], "minimum": 0, "maximum": 1000000
+        },
+        "yaw_error_95_deg": {
+          "type": ["number", "null"], "minimum": 0, "maximum": 180
+        },
+        "clock_id": { "$ref": "#/$defs/identifier" },
+        "observed_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "expires_at_monotonic_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "execution_authority": { "const": false }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "champion_journey" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "champion" },
+              "source_scope": { "const": "champion_eligible" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "lab_clone" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "source_scope": { "const": "lab_evaluation_only" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "available_pose_components": { "contains": { "const": "POSITION_2D" } }
+            },
+            "required": ["available_pose_components"]
+          },
+          "then": {
+            "properties": {
+              "position_coordinate_space": { "$ref": "#/$defs/identifier" },
+              "position_radius_95": {
+                "type": "number", "minimum": 0, "maximum": 1000000
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "position_coordinate_space": { "type": "null" },
+              "position_radius_95": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "available_pose_components": { "contains": { "const": "YAW" } }
+            },
+            "required": ["available_pose_components"]
+          },
+          "then": {
+            "properties": {
+              "yaw_error_95_deg": {
+                "type": "number", "minimum": 0, "maximum": 180
+              }
+            }
+          },
+          "else": {
+            "properties": { "yaw_error_95_deg": { "type": "null" } }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "execution_result": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "result_id", "primitive_id", "lease_id",
+        "binding", "owner_id", "sequence", "status", "reason_code", "clock_id",
+        "completed_at_monotonic_ms", "expires_at_monotonic_ms",
+        "sink_release_attempted", "sink_release_succeeded", "execution_authority"
+      ],
+      "properties": {
+        "record_type": { "const": "execution_result" },
+        "schema_version": { "const": "1.0" },
+        "result_id": { "$ref": "#/$defs/identifier" },
+        "primitive_id": { "$ref": "#/$defs/identifier" },
+        "lease_id": { "$ref": "#/$defs/identifier" },
+        "binding": { "$ref": "#/$defs/binding" },
+        "owner_id": { "$ref": "#/$defs/identifier" },
+        "sequence": { "type": "integer", "minimum": 1, "maximum": 9223372036854775807 },
+        "status": { "enum": ["EXECUTED", "REJECTED", "FAILED", "CANCELLED"] },
+        "reason_code": {
+          "enum": [
+            "AUTHORIZATION_EXPIRED", "AUTHORIZATION_INACTIVE",
+            "AUTHORIZATION_NOT_YET_VALID", "CAPABILITY_DENIED", "CLOCK_INVALID",
+            "CLOCK_MISMATCH", "CONTROL_DENIED", "DURATION_DENIED", "EXECUTED", "GATEWAY_CLOSED",
+            "GATEWAY_FAULTED", "INTERNAL_EMPTY_QUEUE", "LEASE_BINDING_MISMATCH",
+            "LEASE_EXPIRED", "LEASE_NOT_YET_VALID", "LEASE_POLICY_DENIED",
+            "MANUAL_TAKEOVER", "MODE_DENIED",
+            "OWNER_MISMATCH", "POSE_BINDING_MISMATCH", "POSE_COMPONENTS_MISSING",
+            "POSE_CONFIDENCE_BELOW_MINIMUM", "POSE_COORDINATE_SPACE_MISMATCH",
+            "POSE_EXPIRED", "POSE_NOT_VALID",
+            "POSE_SCOPE_MISMATCH", "POSE_UNCERTAINTY_EXCEEDED",
+            "PRIMITIVE_BINDING_MISMATCH", "PRIMITIVE_BUDGET_EXHAUSTED",
+            "PRIMITIVE_EXPIRED", "PRIMITIVE_LEASE_MISMATCH",
+            "PRIMITIVE_NOT_YET_VALID", "PRIMITIVE_OUTLIVES_LEASE",
+            "PRIMITIVE_REPLAY", "QUEUE_FULL", "RELEASE_ALL_EXCEPTION",
+            "RUNTIME_ARM_EXPIRED", "RUNTIME_ARM_INACTIVE", "RUNTIME_ARM_MISMATCH",
+            "RUNTIME_ARM_POLICY_MISMATCH",
+            "RUNTIME_ARM_PROVIDER_EXCEPTION", "SEQUENCE_GAP", "SEQUENCE_REPLAY",
+            "SINK_EXCEPTION", "SINK_SAFETY_CONTRACT_DENIED",
+            "TEMPORAL_BUDGET_INSUFFICIENT", "TEMPORAL_OVERRUN"
+          ]
+        },
+        "clock_id": { "$ref": "#/$defs/identifier" },
+        "completed_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "expires_at_monotonic_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "sink_release_attempted": { "const": true },
+        "sink_release_succeeded": { "type": "boolean" },
+        "error_type": {
+          "enum": [
+            "COOPERATIVE_CANCELLATION",
+            "SINK_APPLY_FAILURE",
+            "SINK_RELEASE_FAILURE"
+          ]
+        },
+        "execution_authority": { "const": false }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "EXECUTED" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "reason_code": { "const": "EXECUTED" },
+              "sink_release_succeeded": { "const": true }
+            },
+            "not": { "required": ["error_type"] }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "CANCELLED" } }, "required": ["status"] },
+          "then": { "properties": { "reason_code": { "enum": ["MANUAL_TAKEOVER", "GATEWAY_CLOSED"] } } }
+        },
+        {
+          "if": { "properties": { "sink_release_succeeded": { "const": false } }, "required": ["sink_release_succeeded"] },
+          "then": {
+            "required": ["error_type"],
+            "properties": {
+              "status": { "const": "FAILED" },
+              "reason_code": { "const": "RELEASE_ALL_EXCEPTION" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "reason_code": { "const": "RELEASE_ALL_EXCEPTION" } }, "required": ["reason_code"] },
+          "then": {
+            "required": ["error_type"],
+            "properties": {
+              "sink_release_succeeded": { "const": false },
+              "error_type": { "const": "SINK_RELEASE_FAILURE" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "reason_code": { "const": "SINK_EXCEPTION" } }, "required": ["reason_code"] },
+          "then": {
+            "required": ["error_type"],
+            "properties": { "error_type": { "const": "SINK_APPLY_FAILURE" } }
+          }
+        },
+        {
+          "if": { "properties": { "error_type": { "const": "SINK_RELEASE_FAILURE" } }, "required": ["error_type"] },
+          "then": { "properties": { "reason_code": { "const": "RELEASE_ALL_EXCEPTION" } } }
+        },
+        {
+          "if": { "properties": { "error_type": { "const": "SINK_APPLY_FAILURE" } }, "required": ["error_type"] },
+          "then": { "properties": { "reason_code": { "const": "SINK_EXCEPTION" } } }
+        },
+        {
+          "if": { "properties": { "error_type": { "const": "COOPERATIVE_CANCELLATION" } }, "required": ["error_type"] },
+          "then": {
+            "properties": {
+              "reason_code": {
+                "enum": ["MANUAL_TAKEOVER", "GATEWAY_CLOSED", "RUNTIME_ARM_INACTIVE"]
+              }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/execution_lease" },
+    { "$ref": "#/$defs/movement_primitive" },
+    { "$ref": "#/$defs/execution_pose_state" },
+    { "$ref": "#/$defs/execution_result" }
+  ]
+}

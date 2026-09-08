@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/standalone-world-pack.schema.json",
+  "title": "Perfect Assassin standalone WorldPack v1",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "map_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$"
+    },
+    "map": {
+      "type": "object",
+      "required": ["map_id", "internal_name", "adt_count"],
+      "properties": {
+        "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+        "internal_name": { "$ref": "#/$defs/map_name" },
+        "adt_count": { "type": "integer", "minimum": 1, "maximum": 4096 }
+      },
+      "additionalProperties": false
+    },
+    "file": {
+      "type": "object",
+      "required": ["role", "relative_path", "byte_size", "sha256"],
+      "properties": {
+        "role": {
+          "enum": [
+            "WORLD_MAP_CATALOG", "CLIENT_WORLD_CATALOG", "NAV_MAP", "NAV_TILE", "ROAD_SEMANTIC",
+            "BVH_INDEX", "BVH_ASSET", "NAVMESH_BAKE_QUALITY",
+            "NAVMESH_GEOMETRY_VALIDATION",
+            "NAVMESH_TILE_REPAIR_EVIDENCE", "NAVMESH_TILE_REPAIR_REGRESSION"
+          ]
+        },
+        "relative_path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)[.][.]?(?:/|$))(?!.*\\\\).{1,512}$"
+        },
+        "byte_size": { "type": "integer", "minimum": 1, "maximum": 1099511627776 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "pack_id", "catalog_id", "product",
+    "expansion", "client_version", "client_build", "asset_container",
+    "asset_adapter_id", "world_source", "nav_runtime_layout", "coverage_state",
+    "eligible_map_count", "packed_map_count", "maps", "files",
+    "content_sha256", "runtime_dependencies", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "standalone_world_pack" },
+    "schema_version": { "const": "1.0" },
+    "pack_id": { "$ref": "#/$defs/identifier" },
+    "catalog_id": { "$ref": "#/$defs/identifier" },
+    "product": { "$ref": "#/$defs/identifier" },
+    "expansion": { "$ref": "#/$defs/identifier" },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "asset_container": { "enum": ["mpq", "casc"] },
+    "asset_adapter_id": { "$ref": "#/$defs/identifier" },
+    "world_source": { "const": "PINNED_CLIENT_ASSETS_OFFLINE_IMPORT" },
+    "nav_runtime_layout": { "const": "namigator-nav-bvh-v1" },
+    "coverage_state": { "enum": ["DECLARED_MAPS_ONLY", "FULL_CATALOG"] },
+    "eligible_map_count": { "type": "integer", "minimum": 1, "maximum": 4096 },
+    "packed_map_count": { "type": "integer", "minimum": 1, "maximum": 4096 },
+    "maps": {
+      "type": "array", "minItems": 1, "maxItems": 4096,
+      "items": { "$ref": "#/$defs/map" }
+    },
+    "files": {
+      "type": "array", "minItems": 5, "maxItems": 1000000,
+      "items": { "$ref": "#/$defs/file" }
+    },
+    "content_sha256": { "$ref": "#/$defs/sha256" },
+    "runtime_dependencies": {
+      "type": "object",
+      "required": [
+        "client_installation_required", "client_process_required",
+        "server_required", "emulator_required"
+      ],
+      "properties": {
+        "client_installation_required": { "const": false },
+        "client_process_required": { "const": false },
+        "server_required": { "const": false },
+        "emulator_required": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

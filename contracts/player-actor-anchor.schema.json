@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/player-actor-anchor.schema.json",
+  "title": "Visible player actor-anchor evidence",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "tracking_state", "confidence", "reason",
+    "actor_anchor", "metrics", "observed_monotonic_s", "provenance",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "player_actor_anchor_observation" },
+    "schema_version": { "const": "0.1" },
+    "tracking_state": { "enum": ["VISIBLE", "LOST", "UNKNOWN"] },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "actor_anchor": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["left", "top", "right", "bottom", "center_x", "center_y"],
+          "properties": {
+            "left": { "type": "number", "minimum": 0, "maximum": 1 },
+            "top": { "type": "number", "minimum": 0, "maximum": 1 },
+            "right": { "type": "number", "minimum": 0, "maximum": 1 },
+            "bottom": { "type": "number", "minimum": 0, "maximum": 1 },
+            "center_x": { "type": "number", "minimum": 0, "maximum": 1 },
+            "center_y": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "metrics": {
+      "type": "object",
+      "required": [
+        "head_component_pixels", "support_component_pixels", "sampled_width", "sampled_height"
+      ],
+      "properties": {
+        "head_component_pixels": { "type": "integer", "minimum": 0 },
+        "support_component_pixels": { "type": "integer", "minimum": 0 },
+        "sampled_width": { "type": "integer", "minimum": 1 },
+        "sampled_height": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "observed_monotonic_s": { "type": "number", "minimum": 0 },
+    "provenance": {
+      "type": "object",
+      "required": ["origin", "capability", "scope", "profile", "profile_version", "evidence_refs"],
+      "properties": {
+        "origin": { "const": "scene_vision" },
+        "capability": { "const": "player_actor_screen_visibility" },
+        "scope": { "const": "unpromoted_evaluation_only" },
+        "profile": { "type": "string", "minLength": 1 },
+        "profile_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "tracking_state": { "const": "VISIBLE" } }, "required": ["tracking_state"] },
+      "then": {
+        "properties": {
+          "actor_anchor": { "type": "object" },
+          "confidence": { "exclusiveMinimum": 0 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "tracking_state": { "const": "LOST" } }, "required": ["tracking_state"] },
+      "then": {
+        "properties": {
+          "actor_anchor": { "type": "null" },
+          "confidence": { "const": 0 }
+        }
+      }
+    }
+  ]
+}

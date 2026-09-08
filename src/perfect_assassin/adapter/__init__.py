@@ -1,0 +1,1 @@
+"""Game-facing compatibility adapters."""

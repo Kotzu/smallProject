@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/knowledge-broker-catalog.schema.json",
+  "title": "Perfect Assassin Knowledge Broker catalog v1",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "level_range": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": "integer", "minimum": 1, "maximum": 70 },
+        "max": { "type": "integer", "minimum": 1, "maximum": 70 }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "provider", "origin", "uri", "provider_version",
+        "retrieved_at", "content_mode"
+      ],
+      "properties": {
+        "provider": {
+          "enum": ["wowhead", "route_teacher", "client_observed", "predator_memory"]
+        },
+        "origin": {
+          "enum": [
+            "external_cached", "route_guidance", "client_observed", "predator_memory"
+          ]
+        },
+        "uri": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "provider_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "retrieved_at": { "type": "string", "format": "date-time" },
+        "content_mode": {
+          "enum": ["metadata_only", "advisory_summary", "user_owned_export"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "position": {
+      "type": "object",
+      "required": ["x", "y", "coordinate_frame", "position_semantics"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "coordinate_frame": {
+          "enum": ["client_world_3d", "source_world_3d", "normalized_map_2d"]
+        },
+        "position_semantics": { "const": "STATIC_SOURCE_CANDIDATE" }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "entry_id", "kind", "name", "map_id", "map_name", "level_range",
+        "source", "confidence", "evidence_refs", "execution_authority"
+      ],
+      "properties": {
+        "entry_id": { "$ref": "#/$defs/identifier" },
+        "kind": {
+          "enum": [
+            "class_trainer", "profession_trainer", "class_quest",
+            "profession_quest", "leveling_step", "route_step", "npc_static"
+          ]
+        },
+        "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+        "map_name": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$"
+        },
+        "map_scope": {
+          "enum": ["worldpack", "zone_area"]
+        },
+        "level_range": { "$ref": "#/$defs/level_range" },
+        "source": { "$ref": "#/$defs/source" },
+        "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+        "evidence_refs": {
+          "type": "array", "minItems": 1, "maxItems": 16, "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+        },
+        "position": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/position" }] },
+        "summary": { "type": "string", "minLength": 1, "maxLength": 512 },
+        "tags": {
+          "type": "array", "maxItems": 16, "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[A-Za-z0-9._:/-]{1,64}$" }
+        },
+        "step_order": { "type": "integer", "minimum": 0, "maximum": 100000 },
+        "execution_authority": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "catalog_id", "target_profile",
+    "product", "expansion", "client_version", "client_build", "entries",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "knowledge_broker_catalog" },
+    "schema_version": { "const": "1.0" },
+    "catalog_id": { "$ref": "#/$defs/identifier" },
+    "target_profile": { "$ref": "#/$defs/identifier" },
+    "product": { "const": "wow" },
+    "expansion": { "const": "the_burning_crusade" },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "entries": {
+      "type": "array", "minItems": 1, "maxItems": 16384,
+      "items": { "$ref": "#/$defs/entry" }
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

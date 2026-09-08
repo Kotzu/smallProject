@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/single-forward-pulse-result.schema.json",
+  "title": "PA-024F3a single forward pulse result",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "run_id", "binding", "movement_arm",
+    "status", "reason", "pre_observation", "post_observation",
+    "execution_result", "delta", "timing", "cleanup", "scope",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "single_forward_pulse_result" },
+    "schema_version": { "const": "0.1" },
+    "run_id": { "$ref": "#/$defs/identifier" },
+    "binding": {
+      "type": "object",
+      "required": ["actor_id", "actor_instance_id", "actor_role", "decision_context", "target_profile", "target_instance_id", "authorization_id", "authorization_sha256"],
+      "properties": {
+        "actor_id": { "$ref": "#/$defs/identifier" },
+        "actor_instance_id": { "$ref": "#/$defs/identifier" },
+        "actor_role": { "const": "lab_clone" },
+        "decision_context": { "const": "lab_clone" },
+        "target_profile": { "const": "tbc_243_lab" },
+        "target_instance_id": { "$ref": "#/$defs/identifier" },
+        "authorization_id": { "const": "execution:tbc243-lab:movement-f3a-single-pulse" },
+        "authorization_sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "movement_arm": {
+      "type": "object",
+      "required": ["arm_nonce", "arm_sha256", "session_receipt_nonce", "session_receipt_sha256", "realm_revalidation_nonce", "realm_revalidation_sha256"],
+      "properties": {
+        "arm_nonce": { "$ref": "#/$defs/identifier" },
+        "arm_sha256": { "$ref": "#/$defs/sha256" },
+        "session_receipt_nonce": { "$ref": "#/$defs/identifier" },
+        "session_receipt_sha256": { "$ref": "#/$defs/sha256" },
+        "realm_revalidation_nonce": { "$ref": "#/$defs/identifier" },
+        "realm_revalidation_sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "enum": ["PROVEN_DISPLACEMENT", "NO_PROVEN_DISPLACEMENT", "EXECUTION_REJECTED", "OBSERVATION_REJECTED", "CANCELLED", "FAILED"]
+    },
+    "reason": { "$ref": "#/$defs/identifier" },
+    "pre_observation": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/observation" }] },
+    "post_observation": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/observation" }] },
+    "execution_result": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/executionResult" }] },
+    "delta": { "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/delta" }] },
+    "timing": {
+      "type": "object",
+      "required": ["clock_id", "started_at_monotonic_ms", "completed_at_monotonic_ms", "deadline_monotonic_ms"],
+      "properties": {
+        "clock_id": { "$ref": "#/$defs/identifier" },
+        "started_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "completed_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "deadline_monotonic_ms": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "cleanup": {
+      "type": "object",
+      "required": ["arm_disarmed", "gateway_closed", "manual_takeover_disarmed", "release_faulted"],
+      "properties": {
+        "arm_disarmed": { "type": "boolean" },
+        "gateway_closed": { "type": "boolean" },
+        "manual_takeover_disarmed": { "type": "boolean" },
+        "release_faulted": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "scope": { "const": "lab_evaluation_only" },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "PROVEN_DISPLACEMENT" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "pre_observation": { "type": "object" },
+          "post_observation": { "type": "object" },
+          "execution_result": { "type": "object", "properties": { "status": { "const": "EXECUTED" } } },
+          "delta": { "type": "object", "properties": { "proven_lower_bound": { "exclusiveMinimum": 0 } } }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "identifier": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$" },
+    "sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "observation": {
+      "type": "object",
+      "required": ["observation_id", "frame_id", "session_id", "sequence", "x", "y", "continent_index", "zone_index", "captured_at_monotonic_ms", "observed_at_monotonic_ms", "expires_at_monotonic_ms", "confidence", "position_radius_95", "observation_sha256"],
+      "properties": {
+        "observation_id": { "$ref": "#/$defs/identifier" },
+        "frame_id": { "$ref": "#/$defs/identifier" },
+        "session_id": { "$ref": "#/$defs/identifier" },
+        "sequence": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "continent_index": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "zone_index": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "captured_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "observed_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "expires_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "position_radius_95": { "type": "number", "exclusiveMinimum": 0 },
+        "observation_sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "executionResult": {
+      "type": "object",
+      "required": ["result_id", "primitive_id", "status", "reason_code", "completed_at_monotonic_ms", "result_sha256"],
+      "properties": {
+        "result_id": { "$ref": "#/$defs/identifier" },
+        "primitive_id": { "$ref": "#/$defs/identifier" },
+        "status": { "enum": ["EXECUTED", "REJECTED", "FAILED", "CANCELLED"] },
+        "reason_code": { "$ref": "#/$defs/identifier" },
+        "completed_at_monotonic_ms": { "type": "number", "minimum": 0 },
+        "result_sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    },
+    "delta": {
+      "type": "object",
+      "required": ["dx", "dy", "distance", "combined_position_radius_95", "proven_lower_bound"],
+      "properties": {
+        "dx": { "type": "number", "minimum": -1, "maximum": 1 },
+        "dy": { "type": "number", "minimum": -1, "maximum": 1 },
+        "distance": { "type": "number", "minimum": 0 },
+        "combined_position_radius_95": { "type": "number", "exclusiveMinimum": 0 },
+        "proven_lower_bound": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

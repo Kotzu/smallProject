@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "locations": [
+    {
+      "id": "undercity_practice_dummy_lab",
+      "purpose": "MovementEngine magnetic-facing and CombatEngine no-damage calibration",
+      "realm_scope": "tbc_243_lab",
+      "map_id": 0,
+      "zone": "Undercity",
+      "area": "War Quarter",
+      "target_name": "Undercity Practice Dummy",
+      "teleport_name": "PAUndercityDummyLab",
+      "game_tele_id": 900001,
+      "position": {
+        "x": 1672.3,
+        "y": 395.5,
+        "z": -62.2,
+        "orientation_radians": 1.133944
+      },
+      "allowed_uses": [
+        "read_only_perception",
+        "no_damage_facing",
+        "controlled_combat_godmode"
+      ],
+      "forbidden_as_hunt_proof": true
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "record_type": "execution_target_authorization",
+  "schema_version": "2.0",
+  "authorization_id": "observation:tbc243-lab:combat-hud-read-only",
+  "target_profile": "tbc_243_lab",
+  "environment_scope": "emulator_local",
+  "actor_binding": {
+    "schema_version": "1.0",
+    "instance_id": "instance:tbc243-lab:predator-clone-01",
+    "actor_role": "lab_clone",
+    "actor_id": "actor:predator:lab-clone-01",
+    "decision_context": "lab_clone",
+    "memory_namespace": "memory:lab:tbc243:predator-clone-01",
+    "expected_character_name": "Predator",
+    "credential_alias": "credential:lab:pa_observer",
+    "binding_assurance": {
+      "state": "configured_expected_only",
+      "evidence_refs": ["authorization:observation:tbc243-lab:combat-hud-read-only:actor-expected"]
+    }
+  },
+  "status": "approved_bounded",
+  "purpose": "education_research_content",
+  "client_match": {
+    "client_build": "2.4.3.8606",
+    "build_signature": "wow-tbc-2.4.3.8606-enGB",
+    "executable_sha256": "406DA0C1C22D6E9121FD3BC17740A0D013660A03748CFE2A235768B8C574D3E6"
+  },
+  "realm_match": {
+    "expected_realm_fingerprint": "cmangos-tbc-lab-current",
+    "server_kind": "emulator",
+    "realmlist_relative_path": "realmlist.wtf",
+    "realmlist_sha256": "7D0CF7DB78B396140613188B968EEEB2D231FB97CDF919F73DFAB474CC25E88F",
+    "realmlist_directive": "set realmlist 127.0.0.1",
+    "listener_bindings": [
+      {
+        "port": 3307,
+        "process_name": "mariadbd",
+        "executable_path": "E:\\WoWserver\\TBC-LAB\\toolchain\\mariadb-12.3.2\\MariaDB 12.3\\bin\\mariadbd.exe",
+        "executable_sha256": "2E8B92342D2E68070A25B97E6A9116525EB45D4A23D7C4A1250A6722FC0BF7C4",
+        "command_line_arguments": [
+          "--defaults-file=E:\\WoWserver\\TBC-LAB\\database\\data\\my.ini",
+          "--datadir=E:\\WoWserver\\TBC-LAB\\database\\data",
+          "--port=3307",
+          "--bind-address=127.0.0.1",
+          "--console"
+        ],
+        "config_path": "E:\\WoWserver\\TBC-LAB\\database\\data\\my.ini",
+        "config_sha256": "2F60BEE49568EB2C958EB9F142DCCA46C383DE591DFC6857ED734FED34AE434D"
+      },
+      {
+        "port": 3443,
+        "process_name": "mangosd",
+        "executable_path": "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\mangosd.exe",
+        "executable_sha256": "509F103A0A9A81832111754A11834A4A2DCCCC5F80D80FA2CB212C2DD705BD5A",
+        "command_line_arguments": ["-c", "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\mangosd.conf"],
+        "config_path": "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\mangosd.conf",
+        "config_sha256": "0B5F46FD1EF50C3BDA09E57DF96667A10A3CCD4BD1B06837B6FBD5227902B9BE"
+      },
+      {
+        "port": 3724,
+        "process_name": "realmd",
+        "executable_path": "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\realmd.exe",
+        "executable_sha256": "3B8C1A39654231A225B84C426AC15C3A18FE489F537056638A160F30891808D6",
+        "command_line_arguments": ["-c", "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\realmd.conf"],
+        "config_path": "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\realmd.conf",
+        "config_sha256": "C99F3597924ECB430CF306DCD52B1596CDE1EF9F21EC3A6D58533347B1877CEC"
+      },
+      {
+        "port": 8085,
+        "process_name": "mangosd",
+        "executable_path": "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\mangosd.exe",
+        "executable_sha256": "509F103A0A9A81832111754A11834A4A2DCCCC5F80D80FA2CB212C2DD705BD5A",
+        "command_line_arguments": ["-c", "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\mangosd.conf"],
+        "config_path": "E:\\WoWserver\\TBC-LAB\\runtime\\core-playerbots\\mangosd.conf",
+        "config_sha256": "0B5F46FD1EF50C3BDA09E57DF96667A10A3CCD4BD1B06837B6FBD5227902B9BE"
+      }
+    ],
+    "routing_probe": {
+      "database_client_path": "E:\\WoWserver\\TBC-LAB\\toolchain\\mariadb-12.3.2\\MariaDB 12.3\\bin\\mariadb.exe",
+      "database_client_sha256": "69CEC1B3887075D655D62B3DBA3814ED9292A608B881330343B46B3037EC4145",
+      "secrets_path": "E:\\WoWserver\\TBC-LAB\\database\\secrets.local.json",
+      "host": "127.0.0.1",
+      "port": 3307,
+      "database": "tbcrealmd"
+    },
+    "expected_routing_records": [
+      {
+        "realm_id": 1,
+        "name": "MaNGOS",
+        "address": "127.0.0.1",
+        "port": 8085,
+        "icon": 1,
+        "realm_flags": 0,
+        "timezone": 1,
+        "allowed_security_level": 0,
+        "client_builds": ["8606"]
+      }
+    ],
+    "expected_routing_sha256": "C515E91C8DAD4F515AC13B9A88FBDB6738E89BC4629E3D6CC5C37E619A808051"
+  },
+  "permitted_modes": [],
+  "permitted_capabilities": [
+    "SCREEN_CAPTURE_READ_ONLY",
+    "VISIBLE_COMBAT_HUD_READ_ONLY"
+  ],
+  "restrictions": [
+    "read_only_combat_observation",
+    "no_input_or_execution",
+    "manual_takeover_required",
+    "no_memory_or_kernel_access"
+  ],
+  "approval": {
+    "granted_by": "operator",
+    "evidence_refs": ["adr:0024", "conversation:2026-08-24-first-advanced-combat"],
+    "recorded_at": "2026-08-24T08:30:00Z",
+    "max_session_minutes": 30
+  },
+  "runtime_arm_required": true
+}

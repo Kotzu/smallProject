@@ -1,0 +1,55 @@
+{
+  "record_type": "movement_live_baseline",
+  "schema_version": "1.0",
+  "baseline_id": "crypt-egress-me452-v1",
+  "scope": "Deathknell Crypt spawn through the exterior path to Deathknell",
+  "review_state": "OPERATOR_REVIEWED_REFERENCE",
+  "execution_authority": false,
+  "artifacts": [
+    {
+      "role": "LIVE_RESULT",
+      "path": "data/runtime/navigation-f3b/results/navmesh-roaming-109fb333-5a13-47cd-a804-0db50831db88.json",
+      "bytes": 862229,
+      "sha256": "d024efbeff855e3f79d352bb0906564657292a1c1446437400d5ca18a33b4747",
+      "expected_status": "RUNTIME_ARM_EXPIRED",
+      "expected_control_frames": 354,
+      "expected_recovery_attempts": 1
+    },
+    {
+      "role": "LIVE_RESULT",
+      "path": "data/runtime/navigation-f3b/results/navmesh-roaming-7fb027c0-34c5-47b5-813b-cff6c0dcc784.json",
+      "bytes": 1159396,
+      "sha256": "fb0629a36a2da36f9652661b61fd8d034c53ad188e7678d07d58e694984c7489",
+      "expected_status": "CONTROL_FRAME_BUDGET_EXHAUSTED",
+      "expected_control_frames": 500,
+      "expected_recovery_attempts": 0
+    },
+    {
+      "role": "LIVE_RESULT",
+      "path": "data/runtime/navigation-f3b/results/navmesh-roaming-0a0f7d27-d3e9-484a-afbb-fb8514d3d98b.json",
+      "bytes": 55385,
+      "sha256": "096b094a28b3da541ad78596f8638df294ec0e3e798bf6d66f588ebfb5193662",
+      "expected_status": "ARRIVED",
+      "expected_control_frames": 18,
+      "expected_recovery_attempts": 0
+    },
+    {
+      "role": "REVIEW_VIDEO",
+      "path": "data/runtime/operator/live-video/me452b-inspect/crypt-egress-fixed-me452b.mp4",
+      "bytes": 28956221,
+      "sha256": "c4b655f5f648f59898ac01651cb5ad6477bc7b9ca18fba49604312aec44fb2cb"
+    },
+    {
+      "role": "REVIEW_VIDEO",
+      "path": "data/runtime/operator/live-video/me452d-inspect/post-crypt-to-deathknell-me452d.mp4",
+      "bytes": 45817330,
+      "sha256": "def867c5d99e33fcdff2fda839b75c2d219aac95f941b67192c2e809a3550643"
+    }
+  ],
+  "promotion_requirements": {
+    "minimum_filmed_crypt_exits": 10,
+    "require_no_blockage": true,
+    "require_no_regression_against_reference": true,
+    "require_operator_review": true
+  }
+}

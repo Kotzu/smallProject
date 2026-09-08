@@ -1,0 +1,20 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:deadmines-candidate:v3",
+  "pack_directory_name": "tbc243-deadmines-candidate-v3",
+  "pack_id": "wow.tbc.2.4.3.8606.deadmines-candidate-v3",
+  "content_sha256": "5e7090c463ad3c5709a94e6118254fc2db73b6ad73e18ad5fb9d0556ca512897",
+  "catalog_id": "wow.tbc.2.4.3.8606.deadmines-candidate-v3",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-full-v3-candidate",
+  "maps": [
+    {
+      "map_id": 36,
+      "internal_name": "DeadminesInstance"
+    }
+  ],
+  "execution_authority": false
+}

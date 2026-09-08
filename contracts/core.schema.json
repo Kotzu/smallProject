@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/core.schema.json",
+  "title": "Perfect Assassin v0.1 telemetry contracts",
+  "$defs": {
+    "source": {
+      "enum": [
+        "client_observed",
+        "legitimate_inspect",
+        "external_cached",
+        "route_guidance",
+        "predator_memory",
+        "lab_skill"
+      ]
+    },
+    "fact": {
+      "type": "object",
+      "required": ["key", "value", "source", "capability", "confidence", "observed_at"],
+      "properties": {
+        "key": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$" },
+        "value": true,
+        "source": { "$ref": "#/$defs/source" },
+        "capability": { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "expires_at": { "type": "string", "format": "date-time" },
+        "restriction_evidence": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["action_id", "score", "reasons", "constraints"],
+      "properties": {
+        "action_id": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$" },
+        "score": { "type": "number" },
+        "reasons": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "constraints": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "event_id", "session_id", "champion_id",
+        "target_profile", "game_time_ms", "captured_at", "adapter", "capabilities_hash", "facts"
+      ],
+      "properties": {
+        "record_type": { "const": "observation" },
+        "schema_version": { "const": "0.1" },
+        "event_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "champion_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "game_time_ms": { "type": "integer", "minimum": 0 },
+        "captured_at": { "type": "string", "format": "date-time" },
+        "adapter": { "type": "string", "minLength": 1 },
+        "capabilities_hash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "facts": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/fact" } }
+      },
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "decision_id", "session_id", "champion_id",
+        "target_profile", "game_time_ms", "created_at", "observation_event_ids", "intent",
+        "candidates", "chosen_action_id", "latency_ms", "brain_version", "execution_mode"
+      ],
+      "properties": {
+        "record_type": { "const": "decision" },
+        "schema_version": { "const": "0.1" },
+        "decision_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "champion_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "game_time_ms": { "type": "integer", "minimum": 0 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "observation_event_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "intent": { "type": "string", "pattern": "^[a-z][a-z0-9_]*(\\.[a-z0-9_]+)+$" },
+        "candidates": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/candidate" } },
+        "chosen_action_id": { "type": "string", "pattern": "^observe\\.[a-z0-9_]+$" },
+        "latency_ms": { "type": "number", "minimum": 0 },
+        "brain_version": { "type": "string", "minLength": 1 },
+        "execution_mode": { "const": "OBSERVE_ONLY" }
+      },
+      "additionalProperties": false
+    },
+    "encounter": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "encounter_id", "session_id", "champion_id", "encounter_type",
+        "started_at", "ended_at", "observation_event_ids", "participant_ids", "brain_version", "adapter",
+        "result", "decision_quality", "estimated_external_factors", "mistakes", "lessons", "replay_ref", "clip_refs"
+      ],
+      "properties": {
+        "record_type": { "const": "encounter" },
+        "schema_version": { "const": "0.1" },
+        "encounter_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "champion_id": { "type": "string", "minLength": 1 },
+        "encounter_type": { "enum": ["pve", "pvp", "mixed"] },
+        "started_at": { "type": "string", "format": "date-time" },
+        "ended_at": { "type": "string", "format": "date-time" },
+        "observation_event_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "participant_ids": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "brain_version": { "type": "string", "minLength": 1 },
+        "adapter": { "type": "string", "minLength": 1 },
+        "result": { "enum": ["victory", "defeat", "escape", "incomplete", "unknown"] },
+        "decision_quality": { "enum": ["unassessed", "good", "mixed", "poor"] },
+        "estimated_external_factors": { "type": "array", "items": { "type": "string" } },
+        "mistakes": { "type": "array", "items": { "type": "string" } },
+        "lessons": { "type": "array", "items": { "type": "string" } },
+        "replay_ref": { "type": "string", "minLength": 1 },
+        "clip_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "memory": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "memory_id", "namespace", "origin", "key", "value",
+        "confidence", "created_at", "evidence_refs"
+      ],
+      "properties": {
+        "record_type": { "const": "memory" },
+        "schema_version": { "const": "0.1" },
+        "memory_id": { "type": "string", "minLength": 1 },
+        "namespace": { "enum": ["champion_identity", "opponent", "world", "mistake", "skill"] },
+        "origin": { "enum": ["champion_lived", "champion_observed", "lab_derived", "external_research"] },
+        "key": { "type": "string", "minLength": 1 },
+        "value": true,
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/observation" },
+    { "$ref": "#/$defs/decision" },
+    { "$ref": "#/$defs/encounter" },
+    { "$ref": "#/$defs/memory" }
+  ]
+}

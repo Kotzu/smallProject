@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/lab-client-identity-issuance.schema.json",
+  "title": "Perfect Assassin LAB client identity issuance commit v1.0",
+  "$comment": "Immutable, atomic commit record for one LAB client receipt projection. The JSONL operator log is observational and is not the v1 identity trust root.",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "issuance_nonce", "action", "identity_origin",
+    "parent_receipt_nonce", "parent_receipt_sha256", "parent_authorization_sha256",
+    "new_receipt_nonce", "new_receipt_sha256", "new_authorization_sha256",
+    "new_authorization_semantic_sha256", "pid", "hwnd",
+    "process_creation_filetime_utc", "windows_session_id", "issued_at",
+    "receipt_utf8_base64", "legacy_launch_audit_file_sha256",
+    "legacy_launch_audit_entry_sha256", "scope", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "lab_client_identity_issuance" },
+    "schema_version": { "const": "1.0" },
+    "issuance_nonce": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$"
+    },
+    "action": { "enum": ["Launch", "AdoptSession", "RenewSessionIdentity"] },
+    "identity_origin": {
+      "enum": [
+        "operator_launch",
+        "legacy_v0_1_continuity_adoption",
+        "verified_receipt_renewal"
+      ]
+    },
+    "parent_receipt_nonce": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$"
+    },
+    "parent_receipt_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[A-F0-9]{64}$"
+    },
+    "parent_authorization_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[A-F0-9]{64}$"
+    },
+    "new_receipt_nonce": {
+      "type": "string",
+      "pattern": "^[A-Fa-f0-9]{8}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{4}-[A-Fa-f0-9]{12}$"
+    },
+    "new_receipt_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "new_authorization_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "new_authorization_semantic_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+    "pid": { "type": "integer", "minimum": 1 },
+    "hwnd": { "type": "string", "pattern": "^0x[A-F0-9]+$" },
+    "process_creation_filetime_utc": { "type": "string", "pattern": "^[0-9]{17,20}$" },
+    "windows_session_id": { "type": "integer", "minimum": 0 },
+    "issued_at": { "type": "string", "format": "date-time" },
+    "receipt_utf8_base64": { "type": "string", "minLength": 4, "maxLength": 1398104 },
+    "legacy_launch_audit_file_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[A-F0-9]{64}$"
+    },
+    "legacy_launch_audit_entry_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[A-F0-9]{64}$"
+    },
+    "scope": { "const": "lab_identity_issuance_commit" },
+    "execution_authority": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "action": { "const": "Launch" } }, "required": ["action"] },
+      "then": {
+        "properties": {
+          "identity_origin": { "const": "operator_launch" },
+          "parent_receipt_nonce": { "const": null },
+          "parent_receipt_sha256": { "const": null },
+          "parent_authorization_sha256": { "const": null },
+          "legacy_launch_audit_file_sha256": { "const": null },
+          "legacy_launch_audit_entry_sha256": { "const": null }
+        }
+      },
+      "else": {
+        "properties": {
+          "parent_receipt_nonce": { "type": "string" },
+          "parent_receipt_sha256": { "type": "string" },
+          "parent_authorization_sha256": { "type": "string" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "action": { "const": "AdoptSession" } }, "required": ["action"] },
+      "then": {
+        "properties": {
+          "identity_origin": { "const": "legacy_v0_1_continuity_adoption" },
+          "legacy_launch_audit_file_sha256": { "type": "string" },
+          "legacy_launch_audit_entry_sha256": { "type": "string" }
+        }
+      },
+      "else": {
+        "properties": {
+          "legacy_launch_audit_file_sha256": { "const": null },
+          "legacy_launch_audit_entry_sha256": { "const": null }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "action": { "const": "RenewSessionIdentity" } }, "required": ["action"] },
+      "then": { "properties": { "identity_origin": { "const": "verified_receipt_renewal" } } }
+    }
+  ],
+  "additionalProperties": false
+}

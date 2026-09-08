@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Client observed recovery strategy memory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_type",
+    "client_build",
+    "coordinate_system",
+    "provenance",
+    "execution_authority",
+    "failures"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "record_type": {"const": "client_observed_recovery_strategy_memory"},
+    "client_build": {"type": "integer", "minimum": 1},
+    "coordinate_system": {"const": "tbc243_client_world_xy"},
+    "provenance": {"const": "client_observed_collision_during_recovery"},
+    "execution_authority": {"const": false},
+    "failures": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "map",
+          "zone_index",
+          "cell",
+          "strategy",
+          "observations",
+          "confidence",
+          "first_observed_at",
+          "last_observed_at",
+          "last_run_id",
+          "execution_authority"
+        ],
+        "properties": {
+          "id": {"type": "string", "pattern": "^recovery-failure:"},
+          "map": {"type": "string", "minLength": 1},
+          "zone_index": {"type": "integer", "minimum": 0, "maximum": 10000},
+          "cell": {
+            "type": "array",
+            "prefixItems": [
+              {"type": "integer"},
+              {"type": "integer"}
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "strategy": {"const": "local_clearance"},
+          "observations": {"type": "integer", "minimum": 1, "maximum": 1000000},
+          "confidence": {"enum": ["provisional", "confirmed"]},
+          "first_observed_at": {"type": "string", "minLength": 1},
+          "last_observed_at": {"type": "string", "minLength": 1},
+          "last_run_id": {"type": "string", "minLength": 1},
+          "execution_authority": {"const": false}
+        }
+      }
+    }
+  }
+}

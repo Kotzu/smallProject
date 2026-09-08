@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/navigation-mesh.schema.json",
+  "title": "Perfect Assassin tiled Recast navigation mesh manifest (pnav v1)",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "utc_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([.][0-9]{1,6})?Z$"
+    },
+    "vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "bounds3": {
+      "type": "object",
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": { "$ref": "#/$defs/vector3" },
+        "maximum": { "$ref": "#/$defs/vector3" }
+      },
+      "additionalProperties": false
+    },
+    "coordinate_system": {
+      "type": "object",
+      "required": [
+        "space_id", "units", "handedness", "axes",
+        "triangle_winding", "world_to_nav_row_major"
+      ],
+      "properties": {
+        "space_id": { "$ref": "#/$defs/identifier" },
+        "units": { "enum": ["world_units", "meters"] },
+        "handedness": { "enum": ["right_handed", "left_handed"] },
+        "axes": {
+          "type": "object",
+          "required": ["x", "y", "z"],
+          "properties": {
+            "x": { "enum": ["east", "west", "north", "south", "up", "down"] },
+            "y": { "enum": ["east", "west", "north", "south", "up", "down"] },
+            "z": { "enum": ["east", "west", "north", "south", "up", "down"] }
+          },
+          "additionalProperties": false
+        },
+        "triangle_winding": { "enum": ["clockwise", "counter_clockwise"] },
+        "world_to_nav_row_major": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "items": { "type": "number" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact_scope": {
+      "type": "object",
+      "required": ["asset_trust", "promotion_state", "decision_scope"],
+      "properties": {
+        "asset_trust": { "const": "candidate_untrusted" },
+        "promotion_state": { "const": "unpromoted" },
+        "decision_scope": {
+          "enum": [
+            "unpromoted_evaluation_only", "lab_evaluation_only",
+            "synthetic_fixture"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_id", "origin", "scope", "capability",
+        "evidence_refs", "observed_at", "confidence"
+      ],
+      "properties": {
+        "source_id": { "$ref": "#/$defs/identifier" },
+        "origin": { "const": "client_asset_derived" },
+        "scope": {
+          "enum": [
+            "unpromoted_evaluation_only", "lab_evaluation_only",
+            "synthetic_fixture"
+          ]
+        },
+        "capability": { "$ref": "#/$defs/identifier" },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "observed_at": { "$ref": "#/$defs/utc_timestamp" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "navigation_tile": {
+      "type": "object",
+      "required": [
+        "tile_id", "grid_x", "grid_y", "layer", "bounds", "vertex_count",
+        "polygon_count", "binary_artifact_ref", "data_size_bytes", "tile_sha256"
+      ],
+      "properties": {
+        "tile_id": { "$ref": "#/$defs/identifier" },
+        "grid_x": { "type": "integer", "minimum": -1048576, "maximum": 1048576 },
+        "grid_y": { "type": "integer", "minimum": -1048576, "maximum": 1048576 },
+        "layer": { "type": "integer", "minimum": 0, "maximum": 255 },
+        "bounds": { "$ref": "#/$defs/bounds3" },
+        "vertex_count": { "type": "integer", "minimum": 3, "maximum": 65534 },
+        "polygon_count": { "type": "integer", "minimum": 1, "maximum": 524283 },
+        "binary_artifact_ref": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "data_size_bytes": { "type": "integer", "minimum": 168, "maximum": 16777216 },
+        "tile_sha256": { "$ref": "#/$defs/sha256" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "format", "format_version", "hash_wire_format", "mesh_id",
+    "geometry_content_sha256", "target_profile", "client_build", "build_signature",
+    "map_ref", "map_signature", "ordered_asset_manifest_sha256", "recast_pin",
+    "agent_profile_id", "agent_profile_hash", "coordinate_system", "bounds",
+    "tile_count", "total_payload_bytes", "tiles", "artifact_scope", "provenance",
+    "execution_authority", "created_at", "content_sha256"
+  ],
+  "properties": {
+    "record_type": { "const": "navigation_mesh" },
+    "schema_version": { "const": "1.0" },
+    "format": { "const": "pnav" },
+    "format_version": { "const": 1 },
+    "hash_wire_format": { "const": "pa-nav-wire-v1" },
+    "mesh_id": { "$ref": "#/$defs/identifier" },
+    "geometry_content_sha256": { "$ref": "#/$defs/sha256" },
+    "target_profile": { "$ref": "#/$defs/identifier" },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "build_signature": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "map_ref": { "$ref": "#/$defs/identifier" },
+    "map_signature": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "ordered_asset_manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "recast_pin": { "const": "9f4ce64458dfae86e1239c525ddc219c4e9e06f1" },
+    "agent_profile_id": { "$ref": "#/$defs/identifier" },
+    "agent_profile_hash": { "$ref": "#/$defs/sha256" },
+    "coordinate_system": { "$ref": "#/$defs/coordinate_system" },
+    "bounds": { "$ref": "#/$defs/bounds3" },
+    "tile_count": { "type": "integer", "minimum": 1, "maximum": 4096 },
+    "total_payload_bytes": { "type": "integer", "minimum": 1, "maximum": 536870912 },
+    "tiles": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4096,
+      "items": { "$ref": "#/$defs/navigation_tile" }
+    },
+    "artifact_scope": { "$ref": "#/$defs/artifact_scope" },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "execution_authority": { "const": false },
+    "created_at": { "$ref": "#/$defs/utc_timestamp" },
+    "content_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        {
+          "properties": {
+            "artifact_scope": {
+              "properties": { "decision_scope": { "const": "unpromoted_evaluation_only" } }
+            },
+            "provenance": {
+              "properties": { "scope": { "const": "unpromoted_evaluation_only" } }
+            }
+          }
+        },
+        {
+          "properties": {
+            "artifact_scope": {
+              "properties": { "decision_scope": { "const": "lab_evaluation_only" } }
+            },
+            "provenance": {
+              "properties": { "scope": { "const": "lab_evaluation_only" } }
+            }
+          }
+        },
+        {
+          "properties": {
+            "artifact_scope": {
+              "properties": { "decision_scope": { "const": "synthetic_fixture" } }
+            },
+            "provenance": {
+              "properties": { "scope": { "const": "synthetic_fixture" } }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/structure-access-scan-progress.schema.json",
+  "title": "Perfect Assassin structure access scan progress v1",
+  "$defs": {
+    "identifier": {
+      "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "count": { "type": "integer", "minimum": 0, "maximum": 128000000 },
+    "task": {
+      "type": "object",
+      "required": [
+        "task_id", "structure_id", "planned_seed_count", "completed_seed_count",
+        "accepted_seed_count", "outside_structure_count", "no_nav_polygon_count",
+        "incomplete_static_awareness_count", "probe_error_count",
+        "missing_seed_count", "state", "execution_authority"
+      ],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "structure_id": { "$ref": "#/$defs/identifier" },
+        "planned_seed_count": { "$ref": "#/$defs/count" },
+        "completed_seed_count": { "$ref": "#/$defs/count" },
+        "accepted_seed_count": { "$ref": "#/$defs/count" },
+        "outside_structure_count": { "$ref": "#/$defs/count" },
+        "no_nav_polygon_count": { "$ref": "#/$defs/count" },
+        "incomplete_static_awareness_count": { "$ref": "#/$defs/count" },
+        "probe_error_count": { "$ref": "#/$defs/count" },
+        "missing_seed_count": { "$ref": "#/$defs/count" },
+        "state": {
+          "enum": [
+            "PENDING", "IN_PROGRESS", "RETRY_REQUIRED",
+            "COMPLETE_WITH_OBSERVATIONS", "COMPLETE_NO_CONFIRMED_WMO"
+          ]
+        },
+        "execution_authority": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "plan_id", "plan_content_sha256",
+    "world_pack_id", "world_pack_content_sha256", "client_build", "map_id",
+    "map_name", "eligible_structure_count", "planned_seed_count",
+    "completed_seed_count", "accepted_seed_count", "outside_structure_count",
+    "no_nav_polygon_count", "incomplete_static_awareness_count",
+    "probe_error_count", "missing_seed_count",
+    "complete_structure_count", "tasks", "execution_authority", "content_sha256"
+  ],
+  "properties": {
+    "record_type": { "const": "structure_access_scan_progress" },
+    "schema_version": { "const": "1.0" },
+    "plan_id": { "$ref": "#/$defs/identifier" },
+    "plan_content_sha256": { "$ref": "#/$defs/sha256" },
+    "world_pack_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_content_sha256": { "$ref": "#/$defs/sha256" },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "map_name": {
+      "type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$"
+    },
+    "eligible_structure_count": { "$ref": "#/$defs/count" },
+    "planned_seed_count": { "$ref": "#/$defs/count" },
+    "completed_seed_count": { "$ref": "#/$defs/count" },
+    "accepted_seed_count": { "$ref": "#/$defs/count" },
+    "outside_structure_count": { "$ref": "#/$defs/count" },
+    "no_nav_polygon_count": { "$ref": "#/$defs/count" },
+    "incomplete_static_awareness_count": { "$ref": "#/$defs/count" },
+    "probe_error_count": { "$ref": "#/$defs/count" },
+    "missing_seed_count": { "$ref": "#/$defs/count" },
+    "complete_structure_count": { "$ref": "#/$defs/count" },
+    "tasks": {
+      "type": "array", "maxItems": 1000000,
+      "items": { "$ref": "#/$defs/task" }
+    },
+    "execution_authority": { "const": false },
+    "content_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "additionalProperties": false
+}

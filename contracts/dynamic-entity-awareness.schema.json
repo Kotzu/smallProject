@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/dynamic-entity-awareness.schema.json",
+  "title": "Read-only dynamic entity awareness v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type", "schema_version", "observed_monotonic_s",
+    "observation_scope", "visibility_ceiling_yards", "position_semantics",
+    "distance_semantics", "track_count", "tracks", "adapter_error",
+    "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "dynamic_entity_awareness" },
+    "schema_version": { "const": "1.0" },
+    "observed_monotonic_s": { "type": "number", "minimum": 0 },
+    "observation_scope": {
+      "const": "CURRENT_VIEWPORT_WITHIN_SERVER_VISIBILITY_SET"
+    },
+    "visibility_ceiling_yards": {
+      "type": "number", "minimum": 1, "maximum": 500
+    },
+    "position_semantics": { "const": "SCREEN_SPACE_ONLY" },
+    "distance_semantics": {
+      "const": "UNKNOWN_UNLESS_SELECTED_TARGET_RANGE_WITNESS"
+    },
+    "track_count": { "type": "integer", "minimum": 0, "maximum": 255 },
+    "tracks": {
+      "type": "array",
+      "maxItems": 255,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "track_id", "reaction", "first_observed_at_s", "last_observed_at_s",
+          "expires_at_s", "center_x_normalized", "center_y_normalized",
+          "velocity_x_normalized_per_s", "velocity_y_normalized_per_s",
+          "width_normalized", "height_normalized",
+          "position_uncertainty_normalized", "confidence", "observation_count",
+          "source_key", "world_position", "distance_yards"
+        ],
+        "properties": {
+          "track_id": { "type": "string", "minLength": 1, "maxLength": 128 },
+          "reaction": {
+            "enum": ["HOSTILE", "NEUTRAL", "FRIENDLY", "UNKNOWN"]
+          },
+          "first_observed_at_s": { "type": "number", "minimum": 0 },
+          "last_observed_at_s": { "type": "number", "minimum": 0 },
+          "expires_at_s": { "type": "number", "minimum": 0 },
+          "center_x_normalized": { "type": "number", "minimum": -1, "maximum": 1 },
+          "center_y_normalized": { "type": "number", "minimum": 0, "maximum": 1 },
+          "velocity_x_normalized_per_s": { "type": "number" },
+          "velocity_y_normalized_per_s": { "type": "number" },
+          "width_normalized": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+          "height_normalized": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+          "position_uncertainty_normalized": { "type": "number", "minimum": 0, "maximum": 1 },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "observation_count": { "type": "integer", "minimum": 1 },
+          "source_key": { "type": ["string", "null"], "minLength": 1, "maxLength": 128 },
+          "world_position": { "type": "null" },
+          "distance_yards": { "type": "null" }
+        }
+      }
+    },
+    "adapter_error": { "type": ["string", "null"], "maxLength": 512 },
+    "execution_authority": { "const": false }
+  }
+}

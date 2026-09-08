@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/zygor-route-coverage.schema.json",
+  "title": "Content-minimal Zygor route coverage audit v1.0",
+  "$defs": {
+    "count": {"type": "integer", "minimum": 0},
+    "kind_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class_quest", "class_trainer", "profession_quest", "profession_trainer", "route_step"],
+      "properties": {
+        "class_quest": {"$ref": "#/$defs/count"},
+        "class_trainer": {"$ref": "#/$defs/count"},
+        "profession_quest": {"$ref": "#/$defs/count"},
+        "profession_trainer": {"$ref": "#/$defs/count"},
+        "route_step": {"$ref": "#/$defs/count"}
+      }
+    },
+    "tag_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accept", "combat", "profession", "talk", "trainer", "turnin"],
+      "properties": {
+        "accept": {"$ref": "#/$defs/count"},
+        "combat": {"$ref": "#/$defs/count"},
+        "profession": {"$ref": "#/$defs/count"},
+        "talk": {"$ref": "#/$defs/count"},
+        "trainer": {"$ref": "#/$defs/count"},
+        "turnin": {"$ref": "#/$defs/count"}
+      }
+    },
+    "map_count": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["map_id", "map_name", "step_count", "coordinate_candidate_count", "kind_counts", "tag_counts"],
+      "properties": {
+        "map_id": {"type": "integer", "minimum": 0},
+        "map_name": {"type": "string", "minLength": 1, "maxLength": 96},
+        "step_count": {"$ref": "#/$defs/count"},
+        "coordinate_candidate_count": {"$ref": "#/$defs/count"},
+        "kind_counts": {"$ref": "#/$defs/kind_counts"},
+        "tag_counts": {"$ref": "#/$defs/tag_counts"}
+      }
+    },
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["archive_path", "source_sha256", "source_size_bytes", "step_count", "coordinate_candidate_count", "kind_counts", "tag_counts", "map_counts", "execution_authority"],
+      "properties": {
+        "archive_path": {"type": "string", "pattern": "^[A-Za-z0-9._/-]{1,260}$"},
+        "source_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "source_size_bytes": {"type": "integer", "minimum": 1},
+        "step_count": {"$ref": "#/$defs/count"},
+        "coordinate_candidate_count": {"$ref": "#/$defs/count"},
+        "kind_counts": {"$ref": "#/$defs/kind_counts"},
+        "tag_counts": {"$ref": "#/$defs/tag_counts"},
+        "map_counts": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/map_count"}},
+        "execution_authority": {"const": false}
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "schema_version", "source_archive_reference", "source_archive_sha256", "source_archive_size_bytes", "provider_version", "client_version", "client_build", "binding_reference", "selected_file_count", "files", "step_count", "coordinate_candidate_count", "kind_counts", "tag_counts", "map_coverage", "coverage_state", "execution_authority"],
+  "properties": {
+    "record_type": {"const": "zygor_route_coverage"},
+    "schema_version": {"const": "1.0"},
+    "source_archive_reference": {"type": "string", "minLength": 1, "maxLength": 512},
+    "source_archive_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_archive_size_bytes": {"type": "integer", "minimum": 1},
+    "provider_version": {"type": "string", "minLength": 1, "maxLength": 64},
+    "client_version": {"type": "string", "minLength": 1, "maxLength": 32},
+    "client_build": {"type": "string", "minLength": 1, "maxLength": 32},
+    "binding_reference": {"type": "string", "minLength": 1, "maxLength": 512},
+    "selected_file_count": {"type": "integer", "minimum": 1, "maximum": 32},
+    "files": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/file"}},
+    "step_count": {"$ref": "#/$defs/count"},
+    "coordinate_candidate_count": {"$ref": "#/$defs/count"},
+    "kind_counts": {"$ref": "#/$defs/kind_counts"},
+    "tag_counts": {"$ref": "#/$defs/tag_counts"},
+    "map_coverage": {"type": "array", "minItems": 1, "maxItems": 32, "items": {"$ref": "#/$defs/map_count"}},
+    "coverage_state": {"const": "BOUND_EXPLICIT_ZONE_MAPS"},
+    "execution_authority": {"const": false}
+  }
+}

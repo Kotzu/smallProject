@@ -1,0 +1,11 @@
+{
+  "record_type": "semantic_destination_sequence",
+  "schema_version": "1.0",
+  "sequence_id": "tbc243-tirisfal-deathknell-brill-loop",
+  "destination_ids": [
+    "settlement:brill",
+    "landmark:deathknell-crypt"
+  ],
+  "loop_count": 1,
+  "execution_authority": false
+}

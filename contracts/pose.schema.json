@@ -1,0 +1,408 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/pose.schema.json",
+  "title": "Perfect Assassin pose observation and estimate contracts v0.1",
+  "$defs": {
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "tracking_state": {
+      "enum": ["ANCHORED", "TRACKED", "DEGRADED", "LOST"]
+    },
+    "freshness": {
+      "type": "object",
+      "required": [
+        "observed_at", "published_at", "age_ms", "stale_after_ms", "status"
+      ],
+      "properties": {
+        "observed_at": { "type": "string", "format": "date-time" },
+        "published_at": { "type": "string", "format": "date-time" },
+        "age_ms": { "type": "number", "minimum": 0 },
+        "stale_after_ms": { "type": "number", "exclusiveMinimum": 0 },
+        "status": { "enum": ["FRESH", "STALE", "EXPIRED"] }
+      },
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_id", "origin", "capability", "scope", "evidence_refs"
+      ],
+      "properties": {
+        "source_id": { "type": "string", "minLength": 1 },
+        "origin": {
+          "enum": [
+            "client_visible_api",
+            "addon_observed",
+            "window_capture",
+            "minimap_vision",
+            "scene_vision",
+            "optical_flow",
+            "dead_reckoning",
+            "manual_anchor",
+            "fused_client_observations",
+            "replay_fixture",
+            "lab_oracle",
+            "server_ground_truth"
+          ]
+        },
+        "capability": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "scope": { "enum": ["champion_eligible", "lab_evaluation_only"] },
+        "evidence_refs": { "$ref": "#/$defs/evidence_refs" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": { "enum": ["lab_oracle", "server_ground_truth"] }
+            }
+          },
+          "then": {
+            "properties": {
+              "scope": { "const": "lab_evaluation_only" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "coordinate_space": {
+      "type": "object",
+      "required": ["space_id", "kind", "units", "axis_convention"],
+      "properties": {
+        "space_id": { "type": "string", "minLength": 1 },
+        "kind": {
+          "enum": ["map_world", "normalized_map", "local_anchor", "screen_pixels"]
+        },
+        "units": {
+          "enum": ["world_units", "normalized", "meters", "pixels"]
+        },
+        "axis_convention": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "player_pose": {
+      "type": "object",
+      "required": ["position", "body_yaw_deg"],
+      "properties": {
+        "position": { "$ref": "#/$defs/vector3" },
+        "body_yaw_deg": { "type": "number", "minimum": -180, "maximum": 180 },
+        "linear_velocity": { "$ref": "#/$defs/vector3" }
+      },
+      "additionalProperties": false
+    },
+    "camera_pose": {
+      "type": "object",
+      "required": ["reference_frame", "yaw_deg", "pitch_deg", "roll_deg", "zoom"],
+      "properties": {
+        "reference_frame": { "enum": ["player_relative", "map_world"] },
+        "yaw_deg": { "type": "number", "minimum": -180, "maximum": 180 },
+        "pitch_deg": { "type": "number", "minimum": -90, "maximum": 90 },
+        "roll_deg": { "type": "number", "minimum": -180, "maximum": 180 },
+        "zoom": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "player_covariance": {
+      "type": "object",
+      "required": ["dimension", "ordering", "matrix_row_major"],
+      "properties": {
+        "dimension": { "const": 4 },
+        "ordering": {
+          "const": ["x", "y", "z", "body_yaw_rad"]
+        },
+        "matrix_row_major": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "items": { "type": "number" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "camera_covariance": {
+      "type": "object",
+      "required": ["dimension", "ordering", "matrix_row_major"],
+      "properties": {
+        "dimension": { "const": 4 },
+        "ordering": {
+          "const": ["yaw_rad", "pitch_rad", "roll_rad", "zoom"]
+        },
+        "matrix_row_major": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "items": { "type": "number" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "player_uncertainty": {
+      "type": "object",
+      "required": [
+        "covariance", "position_radius_95", "vertical_error_95", "yaw_error_95_deg"
+      ],
+      "properties": {
+        "covariance": { "$ref": "#/$defs/player_covariance" },
+        "position_radius_95": { "type": "number", "minimum": 0 },
+        "vertical_error_95": { "type": "number", "minimum": 0 },
+        "yaw_error_95_deg": { "type": "number", "minimum": 0, "maximum": 180 }
+      },
+      "additionalProperties": false
+    },
+    "camera_uncertainty": {
+      "type": "object",
+      "required": ["covariance", "angular_error_95_deg", "zoom_error_95"],
+      "properties": {
+        "covariance": { "$ref": "#/$defs/camera_covariance" },
+        "angular_error_95_deg": { "type": "number", "minimum": 0, "maximum": 180 },
+        "zoom_error_95": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "player_component": {
+      "type": "object",
+      "required": [
+        "tracking_state", "pose", "uncertainty", "confidence", "freshness", "provenance"
+      ],
+      "properties": {
+        "tracking_state": { "$ref": "#/$defs/tracking_state" },
+        "pose": {
+          "oneOf": [
+            { "$ref": "#/$defs/player_pose" },
+            { "type": "null" }
+          ]
+        },
+        "uncertainty": {
+          "oneOf": [
+            { "$ref": "#/$defs/player_uncertainty" },
+            { "type": "null" }
+          ]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "freshness": { "$ref": "#/$defs/freshness" },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "tracking_state": { "const": "LOST" } } },
+          "then": {
+            "properties": {
+              "pose": { "type": "null" },
+              "uncertainty": { "type": "null" },
+              "confidence": { "const": 0 }
+            }
+          },
+          "else": {
+            "properties": {
+              "pose": { "$ref": "#/$defs/player_pose" },
+              "uncertainty": { "$ref": "#/$defs/player_uncertainty" },
+              "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "camera_component": {
+      "type": "object",
+      "required": [
+        "tracking_state", "pose", "uncertainty", "confidence", "freshness", "provenance"
+      ],
+      "properties": {
+        "tracking_state": { "$ref": "#/$defs/tracking_state" },
+        "pose": {
+          "oneOf": [
+            { "$ref": "#/$defs/camera_pose" },
+            { "type": "null" }
+          ]
+        },
+        "uncertainty": {
+          "oneOf": [
+            { "$ref": "#/$defs/camera_uncertainty" },
+            { "type": "null" }
+          ]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "freshness": { "$ref": "#/$defs/freshness" },
+        "provenance": { "$ref": "#/$defs/provenance" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "tracking_state": { "const": "LOST" } } },
+          "then": {
+            "properties": {
+              "pose": { "type": "null" },
+              "uncertainty": { "type": "null" },
+              "confidence": { "const": 0 }
+            }
+          },
+          "else": {
+            "properties": {
+              "pose": { "$ref": "#/$defs/camera_pose" },
+              "uncertainty": { "$ref": "#/$defs/camera_uncertainty" },
+              "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "navigation_state_matches_player": {
+      "allOf": [
+        {
+          "if": { "properties": { "navigation_state": { "const": "ANCHORED" } } },
+          "then": {
+            "properties": {
+              "player": { "properties": { "tracking_state": { "const": "ANCHORED" } } }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "navigation_state": { "const": "TRACKED" } } },
+          "then": {
+            "properties": {
+              "player": { "properties": { "tracking_state": { "const": "TRACKED" } } }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "navigation_state": { "const": "DEGRADED" } } },
+          "then": {
+            "properties": {
+              "player": { "properties": { "tracking_state": { "const": "DEGRADED" } } }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "navigation_state": { "const": "LOST" } } },
+          "then": {
+            "properties": {
+              "player": { "properties": { "tracking_state": { "const": "LOST" } } }
+            }
+          }
+        }
+      ]
+    },
+    "champion_provenance_guard": {
+      "properties": {
+        "provenance": {
+          "properties": {
+            "origin": {
+              "not": { "enum": ["lab_oracle", "server_ground_truth"] }
+            },
+            "scope": { "const": "champion_eligible" }
+          }
+        }
+      }
+    },
+    "pose_observation": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "observation_id", "session_id", "champion_id",
+        "target_profile", "decision_context", "client_build", "build_signature", "map_ref",
+        "map_signature", "coordinate_space", "provider_id", "provider_version",
+        "navigation_state", "player", "camera", "execution_authority", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "pose_observation" },
+        "schema_version": { "const": "0.1" },
+        "observation_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "champion_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "client_build": { "type": "string", "minLength": 1 },
+        "build_signature": { "type": "string", "minLength": 1 },
+        "map_ref": { "type": "string", "minLength": 1 },
+        "map_signature": { "type": "string", "minLength": 1 },
+        "coordinate_space": { "$ref": "#/$defs/coordinate_space" },
+        "provider_id": { "type": "string", "minLength": 1 },
+        "provider_version": { "type": "string", "minLength": 1 },
+        "navigation_state": { "$ref": "#/$defs/tracking_state" },
+        "player": { "$ref": "#/$defs/player_component" },
+        "camera": { "$ref": "#/$defs/camera_component" },
+        "execution_authority": { "const": false },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        { "$ref": "#/$defs/navigation_state_matches_player" },
+        {
+          "if": { "properties": { "decision_context": { "const": "champion" } } },
+          "then": {
+            "properties": {
+              "player": { "$ref": "#/$defs/champion_provenance_guard" },
+              "camera": { "$ref": "#/$defs/champion_provenance_guard" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "pose_estimate": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "estimate_id", "session_id", "champion_id",
+        "target_profile", "decision_context", "client_build", "build_signature", "map_ref",
+        "map_signature", "coordinate_space", "estimator_id", "estimator_version",
+        "input_observation_ids", "navigation_state", "player", "camera",
+        "execution_authority", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "pose_estimate" },
+        "schema_version": { "const": "0.1" },
+        "estimate_id": { "type": "string", "minLength": 1 },
+        "session_id": { "type": "string", "minLength": 1 },
+        "champion_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "client_build": { "type": "string", "minLength": 1 },
+        "build_signature": { "type": "string", "minLength": 1 },
+        "map_ref": { "type": "string", "minLength": 1 },
+        "map_signature": { "type": "string", "minLength": 1 },
+        "coordinate_space": { "$ref": "#/$defs/coordinate_space" },
+        "estimator_id": { "type": "string", "minLength": 1 },
+        "estimator_version": { "type": "string", "minLength": 1 },
+        "input_observation_ids": { "$ref": "#/$defs/evidence_refs" },
+        "navigation_state": { "$ref": "#/$defs/tracking_state" },
+        "player": { "$ref": "#/$defs/player_component" },
+        "camera": { "$ref": "#/$defs/camera_component" },
+        "execution_authority": { "const": false },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        { "$ref": "#/$defs/navigation_state_matches_player" },
+        {
+          "if": { "properties": { "decision_context": { "const": "champion" } } },
+          "then": {
+            "properties": {
+              "player": { "$ref": "#/$defs/champion_provenance_guard" },
+              "camera": { "$ref": "#/$defs/champion_provenance_guard" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/pose_observation" },
+    { "$ref": "#/$defs/pose_estimate" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "fixture_version": "0.1",
+  "label": "server_only_fact_must_fail",
+  "synthetic": true,
+  "target_profile": "tbc_243_lab",
+  "adapter": "fixture_tbc_243:0.1.0",
+  "session_id": "fixture-session-forbidden",
+  "champion_id": "fixture-not-champion",
+  "events": [
+    {
+      "raw_event_id": "event:forbidden:001",
+      "kind": "server_spawn",
+      "game_time_ms": 0,
+      "captured_at": "2026-08-22T12:00:00Z",
+      "facts": [
+        { "raw_key": "target_guid", "value": "hidden-spawn-guid", "source": "server_ground_truth", "capability": "server_spawn_state", "confidence": 1.0, "observed_at": "2026-08-22T12:00:00Z" }
+      ]
+    }
+  ]
+}

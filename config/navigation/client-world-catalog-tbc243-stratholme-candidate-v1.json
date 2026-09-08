@@ -1,0 +1,274 @@
+{
+  "record_type": "client_world_catalog",
+  "schema_version": "1.0",
+  "catalog_id": "wow.tbc.2.4.3.8606.stratholme-candidate-v1",
+  "target_profile": "tbc_243_lab",
+  "product": "wow",
+  "expansion": "the_burning_crusade",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "asset_container": "mpq",
+  "asset_parser_profile": "wow-wdbc-map-v1",
+  "world_catalog_asset": "DBFilesClient/Map.dbc",
+  "world_catalog_asset_sha256": "fadae9835a1180641d2eb2f811fa7fc905694a3563a8a0208a47488d4a42b9f2",
+  "nav_profile_id": "tbc243-stratholme-candidate-v1",
+  "maps": [
+    {
+      "map_id": 329,
+      "internal_name": "Stratholme",
+      "classification": "instance",
+      "map_artifact": "Stratholme.map",
+      "map_artifact_sha256": "654e83620e0b058c6f7337f9347ca80e45f0f8e07fed579cc163c10e2e9dfaf7",
+      "nav_tiles_sha256": "3669e4591fe9ee5a2e6f47ae2ed9b2e7f8eddb4557b3c0dc374d6d77f29da0bd",
+      "coverage_state": "complete",
+      "interior_coverage": "complete",
+      "road_semantic_coverage": "complete",
+      "road_semantics_sha256": "f282f6987b370e2d7ec024a40cc7c7accfd06fb50943e326e9e695c29c896027",
+      "tiles": [
+        {
+          "grid_x": 36,
+          "grid_y": 24,
+          "artifact": "36_24.nav",
+          "sha256": "ce50f7197170ad24f24454ad14fb8469c7c7f92f88e5cb5e50cb75c524fc9668"
+        },
+        {
+          "grid_x": 36,
+          "grid_y": 25,
+          "artifact": "36_25.nav",
+          "sha256": "ba9b03df1a3d7ff6f06a426ca69c79a0a5bd7a0d05d07da695d06a9158fb53c5"
+        },
+        {
+          "grid_x": 36,
+          "grid_y": 26,
+          "artifact": "36_26.nav",
+          "sha256": "e64563d1baf82798fa402b307d3e257f558fa7d846db018daf8d60b379653975"
+        },
+        {
+          "grid_x": 36,
+          "grid_y": 27,
+          "artifact": "36_27.nav",
+          "sha256": "8d4fc441049fe6ae431795b6009fb78024c3b1971305301210ce3a80d98b8dbc"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 24,
+          "artifact": "37_24.nav",
+          "sha256": "1a67657498e2293d47c15818e4156e9d10bbc92346614b5d24d82666db7a2235"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 25,
+          "artifact": "37_25.nav",
+          "sha256": "fe8df724afa7827027d651791c834f2374f5a05438c35cdda520eb39cf7b31da"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 26,
+          "artifact": "37_26.nav",
+          "sha256": "3d471803f57b71a7e8e236895d8ee9cce3ee91cdfa97688e1f31c3e5cff45d88"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 27,
+          "artifact": "37_27.nav",
+          "sha256": "8bd364d1b8092fab0673398fa3d3f7f9d6f988e632ac36e54856c30c4261eb6d"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 24,
+          "artifact": "38_24.nav",
+          "sha256": "565d4cbec3f8b74549259f8c416a714431f119e3f900cade3eb726f347930a9f"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 25,
+          "artifact": "38_25.nav",
+          "sha256": "a64f6a4a8dd042e6fec764c2dd58b3883302c856c79330d081c9035326fbf34a"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 26,
+          "artifact": "38_26.nav",
+          "sha256": "c6cfff9d53d874ed557642ba96d0f8c4d0a51749ddc35f3b5c1d08825377f612"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 27,
+          "artifact": "38_27.nav",
+          "sha256": "e863d79dce00246c70ed53a17bc0b720715c68eb23a6a82199ff93303bb7accc"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 24,
+          "artifact": "39_24.nav",
+          "sha256": "dc0eb7e30a045ba1ef63ff545a834fe44a37ac22cdf74d5ff5653523c80b58e1"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 25,
+          "artifact": "39_25.nav",
+          "sha256": "2eaaada40a7a523d269ff96940bfede0e742e04332f7dae80d174d9cfebb9281"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 26,
+          "artifact": "39_26.nav",
+          "sha256": "147bdef7128cb6932ccef4b82fc7244e417dd4d9f9654f3a588f842aa6963e14"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 27,
+          "artifact": "39_27.nav",
+          "sha256": "f6b7ed1ef4ac5342abb7b15f2aaa613b12b37368447ee23d904303654810ef8f"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 24,
+          "artifact": "40_24.nav",
+          "sha256": "fcc8c7cc99f65f29b87de219d12a619c08967793b6b2c927ae150d107ef1791b"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 25,
+          "artifact": "40_25.nav",
+          "sha256": "27adc0f9c4f98ca9d6f26b1ae811ac45bcc627341da9f7be0351e53c548677f2"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 26,
+          "artifact": "40_26.nav",
+          "sha256": "75e9370004a1ba82605b2555de8c738813c5b460f54d1b56dc89c80698672018"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 27,
+          "artifact": "40_27.nav",
+          "sha256": "f81ca55ec07b84ed0a0855de139ac8504145fb5054882a6b33f795f931b40be5"
+        }
+      ],
+      "road_semantics": [
+        {
+          "grid_x": 36,
+          "grid_y": 24,
+          "artifact": "Stratholme_36_24.road",
+          "sha256": "c042acf7cfc75d577eecbf8e8e9e2578a0d4814dc0a5ef80a1a8d01c6e8acdcf"
+        },
+        {
+          "grid_x": 36,
+          "grid_y": 25,
+          "artifact": "Stratholme_36_25.road",
+          "sha256": "8e0ef72197d9307596c4ba06bc66bf057dc96c9da7513ed3bef4a98b3944b6f0"
+        },
+        {
+          "grid_x": 36,
+          "grid_y": 26,
+          "artifact": "Stratholme_36_26.road",
+          "sha256": "62aecda451fb2c5ad7d079ccc7c6ea128fd58d0ccbafc9f45e2d5feb6dc642c8"
+        },
+        {
+          "grid_x": 36,
+          "grid_y": 27,
+          "artifact": "Stratholme_36_27.road",
+          "sha256": "8d13e789f8282d7e6a8a2fd33e61a155b049c67979066aaf78ceb9b67d2da6e8"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 24,
+          "artifact": "Stratholme_37_24.road",
+          "sha256": "29745614f70662869abb40e06385bdedd91a7451e1cf4a0e34d22b707644312d"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 25,
+          "artifact": "Stratholme_37_25.road",
+          "sha256": "e5ae1148de684e3d95c3d3361427389604f1dfba3e413012adb3db5c6e9529d2"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 26,
+          "artifact": "Stratholme_37_26.road",
+          "sha256": "4abe4be5a3fe07d47bb587aa91ba4ba0e106801a42c18fee4076603cf28b870c"
+        },
+        {
+          "grid_x": 37,
+          "grid_y": 27,
+          "artifact": "Stratholme_37_27.road",
+          "sha256": "2683502bd8b81a21d78cf0f4ca4be98a5cb8e2f0f3499610b934309953c094a0"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 24,
+          "artifact": "Stratholme_38_24.road",
+          "sha256": "cc1431e13c960cd24ef539644eb0f68bc07033145bdf5d311ec1a4aa7bf5ef4a"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 25,
+          "artifact": "Stratholme_38_25.road",
+          "sha256": "8e25cf9253f41cba7edd290979d3bbe79cc4c37d670f1503873227db551f2106"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 26,
+          "artifact": "Stratholme_38_26.road",
+          "sha256": "a5efd8a682cb8d416896769ba6e39eed2415ee4b368b10abe6230be92d5548dc"
+        },
+        {
+          "grid_x": 38,
+          "grid_y": 27,
+          "artifact": "Stratholme_38_27.road",
+          "sha256": "a72d7d34aa6569c4f7ae604e264bca8f7ee7154851b3bba46b78468130ab1706"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 24,
+          "artifact": "Stratholme_39_24.road",
+          "sha256": "f7586862941114c0664920f096b8a506bff18ed1c435820f0e7ba2f984f749d4"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 25,
+          "artifact": "Stratholme_39_25.road",
+          "sha256": "33377c7007a394a3edb777030cfff21e036b4849c53441ee16a69a206748ad36"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 26,
+          "artifact": "Stratholme_39_26.road",
+          "sha256": "7e761e14848bcf0de04d53ab88668eb6aa4c69063f37a05b65ac35107496f55d"
+        },
+        {
+          "grid_x": 39,
+          "grid_y": 27,
+          "artifact": "Stratholme_39_27.road",
+          "sha256": "e7b5e340a406e0d0e5e106250c5f085c841bc762dd95db57be9772cd67d0599a"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 24,
+          "artifact": "Stratholme_40_24.road",
+          "sha256": "f993d57c487218b1ad601c31924b1a2b4f8b3d79b443c356b165e892749bc8d6"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 25,
+          "artifact": "Stratholme_40_25.road",
+          "sha256": "036dc96eaf0596576a9c37448b8f373a8b0c54d746f88327bf7f224a7b9de504"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 26,
+          "artifact": "Stratholme_40_26.road",
+          "sha256": "d0ea3ee67b09f9575d497a5e4dc32dd3fc302ee3a8c163f4e609c13d3323da2c"
+        },
+        {
+          "grid_x": 40,
+          "grid_y": 27,
+          "artifact": "Stratholme_40_27.road",
+          "sha256": "50e1f88741ddd4d8196b654bcf82f13ca3832d7955c07e0979e0e50e208a0e22"
+        }
+      ]
+    }
+  ],
+  "execution_authority": false
+}

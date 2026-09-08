@@ -1,0 +1,17 @@
+{
+  "record_type": "world_pack_runtime_profile",
+  "schema_version": "1.0",
+  "profile_id": "worldpack-runtime:tbc243:azeroth-full:v4-candidate",
+  "pack_directory_name": "tbc243-azeroth-full-v4-candidate",
+  "pack_id": "tbc243-azeroth-full-v4-candidate",
+  "content_sha256": "99feeb1ca0969f0a0cbc1575f5fb4adb37eb2ee464fc53a54d04782f157f6dbf",
+  "catalog_id": "wow.tbc.2.4.3.8606.azeroth-full-v4",
+  "target_profile": "tbc_243_lab",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "nav_profile_id": "tbc243-azeroth-full-v4",
+  "maps": [
+    { "map_id": 0, "internal_name": "Azeroth" }
+  ],
+  "execution_authority": false
+}

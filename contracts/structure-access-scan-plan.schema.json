@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/structure-access-scan-plan.schema.json",
+  "title": "Perfect Assassin generic structure access scan plan v1",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "bounds": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "$ref": "#/$defs/vector3" },
+        "max": { "$ref": "#/$defs/vector3" }
+      },
+      "additionalProperties": false
+    },
+    "point": {
+      "type": "array",
+      "prefixItems": [
+        { "type": "number" },
+        { "type": "number" },
+        { "type": "number" }
+      ],
+      "items": false,
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "seed": {
+      "type": "object",
+      "required": [
+        "seed_id", "position", "source", "resolution_state",
+        "execution_authority"
+      ],
+      "properties": {
+        "seed_id": { "$ref": "#/$defs/identifier" },
+        "position": { "$ref": "#/$defs/point" },
+        "source": { "const": "AABB_NAV_TILE_INTERSECTION_LATTICE" },
+        "resolution_state": { "const": "UNVERIFIED" },
+        "execution_authority": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "refinement": {
+      "type": "object",
+      "required": [
+        "strategy", "maximum_depth", "minimum_cell_extent_yards",
+        "maximum_probe_count", "requires_structure_containment"
+      ],
+      "properties": {
+        "strategy": {
+          "const": "DETOUR_RESOLVE_THEN_SUBDIVIDE_UNOBSERVED_CELLS"
+        },
+        "maximum_depth": { "type": "integer", "minimum": 1, "maximum": 12 },
+        "minimum_cell_extent_yards": {
+          "type": "number", "exclusiveMinimum": 0, "maximum": 16
+        },
+        "maximum_probe_count": {
+          "type": "integer", "minimum": 1, "maximum": 65536
+        },
+        "requires_structure_containment": { "const": true }
+      },
+      "additionalProperties": false
+    },
+    "task": {
+      "type": "object",
+      "required": [
+        "task_id", "structure_id", "asset_path", "nav_coverage", "bounds",
+        "initial_seed_count", "initial_seeds", "refinement_policy", "state",
+        "requires_detour_resolution", "execution_authority"
+      ],
+      "properties": {
+        "task_id": { "$ref": "#/$defs/identifier" },
+        "structure_id": { "$ref": "#/$defs/identifier" },
+        "asset_path": {
+          "type": "string",
+          "pattern": "^(?!/)(?!.*(?:^|/)[.][.]?(?:/|$))(?!.*\\\\).{1,512}$"
+        },
+        "nav_coverage": { "enum": ["FULL", "PARTIAL", "GLOBAL_WMO"] },
+        "bounds": { "$ref": "#/$defs/bounds" },
+        "initial_seed_count": {
+          "type": "integer", "minimum": 1, "maximum": 128
+        },
+        "initial_seeds": {
+          "type": "array", "minItems": 1, "maxItems": 128,
+          "items": { "$ref": "#/$defs/seed" }
+        },
+        "refinement_policy": { "$ref": "#/$defs/refinement" },
+        "state": { "const": "PLANNED_UNVERIFIED" },
+        "requires_detour_resolution": { "const": true },
+        "execution_authority": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "deferred": {
+      "type": "object",
+      "required": [
+        "structure_id", "nav_coverage", "reason", "execution_authority"
+      ],
+      "properties": {
+        "structure_id": { "$ref": "#/$defs/identifier" },
+        "nav_coverage": { "const": "NONE" },
+        "reason": { "const": "NAV_COVERAGE_ABSENT" },
+        "execution_authority": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "plan_id", "world_pack_id",
+    "world_pack_content_sha256", "catalog_id", "target_profile",
+    "client_version", "client_build", "nav_profile_id", "map_id", "map_name",
+    "structure_index_id", "structure_index_sha256", "map_artifact_sha256",
+    "planner_profile", "probe_contract_id", "probe_worker_sha256",
+    "structure_kind_scope", "coverage_semantics", "plan_state", "wmo_count",
+    "eligible_structure_count", "deferred_structure_count", "initial_seed_count",
+    "tasks", "deferred_structures", "dynamic_entity_knowledge",
+    "execution_authority", "content_sha256"
+  ],
+  "properties": {
+    "record_type": { "const": "structure_access_scan_plan" },
+    "schema_version": { "const": "1.0" },
+    "plan_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_content_sha256": { "$ref": "#/$defs/sha256" },
+    "catalog_id": { "$ref": "#/$defs/identifier" },
+    "target_profile": { "$ref": "#/$defs/identifier" },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "nav_profile_id": { "$ref": "#/$defs/identifier" },
+    "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "map_name": {
+      "type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$"
+    },
+    "structure_index_id": { "$ref": "#/$defs/identifier" },
+    "structure_index_sha256": { "$ref": "#/$defs/sha256" },
+    "map_artifact_sha256": { "$ref": "#/$defs/sha256" },
+    "planner_profile": { "const": "adaptive-wmo-aabb-nav-intersection-v1" },
+    "probe_contract_id": { "const": "detour-bvh-local-structure-access-v1" },
+    "probe_worker_sha256": { "$ref": "#/$defs/sha256" },
+    "structure_kind_scope": { "const": "WMO_ONLY" },
+    "coverage_semantics": {
+      "const": "DATA_DERIVED_CANDIDATES_REQUIRE_NAV_RESOLUTION"
+    },
+    "plan_state": { "const": "PLANNED_UNVERIFIED" },
+    "wmo_count": { "type": "integer", "minimum": 1, "maximum": 1000000 },
+    "eligible_structure_count": {
+      "type": "integer", "minimum": 0, "maximum": 1000000
+    },
+    "deferred_structure_count": {
+      "type": "integer", "minimum": 0, "maximum": 1000000
+    },
+    "initial_seed_count": {
+      "type": "integer", "minimum": 0, "maximum": 128000000
+    },
+    "tasks": {
+      "type": "array", "maxItems": 1000000,
+      "items": { "$ref": "#/$defs/task" }
+    },
+    "deferred_structures": {
+      "type": "array", "maxItems": 1000000,
+      "items": { "$ref": "#/$defs/deferred" }
+    },
+    "dynamic_entity_knowledge": { "const": "NONE" },
+    "execution_authority": { "const": false },
+    "content_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "additionalProperties": false
+}

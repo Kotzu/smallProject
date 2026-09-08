@@ -1,0 +1,13 @@
+comtypes==1.4.16 --hash=sha256:e18d85179ff12955524c5a8c3bc09cb3c0d890f1da4d7123d14244c7b78f84c8
+dxcam[winrt]==0.3.0 --hash=sha256:f08a8505b4ea0afbf1ad9f741c512030ef9119dd029f65a08a0e635f616113e0
+numpy==2.5.2 --hash=sha256:7587f53dfbd5edc0f7b87c6217b4c6d2d1f2ef9c3da70bc1315e7db5f8d7ec9d
+typing-extensions==4.16.0 --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8
+winrt-runtime==3.2.1 --hash=sha256:e36e587ab5fd681ee472cd9a5995743f75107a1a84d749c64f7e490bc86bc814
+winrt-Windows.Foundation==3.2.1 --hash=sha256:a22a7ebcec0d262e60119cff728f32962a02df60471ded8b2735a655eccc0ef5
+winrt-Windows.Foundation.Collections==3.2.1 --hash=sha256:d4cfece7e9c0ead2941e55a1da82f20d2b9c8003bb7a8853bb7f999b539f80a4
+winrt-Windows.Graphics==3.2.1 --hash=sha256:e42102000cc86d96a65ca18f0b16f65f2f7337a651ac5abe17b55614ffe67045
+winrt-Windows.Graphics.Capture==3.2.1 --hash=sha256:b916af8d8a4f9f14ecdef5e58b8f3700f37e060e0ca125958332e9601ac5cc58
+winrt-Windows.Graphics.Capture.Interop==3.2.1 --hash=sha256:f2dc50cc4b2d8a8b35a886b34e94d36586b7ca832ff338be35d5f95ec76b1fba
+winrt-Windows.Graphics.DirectX==3.2.1 --hash=sha256:be70b38eed306acdcf1952ce9072f7b70265b4392530c8d3613c333b90ae76fe
+winrt-Windows.Graphics.DirectX.Direct3D11==3.2.1 --hash=sha256:bed68a6c69f39c325bed675e1be3668bd05005a671df34a603bb8973a0b7faf2
+winrt-Windows.Graphics.DirectX.Direct3D11.Interop==3.2.1 --hash=sha256:6476d55fcddd82ecf55cad9d1b485e6262ebd0c2757a85febde56dbd953513d7

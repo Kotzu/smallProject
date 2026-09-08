@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "route_id": "undercity-movement-lab-manual",
+  "map": "Azeroth",
+  "waypoints": [
+    {
+      "id": "undercity-practice-dummy-lab",
+      "label": "Undercity Practice Dummy LAB",
+      "x": 1672.3,
+      "y": 395.5,
+      "z": -62.2,
+      "source": "reviewed_lab_test_location"
+    }
+  ]
+}

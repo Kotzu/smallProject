@@ -1,0 +1,334 @@
+{
+  "record_type": "client_world_catalog",
+  "schema_version": "1.0",
+  "catalog_id": "wow.tbc.2.4.3.8606.shadowfang-v2",
+  "target_profile": "tbc_243_lab",
+  "product": "wow",
+  "expansion": "the_burning_crusade",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "asset_container": "mpq",
+  "asset_parser_profile": "wow-wdbc-map-v1",
+  "world_catalog_asset": "DBFilesClient/Map.dbc",
+  "world_catalog_asset_sha256": "fadae9835a1180641d2eb2f811fa7fc905694a3563a8a0208a47488d4a42b9f2",
+  "nav_profile_id": "tbc243-shadowfang-v2",
+  "maps": [
+    {
+      "map_id": 33,
+      "internal_name": "Shadowfang",
+      "classification": "instance",
+      "map_artifact": "Shadowfang.map",
+      "map_artifact_sha256": "810f6e609dc3e6bf312d6ba006c8f4af8a510f8b4bc71f237e34790bb212510a",
+      "nav_tiles_sha256": "9791df0bc887671fdfcc408b0e73d5d66cdbaeebbe903dd1540e099f371e610c",
+      "coverage_state": "complete",
+      "interior_coverage": "complete",
+      "road_semantic_coverage": "complete",
+      "road_semantics_sha256": "8f8b7f422608b9ac76055b2baf32decf66065fcbc622e9e19fced3b492f5bba7",
+      "tiles": [
+        {
+          "grid_x": 25,
+          "grid_y": 30,
+          "artifact": "25_30.nav",
+          "sha256": "b0f0a04875f77347acb9378ab6b7b2e1654cd029eeae0a361061530a2be130cf"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 31,
+          "artifact": "25_31.nav",
+          "sha256": "bda46886bcf278bf95f07c2fec011bf07cc0b0716a1d75ce732a48eb01aa16d5"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 32,
+          "artifact": "25_32.nav",
+          "sha256": "63c0d44a2d6d9d021d5aa844a69f4ddb8707cb8f26d85225ec1352ea57bdbcaa"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 33,
+          "artifact": "25_33.nav",
+          "sha256": "c836d630ed5063eb9c65b58053e98617c1f6b454bb749faa01f2471762240f7d"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 34,
+          "artifact": "25_34.nav",
+          "sha256": "7e6cc2ccf9e3cca2fdc2a43fc54c3e1ba06cdc3da903db3f91b36ff4260938b2"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 30,
+          "artifact": "26_30.nav",
+          "sha256": "b2e998fa6197994e5f0b8cc9e09cbec2e563896328e49688a5e0100dfa5195ce"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 31,
+          "artifact": "26_31.nav",
+          "sha256": "56d7de43d7871db43aa8f534a9b8fbe0ff06f111a68a3a9e9c338e21d397bdc0"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 32,
+          "artifact": "26_32.nav",
+          "sha256": "3947a00aaa46414a56af01545e28cdf4ca1bb7214cc52d2f1164e4ceb0fa3089"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 33,
+          "artifact": "26_33.nav",
+          "sha256": "636d97c63d706db960ba4429efc13d9b674e5892033b32d74f1ff51dbb980279"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 34,
+          "artifact": "26_34.nav",
+          "sha256": "277300377f19ab717ff83d8e6bfd090502404e64908db84728c90d4dfee7a662"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 30,
+          "artifact": "27_30.nav",
+          "sha256": "7e48e6c8b13050c13c418f55deb92f3a61a8d3c8d7c44c834442ee927eec54e3"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 31,
+          "artifact": "27_31.nav",
+          "sha256": "ce8f9a8de8fbe8177e90f02b9d0c8b1c7aa3d7518cd2c4852a58f4c55020974c"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 32,
+          "artifact": "27_32.nav",
+          "sha256": "3f2f5b7a519e8fe1afc38bedae0795b8b0df98b61bcb83d7f2a4541bd91c130b"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 33,
+          "artifact": "27_33.nav",
+          "sha256": "267fa78a86d067781b0653a3ed53bbb24181442f8bbb09915f12412d9efd128e"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 34,
+          "artifact": "27_34.nav",
+          "sha256": "36c0cdfc0fae529de8b1e6a0cdb492aa2ecc91f52f54d036dc2952e8801fd105"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 30,
+          "artifact": "28_30.nav",
+          "sha256": "1ad24cbe78e4a2429f41efa2cfc45eed5c65fd8eee4b0f6b06928313e1223ff9"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 31,
+          "artifact": "28_31.nav",
+          "sha256": "5b952df0f4ca0ea443fafd3da9c26c4ef573f39fed4ed0b18413d1a28bb584be"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 32,
+          "artifact": "28_32.nav",
+          "sha256": "c03d97ab4a92f94b699f22ef495ec364ee7ec2ae18afdfa0bd9850d35c595d3f"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 33,
+          "artifact": "28_33.nav",
+          "sha256": "c977d51c6391f07916281a3868066f300e193f5bb1c5bcaa8a54d9365bc9fe0c"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 34,
+          "artifact": "28_34.nav",
+          "sha256": "291a197abbd86f7194c70e673fc1ea32de937a944df6fc3c51923303837abefa"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 30,
+          "artifact": "29_30.nav",
+          "sha256": "9c7ace1d85b9ba62af4ddee4cf63747cf169c98ec77224e3f3380af2793f4dfd"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 31,
+          "artifact": "29_31.nav",
+          "sha256": "e0d3713b37ddffca54935b7145e7faf4afe8c7af27d8afb9a2ab2d21d14354cf"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 32,
+          "artifact": "29_32.nav",
+          "sha256": "b4cc171f3da7d3c688c18ec1fea5a4928559bc11c73227b9d3e3feba54846ec1"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 33,
+          "artifact": "29_33.nav",
+          "sha256": "c067e8653d2398004cea9d61be67b1bc9db4424b206c205093969ec2a66557eb"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 34,
+          "artifact": "29_34.nav",
+          "sha256": "901e8832b7b6df0e5bdeffcc18de3dc653eded3d73f610d39eda018332f6e4aa"
+        }
+      ],
+      "road_semantics": [
+        {
+          "grid_x": 25,
+          "grid_y": 30,
+          "artifact": "Shadowfang_25_30.road",
+          "sha256": "39dfbe191c99ce6665a8fb7c51a08a51b07d5c8ca357de675a3d3470649170a8"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 31,
+          "artifact": "Shadowfang_25_31.road",
+          "sha256": "1fa4ca821eda06f2c4dad8b8f40b6b603ce5d1f9997999b6c6278b4e2748de76"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 32,
+          "artifact": "Shadowfang_25_32.road",
+          "sha256": "7ecc4a5699e61e9d1958b7f39ac589287a18311ae7222bb1c44bcf743ebeccbf"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 33,
+          "artifact": "Shadowfang_25_33.road",
+          "sha256": "1d87fbf3d1a5def040782000bf87d5caf6b7ec4262ad5c9b54f94123ea9404cc"
+        },
+        {
+          "grid_x": 25,
+          "grid_y": 34,
+          "artifact": "Shadowfang_25_34.road",
+          "sha256": "71a752b1cc5aeeb0aa90a594f879baf06de011484bce378aeace13d4c5075eff"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 30,
+          "artifact": "Shadowfang_26_30.road",
+          "sha256": "5c4647f266131b97166731110f9585da26d7335069bdb2ecfb157fd22b7864c6"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 31,
+          "artifact": "Shadowfang_26_31.road",
+          "sha256": "6485f173a988c60b54f7bb93f296d5d7ab8fd417ee27d0ffcb0a98686d61878c"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 32,
+          "artifact": "Shadowfang_26_32.road",
+          "sha256": "8fd6bb0a3936e7d6fb85351abd09bf9e024c89df334244aa390f385070b7c5f4"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 33,
+          "artifact": "Shadowfang_26_33.road",
+          "sha256": "fc76d6be194fad93f626b0be8582f96e38685d746889bfea311496f6d9f1cf9b"
+        },
+        {
+          "grid_x": 26,
+          "grid_y": 34,
+          "artifact": "Shadowfang_26_34.road",
+          "sha256": "655758f638bcc5124d2f2d4301ddcd035715c19f962f16d15a5c5fb65d8c58de"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 30,
+          "artifact": "Shadowfang_27_30.road",
+          "sha256": "ac206a241c80026b70e087a51e19ea09bd3a20824c0a4baf3d3aafe76f0f3119"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 31,
+          "artifact": "Shadowfang_27_31.road",
+          "sha256": "0c07c33ab94f2632712f0cdf5896885538ec7a2bdd939ec954a8c0707a523ea6"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 32,
+          "artifact": "Shadowfang_27_32.road",
+          "sha256": "5cdf3f257cfa6335477c60ba33461134a57aa9488e80c0ca76937c9c3825ec34"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 33,
+          "artifact": "Shadowfang_27_33.road",
+          "sha256": "73133cdd1d2e2f9f4645be9b6ab9552e6ed1f4e2f13ffb34ebf7530d7d80b0e3"
+        },
+        {
+          "grid_x": 27,
+          "grid_y": 34,
+          "artifact": "Shadowfang_27_34.road",
+          "sha256": "3a9130bd53e1600eece1bbbd310096cbdf2ec4273cd0528884f489d07d845d48"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 30,
+          "artifact": "Shadowfang_28_30.road",
+          "sha256": "051c6d4655b1613713c54f34ab28985fd3eaa7ecbc5ebd559d03dc4c92a5dcf9"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 31,
+          "artifact": "Shadowfang_28_31.road",
+          "sha256": "e6ceea19a02d447f7bcbdaf781ffcac76079af50b5077371a8baf4f6072d398c"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 32,
+          "artifact": "Shadowfang_28_32.road",
+          "sha256": "7e0940993d3865bae28ff1da083ee55cc1b5e9e5883df5c1fbb44aea7fc6a4b9"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 33,
+          "artifact": "Shadowfang_28_33.road",
+          "sha256": "fb6be72ea52903916fe115c145731fe2c52d43708141d98ece97cbe63f910a6c"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 34,
+          "artifact": "Shadowfang_28_34.road",
+          "sha256": "d3e52944be18e0dccecc1f080ba04e0f350dc946dbae7ab6d8fbb8d6ac942da2"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 30,
+          "artifact": "Shadowfang_29_30.road",
+          "sha256": "ea192eca9adbb1e7006645e61cd192da533cc142a446f9683053d7da22c9b611"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 31,
+          "artifact": "Shadowfang_29_31.road",
+          "sha256": "67aa313326d45c2fc80134ec2a67c04ba88a4035cfe5347d8b8d653f50a0eab8"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 32,
+          "artifact": "Shadowfang_29_32.road",
+          "sha256": "5d6b1b3e60a5df3db4bfc7e751c077b84e898d9a8cfd4b032c1408ee31570e31"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 33,
+          "artifact": "Shadowfang_29_33.road",
+          "sha256": "70ba2320c5525d0e46db915bb9a141d80f1aacb27a5a3f84d725e346e5de1be9"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 34,
+          "artifact": "Shadowfang_29_34.road",
+          "sha256": "b3a40eec57a1467f0f351ff0bcd62ccb95cf0e0887d9c6689ce5ea37ba68b80c"
+        }
+      ]
+    }
+  ],
+  "execution_authority": false
+}

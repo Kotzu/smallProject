@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/structure-access-scan-observation.schema.json",
+  "title": "Perfect Assassin resumable structure access scan observation v1",
+  "$defs": {
+    "identifier": {
+      "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,255}$"
+    },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "point": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": { "type": "number" }
+    },
+    "surface": { "enum": ["ground", "wmo", "doodad"] },
+    "radial": {
+      "type": "object",
+      "required": ["bearing_rad", "clearance_yards", "navmesh_reachable"],
+      "properties": {
+        "bearing_rad": {
+          "type": "number", "minimum": 0,
+          "exclusiveMaximum": 6.283185307179587
+        },
+        "clearance_yards": { "type": "number", "minimum": 0, "maximum": 30 },
+        "navmesh_reachable": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "collision_probe": {
+      "type": "object",
+      "required": ["physical_surfaces", "probe_radius_yards", "radial_probes"],
+      "properties": {
+        "physical_surfaces": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "$ref": "#/$defs/surface" }
+        },
+        "probe_radius_yards": {
+          "type": "number", "minimum": 1, "maximum": 30
+        },
+        "radial_probes": {
+          "type": "array", "minItems": 8, "maxItems": 64,
+          "items": { "$ref": "#/$defs/radial" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "fragment_id", "plan_id",
+    "plan_content_sha256", "world_pack_id", "world_pack_content_sha256",
+    "client_build", "map_id", "map_name", "probe_worker_sha256", "task_id",
+    "seed_id", "expected_structure_id", "requested_position", "status",
+    "resolved_position", "actual_structure_ids", "awareness_artifact",
+    "awareness_sha256", "collision_probe", "failure_reason",
+    "execution_authority", "content_sha256"
+  ],
+  "properties": {
+    "record_type": { "const": "structure_access_scan_observation" },
+    "schema_version": { "const": "1.0" },
+    "fragment_id": { "$ref": "#/$defs/identifier" },
+    "plan_id": { "$ref": "#/$defs/identifier" },
+    "plan_content_sha256": { "$ref": "#/$defs/sha256" },
+    "world_pack_id": { "$ref": "#/$defs/identifier" },
+    "world_pack_content_sha256": { "$ref": "#/$defs/sha256" },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "map_name": {
+      "type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$"
+    },
+    "probe_worker_sha256": { "$ref": "#/$defs/sha256" },
+    "task_id": { "$ref": "#/$defs/identifier" },
+    "seed_id": { "$ref": "#/$defs/identifier" },
+    "expected_structure_id": { "$ref": "#/$defs/identifier" },
+    "requested_position": { "$ref": "#/$defs/point" },
+    "status": {
+      "enum": [
+        "ACCEPTED_CONTAINED_WMO",
+        "REJECTED_EXPECTED_STRUCTURE_NOT_CONFIRMED",
+        "REJECTED_NO_NAV_POLYGON",
+        "REJECTED_INCOMPLETE_STATIC_AWARENESS",
+        "PROBE_ERROR"
+      ]
+    },
+    "resolved_position": {
+      "oneOf": [{ "$ref": "#/$defs/point" }, { "type": "null" }]
+    },
+    "actual_structure_ids": {
+      "type": "array", "maxItems": 64, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifier" }
+    },
+    "awareness_artifact": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}[.]json$"
+    },
+    "awareness_sha256": {
+      "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    },
+    "collision_probe": {
+      "oneOf": [{ "$ref": "#/$defs/collision_probe" }, { "type": "null" }]
+    },
+    "failure_reason": {
+      "type": ["string", "null"], "minLength": 1, "maxLength": 512
+    },
+    "execution_authority": { "const": false },
+    "content_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "additionalProperties": false
+}

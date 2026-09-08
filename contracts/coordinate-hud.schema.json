@@ -1,0 +1,329 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/coordinate-hud.schema.json",
+  "title": "Visible coordinate HUD observation",
+  "type": "object",
+  "required": ["record_type", "schema_version", "observation_id", "frame_id", "session_id", "target_profile", "actor_binding", "authorization_sha256", "decision_context", "client_build", "build_signature", "tracking_state", "reason", "confidence", "timing", "protocol", "position", "map_position_available", "player_state", "provenance", "execution_authority"],
+  "properties": {
+    "record_type": { "const": "coordinate_hud_observation" },
+    "schema_version": { "const": "2.0" },
+    "observation_id": { "type": "string", "minLength": 1 },
+    "frame_id": { "type": "string", "minLength": 1 },
+    "session_id": { "type": "string", "minLength": 1 },
+    "target_profile": { "type": "string", "minLength": 1 },
+    "actor_binding": {
+      "type": "object",
+      "required": ["schema_version", "instance_id", "actor_role", "actor_id", "decision_context", "memory_namespace", "expected_character_name", "credential_alias", "binding_assurance"],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "instance_id": { "type": "string", "minLength": 1 },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "actor_id": { "type": "string", "minLength": 1 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "memory_namespace": { "type": "string", "minLength": 1 },
+        "expected_character_name": { "type": "string", "minLength": 1 },
+        "credential_alias": { "type": "string", "minLength": 1 },
+        "binding_assurance": {
+          "type": "object",
+          "required": ["state", "evidence_refs"],
+          "properties": {
+            "state": { "const": "configured_expected_only" },
+            "evidence_refs": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "authorization_sha256": {
+      "type": "string",
+      "pattern": "^[A-F0-9]{64}$"
+    },
+    "decision_context": { "enum": ["champion", "lab_clone"] },
+    "client_build": { "type": "string", "minLength": 1 },
+    "build_signature": { "type": "string", "minLength": 1 },
+    "tracking_state": { "enum": ["VALID", "DEGRADED", "INVALID", "NOT_FOUND"] },
+    "reason": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "timing": {
+      "type": "object",
+      "required": ["captured_at", "monotonic_timestamp_s", "frame_age_ms", "observed_monotonic_s", "age_at_observation_ms", "freshness_limit_ms", "expires_monotonic_s"],
+      "properties": {
+        "captured_at": { "type": "string", "format": "date-time" },
+        "monotonic_timestamp_s": { "type": "number", "minimum": 0 },
+        "frame_age_ms": { "type": "number", "minimum": 0 },
+        "observed_monotonic_s": { "type": "number", "minimum": 0 },
+        "age_at_observation_ms": { "type": "number", "minimum": 0 },
+        "freshness_limit_ms": { "type": "number", "exclusiveMinimum": 0, "maximum": 5000 },
+        "expires_monotonic_s": { "type": "number", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "protocol": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["magic", "version", "sequence", "flags", "crc_valid", "packet_hex"],
+          "properties": {
+            "magic": { "const": 165 },
+            "version": { "const": 3 },
+            "sequence": { "type": "integer", "minimum": 0, "maximum": 255 },
+            "flags": { "type": "integer", "minimum": 0, "maximum": 63 },
+            "crc_valid": { "const": true },
+            "packet_hex": { "type": "string", "pattern": "^[0-9a-f]{28}$" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "position": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["coordinate_space", "x", "y", "continent_index", "zone_index"],
+          "properties": {
+            "coordinate_space": { "const": "normalized_current_zone_map" },
+            "x": { "type": "number", "minimum": 0, "maximum": 1 },
+            "y": { "type": "number", "minimum": 0, "maximum": 1 },
+            "continent_index": { "type": "integer", "minimum": 0, "maximum": 255 },
+            "zone_index": { "type": "integer", "minimum": 0, "maximum": 255 },
+            "facing_rad": { "type": "number", "minimum": 0, "maximum": 6.283185307179586 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "map_position_available": { "type": "boolean" },
+    "player_state": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["dead_or_ghost", "ghost"],
+          "properties": {
+            "dead_or_ghost": { "type": "boolean" },
+            "ghost": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "camera_integrity": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": [
+            "record_type", "schema_version", "tracking_state", "confidence", "reason",
+            "actor_anchor", "metrics", "observed_monotonic_s", "provenance",
+            "execution_authority"
+          ],
+          "properties": {
+            "record_type": { "const": "player_actor_anchor_observation" },
+            "schema_version": { "const": "0.1" },
+            "tracking_state": { "enum": ["VISIBLE", "LOST", "UNKNOWN"] },
+            "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+            "reason": { "type": "string", "minLength": 1, "maxLength": 128 },
+            "actor_anchor": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "object",
+                  "required": ["left", "top", "right", "bottom", "center_x", "center_y"],
+                  "properties": {
+                    "left": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "top": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "right": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "bottom": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "center_x": { "type": "number", "minimum": 0, "maximum": 1 },
+                    "center_y": { "type": "number", "minimum": 0, "maximum": 1 }
+                  },
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "metrics": {
+              "type": "object",
+              "required": ["head_component_pixels", "support_component_pixels", "sampled_width", "sampled_height"],
+              "properties": {
+                "head_component_pixels": { "type": "integer", "minimum": 0 },
+                "support_component_pixels": { "type": "integer", "minimum": 0 },
+                "sampled_width": { "type": "integer", "minimum": 1 },
+                "sampled_height": { "type": "integer", "minimum": 1 }
+              },
+              "additionalProperties": false
+            },
+            "observed_monotonic_s": { "type": "number", "minimum": 0 },
+            "provenance": {
+              "type": "object",
+              "required": ["origin", "capability", "scope", "profile", "profile_version", "evidence_refs"],
+              "properties": {
+                "origin": { "const": "scene_vision" },
+                "capability": { "const": "player_actor_screen_visibility" },
+                "scope": { "const": "unpromoted_evaluation_only" },
+                "profile": { "type": "string", "minLength": 1 },
+                "profile_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+                "evidence_refs": {
+                  "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true,
+                  "items": { "type": "string", "minLength": 1 }
+                }
+              },
+              "additionalProperties": false
+            },
+            "execution_authority": { "const": false }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["origin", "capture_origin", "capability", "scope", "profile_id", "profile_version", "profile_sha256", "profile_calibration_state", "evidence_refs"],
+      "properties": {
+        "origin": { "const": "visible_addon_hud" },
+        "capture_origin": { "enum": ["window_capture", "replay_fixture"] },
+        "capability": { "const": "self_map_position" },
+        "scope": { "enum": ["lab_evaluation_only", "synthetic_fixture", "unpromoted_evaluation_only"] },
+        "profile_id": { "type": "string", "minLength": 1 },
+        "profile_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+        "profile_sha256": { "type": "string", "pattern": "^[A-F0-9]{64}$" },
+        "profile_calibration_state": { "enum": ["synthetic_verified", "controlled_live_verified"] },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 8,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": { "properties": { "decision_context": { "const": "lab_clone" } }, "required": ["decision_context"] },
+      "then": {
+        "properties": {
+          "actor_binding": {
+            "properties": {
+              "actor_role": { "const": "lab_clone" },
+              "decision_context": { "const": "lab_clone" },
+              "memory_namespace": { "pattern": "^memory:lab:" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "decision_context": { "const": "champion" } }, "required": ["decision_context"] },
+      "then": {
+        "properties": {
+          "actor_binding": {
+            "properties": {
+              "actor_role": { "const": "champion_journey" },
+              "decision_context": { "const": "champion" },
+              "memory_namespace": { "pattern": "^memory:champion:" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "tracking_state": { "const": "VALID" } }, "required": ["tracking_state"] },
+      "then": {
+        "properties": {
+          "map_position_available": { "const": true },
+          "position": { "type": "object" },
+          "player_state": { "type": "object" },
+          "timing": {
+            "properties": {
+              "age_at_observation_ms": { "maximum": 600 },
+              "freshness_limit_ms": { "const": 600 }
+            }
+          },
+          "protocol": {
+            "type": "object",
+            "properties": { "flags": { "enum": [3, 11, 19, 27, 51, 59] } }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "map_position_available": { "const": false },
+          "position": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "player_state": {
+            "type": "object",
+            "properties": { "ghost": { "const": true } },
+            "required": ["ghost"]
+          }
+        },
+        "required": ["player_state"]
+      },
+      "then": {
+        "properties": {
+          "player_state": {
+            "properties": { "dead_or_ghost": { "const": true } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provenance": { "properties": { "capture_origin": { "const": "replay_fixture" } } }
+        }
+      },
+      "then": {
+        "properties": {
+          "provenance": { "properties": { "scope": { "const": "synthetic_fixture" } } }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_context": { "const": "lab_clone" },
+          "provenance": { "properties": { "capture_origin": { "const": "window_capture" } } }
+        }
+      },
+      "then": {
+        "properties": {
+          "provenance": { "properties": { "scope": { "const": "lab_evaluation_only" } } }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "decision_context": { "const": "champion" },
+          "provenance": {
+            "properties": {
+              "capture_origin": { "const": "window_capture" }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "provenance": { "properties": { "scope": { "const": "unpromoted_evaluation_only" } } }
+        }
+      }
+    }
+  ]
+}

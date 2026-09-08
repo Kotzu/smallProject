@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/dynamic-experience-summary.schema.json",
+  "title": "Permanent dynamic experience summary v2.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type", "schema_version", "database_schema_version", "map_name",
+    "navmesh_sha256", "observation_count", "reaction_counts",
+    "last_observed_at_utc", "experience_semantics",
+    "entity_position_semantics", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "dynamic_experience_summary" },
+    "schema_version": { "const": "2.0" },
+    "database_schema_version": { "const": 2 },
+    "map_name": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "navmesh_sha256": { "type": "string", "pattern": "^[0-9A-F]{64}$" },
+    "observation_count": { "type": "integer", "minimum": 0 },
+    "reaction_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["HOSTILE", "NEUTRAL", "FRIENDLY", "UNKNOWN"],
+      "properties": {
+        "HOSTILE": { "type": "integer", "minimum": 0 },
+        "NEUTRAL": { "type": "integer", "minimum": 0 },
+        "FRIENDLY": { "type": "integer", "minimum": 0 },
+        "UNKNOWN": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "last_observed_at_utc": { "type": ["string", "null"], "format": "date-time" },
+    "experience_semantics": { "const": "APPEND_ONLY_OBSERVER_POSE_ENCOUNTER_MEMORY" },
+    "entity_position_semantics": { "const": "UNKNOWN_NOT_INFERRED" },
+    "execution_authority": { "const": false }
+  }
+}

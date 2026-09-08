@@ -1,0 +1,645 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/execution-target-authorization.schema.json",
+  "title": "Perfect Assassin execution target authorization v2.0",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "authorization_id", "target_profile",
+    "environment_scope", "actor_binding", "status", "purpose", "client_match", "realm_match",
+    "permitted_modes", "permitted_capabilities", "restrictions", "approval",
+    "runtime_arm_required"
+  ],
+  "properties": {
+    "record_type": { "const": "execution_target_authorization" },
+    "schema_version": { "const": "2.0" },
+    "authorization_id": { "type": "string", "minLength": 1 },
+    "target_profile": { "type": "string", "minLength": 1 },
+    "environment_scope": {
+      "enum": [
+        "emulator_local", "emulator_lan", "emulator_remote",
+        "blizzard_ptr", "public_live"
+      ]
+    },
+    "actor_binding": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "schema_version", "instance_id", "actor_role", "actor_id",
+            "decision_context", "memory_namespace", "expected_character_name",
+            "credential_alias", "binding_assurance"
+          ],
+          "properties": {
+            "schema_version": { "const": "1.0" },
+            "instance_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+            },
+            "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+            "actor_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+            },
+            "decision_context": { "enum": ["champion", "lab_clone"] },
+            "memory_namespace": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+            },
+            "expected_character_name": { "type": "string", "minLength": 1, "maxLength": 24 },
+            "credential_alias": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+            },
+            "binding_assurance": {
+              "type": "object",
+              "required": ["state", "evidence_refs"],
+              "properties": {
+                "state": { "const": "configured_expected_only" },
+                "evidence_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 4,
+                  "uniqueItems": true,
+                  "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "actor_role": { "const": "champion_journey" } },
+                "required": ["actor_role"]
+              },
+              "then": {
+                "properties": {
+                  "decision_context": { "const": "champion" },
+                  "memory_namespace": { "pattern": "^memory:champion:" }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "actor_role": { "const": "lab_clone" } },
+                "required": ["actor_role"]
+              },
+              "then": {
+                "properties": {
+                  "decision_context": { "const": "lab_clone" },
+                  "memory_namespace": { "pattern": "^memory:lab:" }
+                }
+              }
+            }
+          ],
+          "additionalProperties": false
+        },
+        { "type": "null" }
+      ]
+    },
+    "status": { "enum": ["pending_evidence", "approved_bounded", "denied"] },
+    "purpose": { "const": "education_research_content" },
+    "client_match": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["client_build", "build_signature", "executable_sha256"],
+          "properties": {
+            "client_build": { "type": "string", "minLength": 1 },
+            "build_signature": { "type": "string", "minLength": 1 },
+            "executable_sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        { "type": "null" }
+      ]
+    },
+    "realm_match": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["expected_realm_fingerprint", "server_kind"],
+          "properties": {
+            "expected_realm_fingerprint": { "type": "string", "minLength": 1 },
+            "server_kind": { "enum": ["emulator", "blizzard_ptr", "public_live"] },
+            "realmlist_relative_path": { "type": "string", "minLength": 1 },
+            "realmlist_sha256": { "type": "string", "pattern": "^[A-Fa-f0-9]{64}$" },
+            "realmlist_directive": { "type": "string", "minLength": 1 },
+            "listener_bindings": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "required": [
+                  "port", "process_name", "executable_path", "executable_sha256",
+                  "command_line_arguments", "config_path", "config_sha256"
+                ],
+                "properties": {
+                  "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                  "process_name": { "type": "string", "minLength": 1 },
+                  "executable_path": { "type": "string", "minLength": 1 },
+                  "executable_sha256": {
+                    "type": "string",
+                    "pattern": "^[A-Fa-f0-9]{64}$"
+                  },
+                  "command_line_arguments": {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": { "type": "string", "minLength": 1 }
+                  },
+                  "config_path": { "type": "string", "minLength": 1 },
+                  "config_sha256": {
+                    "type": "string",
+                    "pattern": "^[A-Fa-f0-9]{64}$"
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "routing_probe": {
+              "type": "object",
+              "required": [
+                "database_client_path", "database_client_sha256", "secrets_path",
+                "host", "port", "database"
+              ],
+              "properties": {
+                "database_client_path": { "type": "string", "minLength": 1 },
+                "database_client_sha256": {
+                  "type": "string",
+                  "pattern": "^[A-Fa-f0-9]{64}$"
+                },
+                "secrets_path": { "type": "string", "minLength": 1 },
+                "host": { "type": "string", "minLength": 1 },
+                "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                "database": { "type": "string", "pattern": "^[A-Za-z0-9_]+$" }
+              },
+              "additionalProperties": false
+            },
+            "expected_routing_records": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 16,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "required": [
+                  "realm_id", "name", "address", "port", "icon", "realm_flags",
+                  "timezone", "allowed_security_level", "client_builds"
+                ],
+                "properties": {
+                  "realm_id": { "type": "integer", "minimum": 1 },
+                  "name": { "type": "string", "minLength": 1, "maxLength": 64 },
+                  "address": { "type": "string", "minLength": 1, "maxLength": 255 },
+                  "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+                  "icon": { "type": "integer", "minimum": 0 },
+                  "realm_flags": { "type": "integer", "minimum": 0 },
+                  "timezone": { "type": "integer", "minimum": 0 },
+                  "allowed_security_level": { "type": "integer", "minimum": 0 },
+                  "client_builds": {
+                    "type": "array",
+                    "minItems": 1,
+                    "uniqueItems": true,
+                    "items": { "type": "string", "pattern": "^[0-9]+$" }
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "expected_routing_sha256": {
+              "type": "string",
+              "pattern": "^[A-Fa-f0-9]{64}$"
+            },
+            "remote_assurance": {
+              "type": "object",
+              "required": ["state", "evidence_refs"],
+              "properties": {
+                "state": { "const": "configured_endpoint_only" },
+                "evidence_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 8,
+                  "uniqueItems": true,
+                  "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        { "type": "null" }
+      ]
+    },
+    "permitted_modes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "enum": ["MOVEMENT_ONLY", "COMBAT_ONLY", "FULL_AI"] }
+    },
+    "permitted_capabilities": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "SCREEN_CAPTURE_READ_ONLY",
+          "VISIBLE_COORDINATE_HUD_READ_ONLY",
+          "VISIBLE_COMBAT_HUD_READ_ONLY",
+          "LAB_OPERATOR_FIXED_UI",
+          "MOVEMENT_EXECUTION",
+          "COMBAT_EXECUTION"
+        ]
+      }
+    },
+    "movement_policy": {
+      "type": "object",
+      "required": [
+        "allowed_controls", "max_hold_duration_ms", "max_execution_envelope_ms",
+        "max_primitives", "manual_takeover_required", "release_all_required",
+        "combat_authorized", "economy_authorized"
+      ],
+      "properties": {
+        "allowed_controls": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "enum": ["MOVE_FORWARD", "MOVE_BACKWARD", "STRAFE_LEFT", "STRAFE_RIGHT"]
+          }
+        },
+        "max_hold_duration_ms": { "type": "integer", "minimum": 1, "maximum": 450 },
+        "max_execution_envelope_ms": { "type": "integer", "minimum": 2, "maximum": 500 },
+        "max_primitives": { "type": "integer", "minimum": 1, "maximum": 4096 },
+        "manual_takeover_required": { "const": true },
+        "release_all_required": { "const": true },
+        "combat_authorized": { "const": false },
+        "economy_authorized": { "const": false }
+      },
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "allowed_controls": { "const": ["MOVE_FORWARD"] },
+            "max_hold_duration_ms": { "const": 100 },
+            "max_execution_envelope_ms": { "const": 150 },
+            "max_primitives": { "const": 1 }
+          }
+        },
+        {
+          "properties": {
+            "allowed_controls": {
+              "const": ["MOVE_FORWARD", "MOVE_BACKWARD", "STRAFE_LEFT", "STRAFE_RIGHT"]
+            },
+            "max_hold_duration_ms": { "const": 450 },
+            "max_execution_envelope_ms": { "const": 500 },
+            "max_primitives": { "const": 4096 }
+          }
+        }
+      ]
+    },
+    "combat_policy": {
+      "type": "object",
+      "required": [
+        "allowed_controls", "max_actions", "max_encounter_seconds",
+        "max_acquisition_seconds", "max_combat_seconds", "max_recovery_seconds",
+        "max_approach_pulses", "approach_hold_duration_ms", "orbit_hold_duration_ms",
+        "max_turn_pulses", "max_facing_turn_pulses", "search_turn_hold_duration_ms",
+        "search_turn_mouse_delta_x", "turn_near_hold_duration_ms",
+        "turn_near_mouse_delta_x", "turn_medium_hold_duration_ms",
+        "turn_medium_mouse_delta_x", "turn_far_hold_duration_ms",
+        "turn_far_mouse_delta_x", "turn_medium_offset_threshold",
+        "turn_far_offset_threshold", "turn_execution_slack_ms",
+        "action_key_hold_ms", "max_target_level_delta",
+        "retreat_health_pct", "manual_takeover_required",
+        "release_all_required", "player_targets_authorized",
+        "economy_authorized"
+      ],
+      "properties": {
+        "allowed_controls": {
+          "type": "array",
+          "minItems": 13,
+          "maxItems": 13,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "TARGET_VISIBLE_HOSTILE", "TARGET_NEAREST_HOSTILE", "TARGET_EXACT_NAME", "TARGET_LAST_HOSTILE", "INTERACT_TARGET", "ACTION_SLOT_1", "ACTION_SLOT_2",
+              "ACTION_SLOT_3", "MOVE_FORWARD", "STRAFE_LEFT", "STRAFE_RIGHT", "TURN_LEFT", "TURN_RIGHT"
+            ]
+          },
+          "allOf": [
+            { "contains": { "const": "TARGET_VISIBLE_HOSTILE" } },
+            { "contains": { "const": "TARGET_NEAREST_HOSTILE" } },
+            { "contains": { "const": "TARGET_EXACT_NAME" } },
+            { "contains": { "const": "TARGET_LAST_HOSTILE" } },
+            { "contains": { "const": "INTERACT_TARGET" } },
+            { "contains": { "const": "ACTION_SLOT_1" } },
+            { "contains": { "const": "ACTION_SLOT_2" } },
+            { "contains": { "const": "ACTION_SLOT_3" } },
+            { "contains": { "const": "MOVE_FORWARD" } }
+            ,{ "contains": { "const": "STRAFE_LEFT" } }
+            ,{ "contains": { "const": "STRAFE_RIGHT" } }
+            ,{ "contains": { "const": "TURN_LEFT" } }
+            ,{ "contains": { "const": "TURN_RIGHT" } }
+          ]
+        },
+        "max_actions": { "const": 64 },
+        "max_encounter_seconds": { "const": 90 },
+        "max_acquisition_seconds": { "const": 25 },
+        "max_combat_seconds": { "const": 60 },
+        "max_recovery_seconds": { "const": 5 },
+        "max_approach_pulses": { "const": 10 },
+        "approach_hold_duration_ms": { "const": 250 },
+        "orbit_hold_duration_ms": { "const": 90 },
+        "max_turn_pulses": { "const": 12 },
+        "max_facing_turn_pulses": { "const": 24 },
+        "search_turn_hold_duration_ms": { "const": 200 },
+        "search_turn_mouse_delta_x": { "const": 24 },
+        "turn_near_hold_duration_ms": { "const": 25 },
+        "turn_near_mouse_delta_x": { "const": 4 },
+        "turn_medium_hold_duration_ms": { "const": 35 },
+        "turn_medium_mouse_delta_x": { "const": 14 },
+        "turn_far_hold_duration_ms": { "const": 50 },
+        "turn_far_mouse_delta_x": { "const": 28 },
+        "turn_medium_offset_threshold": { "const": 0.25 },
+        "turn_far_offset_threshold": { "const": 0.60 },
+        "turn_execution_slack_ms": { "const": 150 },
+        "action_key_hold_ms": { "const": 25 },
+        "max_target_level_delta": { "const": 1 },
+        "retreat_health_pct": { "const": 25 },
+        "manual_takeover_required": { "const": true },
+        "release_all_required": { "const": true },
+        "player_targets_authorized": { "const": false },
+        "economy_authorized": { "const": false }
+      },
+      "additionalProperties": false
+    },
+    "restrictions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "approval": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["granted_by", "evidence_refs", "recorded_at", "max_session_minutes"],
+          "properties": {
+            "granted_by": { "enum": ["operator", "platform_owner"] },
+            "evidence_refs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "recorded_at": { "type": "string", "format": "date-time" },
+            "expires_at": { "type": "string", "format": "date-time" },
+            "max_session_minutes": { "type": "integer", "minimum": 1, "maximum": 60 },
+            "renews_authorization_sha256": {
+              "type": "string", "pattern": "^[A-F0-9]{64}$"
+            },
+            "renewal_scope": { "const": "temporal_only" }
+          },
+          "dependentRequired": {
+            "renews_authorization_sha256": ["renewal_scope"],
+            "renewal_scope": ["renews_authorization_sha256"]
+          },
+          "additionalProperties": false
+        },
+        { "type": "null" }
+      ]
+    },
+    "runtime_arm_required": { "const": true }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "approved_bounded" } } },
+      "then": {
+        "properties": {
+          "actor_binding": { "type": "object" },
+          "client_match": { "type": "object" },
+          "realm_match": { "type": "object" },
+          "permitted_capabilities": { "minItems": 1 },
+          "approval": { "type": "object" }
+        }
+      },
+      "else": {
+        "properties": {
+          "permitted_modes": { "maxItems": 0 },
+          "permitted_capabilities": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "approved_bounded" },
+          "environment_scope": {
+            "enum": ["emulator_local", "emulator_lan", "emulator_remote"]
+          }
+        },
+        "required": ["status", "environment_scope"]
+      },
+      "then": {
+        "properties": {
+          "realm_match": {
+            "type": "object",
+            "required": [
+              "realmlist_relative_path", "realmlist_sha256", "realmlist_directive"
+            ],
+            "properties": { "server_kind": { "const": "emulator" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "approved_bounded" },
+          "environment_scope": { "const": "emulator_local" }
+        },
+        "required": ["status", "environment_scope"]
+      },
+      "then": {
+        "properties": {
+          "realm_match": {
+            "type": "object",
+            "required": [
+              "realmlist_relative_path", "realmlist_sha256",
+              "realmlist_directive", "listener_bindings", "routing_probe",
+              "expected_routing_records", "expected_routing_sha256"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": { "const": "approved_bounded" },
+          "environment_scope": { "enum": ["emulator_lan", "emulator_remote"] }
+        },
+        "required": ["status", "environment_scope"]
+      },
+      "then": {
+        "properties": {
+          "permitted_modes": { "maxItems": 0 },
+          "realm_match": {
+            "type": "object",
+            "required": ["remote_assurance"]
+          }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "environment_scope": { "const": "blizzard_ptr" } } },
+      "then": {
+        "properties": {
+          "realm_match": {
+            "oneOf": [
+              { "type": "null" },
+              {
+                "type": "object",
+                "properties": { "server_kind": { "const": "blizzard_ptr" } }
+              }
+            ]
+          }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "status": { "const": "approved_bounded" } } },
+            "then": {
+              "properties": {
+                "approval": {
+                  "type": "object",
+                  "properties": { "granted_by": { "const": "platform_owner" } }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "if": { "properties": { "environment_scope": { "const": "public_live" } } },
+      "then": {
+        "properties": {
+          "status": { "const": "denied" },
+          "permitted_modes": { "maxItems": 0 },
+          "permitted_capabilities": { "maxItems": 0 },
+          "approval": { "type": "null" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "permitted_capabilities": {
+            "contains": { "const": "MOVEMENT_EXECUTION" }
+          }
+        },
+        "required": ["permitted_capabilities"]
+      },
+      "then": {
+        "required": ["movement_policy"],
+        "properties": {
+          "status": { "const": "approved_bounded" },
+          "environment_scope": { "const": "emulator_local" },
+          "actor_binding": {
+            "type": "object",
+            "properties": {
+              "actor_role": { "const": "lab_clone" },
+              "decision_context": { "const": "lab_clone" }
+            }
+          },
+          "permitted_modes": {
+            "minItems": 1,
+            "maxItems": 1,
+            "contains": { "const": "MOVEMENT_ONLY" }
+          },
+          "permitted_capabilities": {
+            "minItems": 3,
+            "maxItems": 3,
+            "allOf": [
+              { "contains": { "const": "SCREEN_CAPTURE_READ_ONLY" } },
+              { "contains": { "const": "VISIBLE_COORDINATE_HUD_READ_ONLY" } },
+              { "contains": { "const": "MOVEMENT_EXECUTION" } }
+            ]
+          },
+          "approval": {
+            "type": "object",
+            "required": ["expires_at"],
+            "oneOf": [
+              {
+                "properties": { "max_session_minutes": { "const": 1 } },
+                "not": {
+                  "anyOf": [
+                    { "required": ["renews_authorization_sha256"] },
+                    { "required": ["renewal_scope"] }
+                  ]
+                }
+              },
+              { "properties": { "max_session_minutes": { "const": 10 } } }
+            ]
+          }
+        }
+      },
+      "else": {
+        "not": { "required": ["movement_policy"] }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "permitted_capabilities": {
+            "contains": { "const": "COMBAT_EXECUTION" }
+          }
+        },
+        "required": ["permitted_capabilities"]
+      },
+      "then": {
+        "required": ["combat_policy"],
+        "properties": {
+          "status": { "const": "approved_bounded" },
+          "environment_scope": { "const": "emulator_local" },
+          "actor_binding": {
+            "type": "object",
+            "properties": {
+              "actor_role": { "const": "lab_clone" },
+              "decision_context": { "const": "lab_clone" }
+            }
+          },
+          "permitted_modes": {
+            "minItems": 1,
+            "maxItems": 1,
+            "contains": { "const": "COMBAT_ONLY" }
+          },
+          "permitted_capabilities": {
+            "minItems": 3,
+            "maxItems": 3,
+            "allOf": [
+              { "contains": { "const": "SCREEN_CAPTURE_READ_ONLY" } },
+              { "contains": { "const": "VISIBLE_COMBAT_HUD_READ_ONLY" } },
+              { "contains": { "const": "COMBAT_EXECUTION" } }
+            ]
+          },
+          "approval": {
+            "type": "object",
+            "required": ["expires_at"],
+            "properties": { "max_session_minutes": { "const": 2 } },
+            "not": {
+              "anyOf": [
+                { "required": ["renews_authorization_sha256"] },
+                { "required": ["renewal_scope"] }
+              ]
+            }
+          }
+        }
+      },
+      "else": {
+        "not": { "required": ["combat_policy"] }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

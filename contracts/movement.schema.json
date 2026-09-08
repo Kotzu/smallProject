@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/movement.schema.json",
+  "title": "Perfect Assassin movement planning v0.1",
+  "$defs": {
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "coordinate_destination": {
+      "type": "object",
+      "required": ["kind", "coordinate_space", "x", "y", "radius"],
+      "properties": {
+        "kind": { "const": "coordinate" },
+        "coordinate_space": { "type": "string", "minLength": 1 },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" },
+        "radius": { "type": "number", "exclusiveMinimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "semantic_destination": {
+      "type": "object",
+      "required": ["kind", "semantic_ref", "arrival_condition"],
+      "properties": {
+        "kind": { "const": "semantic" },
+        "semantic_ref": { "type": "string", "minLength": 1 },
+        "arrival_condition": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "waypoint": {
+      "type": "object",
+      "required": ["coordinate_space", "x", "y"],
+      "properties": {
+        "coordinate_space": { "type": "string", "minLength": 1 },
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "goal": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "goal_id", "champion_id", "target_profile",
+        "goal_kind", "destination", "source", "confidence", "evidence_refs", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "movement_goal" },
+        "schema_version": { "const": "0.1" },
+        "goal_id": { "type": "string", "minLength": 1 },
+        "champion_id": { "type": "string", "minLength": 1 },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "goal_kind": {
+          "enum": ["quest_npc", "loot", "corpse", "safe_point", "roam", "party_member", "dungeon_waypoint"]
+        },
+        "destination": {
+          "oneOf": [
+            { "$ref": "#/$defs/coordinate_destination" },
+            { "$ref": "#/$defs/semantic_destination" }
+          ]
+        },
+        "source": {
+          "enum": ["client_observed", "route_teacher", "predator_memory", "brain_proposal", "external_research"]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "evidence_refs": { "$ref": "#/$defs/evidence_refs" },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "path": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "path_id", "goal_id", "decision_context",
+        "target_profile", "planner_id", "planner_version", "map_signature",
+        "nav_source_origin", "waypoints", "total_cost", "confidence",
+        "evidence_refs", "execution_authority", "created_at"
+      ],
+      "properties": {
+        "record_type": { "const": "path_proposal" },
+        "schema_version": { "const": "0.1" },
+        "path_id": { "type": "string", "minLength": 1 },
+        "goal_id": { "type": "string", "minLength": 1 },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "planner_id": { "type": "string", "minLength": 1 },
+        "planner_version": { "type": "string", "minLength": 1 },
+        "map_signature": { "type": "string", "minLength": 1 },
+        "nav_source_origin": {
+          "enum": [
+            "client_asset_derived", "client_observed", "champion_learned",
+            "external_research", "route_teacher", "lab_oracle"
+          ]
+        },
+        "waypoints": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/waypoint" }
+        },
+        "total_cost": { "type": "number", "minimum": 0 },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "evidence_refs": { "$ref": "#/$defs/evidence_refs" },
+        "execution_authority": { "const": false },
+        "created_at": { "type": "string", "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "decision_context": { "const": "champion" } } },
+          "then": { "properties": { "nav_source_origin": { "not": { "const": "lab_oracle" } } } }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/goal" },
+    { "$ref": "#/$defs/path" }
+  ]
+}

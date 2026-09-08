@@ -1,0 +1,94 @@
+{
+  "schema_version": "0.1",
+  "integration_id": "dxcam.windows_capture",
+  "purpose": "Read-only Windows GPU capture sidecar using DXGI Desktop Duplication and comparative WinRT monitor capture",
+  "deployment_state": "controlled_live_verified",
+  "upstream_url": "https://github.com/ra1nty/DXcam",
+  "license": "MIT for DXcam; transitive license metadata remains in the pinned wheels",
+  "pinned_ref": "0.3.0",
+  "artifacts": [
+    {
+      "name": "dxcam-0.3.0-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/dxcam/0.3.0/",
+      "sha256": "F08A8505B4EA0AFBF1AD9F741C512030EF9119DD029F65A08A0E635F616113E0"
+    },
+    {
+      "name": "comtypes-1.4.16-py3-none-any.whl",
+      "source_url": "https://pypi.org/project/comtypes/1.4.16/",
+      "sha256": "E18D85179FF12955524C5A8C3BC09CB3C0D890F1DA4D7123D14244C7B78F84C8"
+    },
+    {
+      "name": "numpy-2.5.2-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/numpy/2.5.2/",
+      "sha256": "7587F53DFBD5EDC0F7B87C6217B4C6D2D1F2EF9C3DA70BC1315E7DB5F8D7EC9D"
+    },
+    {
+      "name": "typing_extensions-4.16.0-py3-none-any.whl",
+      "source_url": "https://pypi.org/project/typing-extensions/4.16.0/",
+      "sha256": "481CAA481374E813C1B176ADA14E97F1F67A4539CE9CFEB3F350D78D6370C2E8"
+    },
+    {
+      "name": "winrt_runtime-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-runtime/3.2.1/",
+      "sha256": "E36E587AB5FD681EE472CD9A5995743F75107A1A84D749C64F7E490BC86BC814"
+    },
+    {
+      "name": "winrt_windows_foundation-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Foundation/3.2.1/",
+      "sha256": "A22A7EBCEC0D262E60119CFF728F32962A02DF60471DED8B2735A655ECCC0EF5"
+    },
+    {
+      "name": "winrt_windows_foundation_collections-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Foundation.Collections/3.2.1/",
+      "sha256": "D4CFECE7E9C0EAD2941E55A1DA82F20D2B9C8003BB7A8853BB7F999B539F80A4"
+    },
+    {
+      "name": "winrt_windows_graphics-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Graphics/3.2.1/",
+      "sha256": "E42102000CC86D96A65CA18F0B16F65F2F7337A651AC5ABE17B55614FFE67045"
+    },
+    {
+      "name": "winrt_windows_graphics_capture-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Graphics.Capture/3.2.1/",
+      "sha256": "B916AF8D8A4F9F14ECDEF5E58B8F3700F37E060E0CA125958332E9601AC5CC58"
+    },
+    {
+      "name": "winrt_windows_graphics_capture_interop-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Graphics.Capture.Interop/3.2.1/",
+      "sha256": "F2DC50CC4B2D8A8B35A886B34E94D36586B7CA832FF338BE35D5F95EC76B1FBA"
+    },
+    {
+      "name": "winrt_windows_graphics_directx-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Graphics.DirectX/3.2.1/",
+      "sha256": "BE70B38EED306ACDCF1952CE9072F7B70265B4392530C8D3613C333B90AE76FE"
+    },
+    {
+      "name": "winrt_windows_graphics_directx_direct3d11-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Graphics.DirectX.Direct3D11/3.2.1/",
+      "sha256": "BED68A6C69F39C325BED675E1BE3668BD05005A671DF34A603BB8973A0B7FAF2"
+    },
+    {
+      "name": "winrt_windows_graphics_directx_direct3d11_interop-3.2.1-cp314-cp314-win_amd64.whl",
+      "source_url": "https://pypi.org/project/winrt-Windows.Graphics.DirectX.Direct3D11.Interop/3.2.1/",
+      "sha256": "6476D55FCDDD82ECF55CAD9D1B485E6262EBD0C2757A85FEBDE56DBD953513D7"
+    }
+  ],
+  "local_paths": [
+    "E:\\WoWserver\\PerfectAssassin-Dependencies\\capture\\dxcam\\wheels",
+    "E:\\WoWserver\\PerfectAssassin-Workspace\\integrations\\windows-capture"
+  ],
+  "deployment_adjustments": [
+    "Pinned wheelhouse stays outside the server and project source tree",
+    "Capture adapter imports DXcam lazily and emits metadata without persisting pixels",
+    "Core capture ports and replay intake do not depend on NumPy or DXcam",
+    "Window locator requires exact PID/HWND, foreground state and per-monitor DPI-aware physical coordinates",
+    "Capture probes load target identity from versioned authorization and verify the executable SHA-256 before opening the camera"
+  ],
+  "limitations": [
+    "DXcam WinRT backend captures a monitor, not a native HWND CreateForWindow target",
+    "Continuous TBC 2.4.3 capture and live move/resize are verified; live multi-output migration is unavailable on current single-output hardware and remains fail-closed",
+    "Visible desktop capture is unavailable when the WoW client rejects Remote Desktop or is minimized",
+    "The pinned wheel set targets CPython 3.14 on Windows x64 and must be refreshed for another runtime"
+  ],
+  "verified_at": "2026-08-22T18:16:55+03:00"
+}

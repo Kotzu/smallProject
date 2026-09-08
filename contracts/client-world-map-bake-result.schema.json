@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/client-world-map-bake-result.schema.json",
+  "title": "Perfect Assassin standalone client world map bake result v1",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "map_name": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$"
+    },
+    "state": {
+      "enum": [
+        "READY_FOR_EXTRACTION", "EXTRACTION_PARTIAL",
+        "READY_FOR_SEMANTICS", "SEMANTICS_PARTIAL",
+        "READY_FOR_NAVMESH", "NAVMESH_PARTIAL",
+        "INCONSISTENT_DOWNSTREAM_ARTIFACTS", "COMPLETE"
+      ]
+    },
+    "command": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 64,
+      "items": { "type": "string", "minLength": 1, "maxLength": 2048 }
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "status", "catalog_id", "map_id",
+    "internal_name", "initial_state", "bvh_ready", "product", "expansion",
+    "client_version", "client_build", "asset_container", "asset_adapter_id", "world_source",
+    "server_dependency", "emulator_dependency", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "client_world_map_bake_result" },
+    "schema_version": { "const": "1.0" },
+    "status": { "enum": ["DRY_RUN", "PASS", "FAIL"] },
+    "catalog_id": { "$ref": "#/$defs/identifier" },
+    "map_id": { "type": "integer", "minimum": 0, "maximum": 2147483647 },
+    "internal_name": { "$ref": "#/$defs/map_name" },
+    "initial_state": { "$ref": "#/$defs/state" },
+    "final_state": { "$ref": "#/$defs/state" },
+    "bvh_ready": { "type": "boolean" },
+    "product": { "$ref": "#/$defs/identifier" },
+    "expansion": { "$ref": "#/$defs/identifier" },
+    "client_version": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "asset_container": { "enum": ["mpq", "casc"] },
+    "asset_adapter_id": { "$ref": "#/$defs/identifier" },
+    "world_source": { "const": "PINNED_CLIENT_ASSETS_ONLY" },
+    "server_dependency": { "const": false },
+    "emulator_dependency": { "const": false },
+    "commands": {
+      "type": "object",
+      "required": ["bvh", "extraction", "semantics", "navmesh"],
+      "properties": {
+        "bvh": { "$ref": "#/$defs/command" },
+        "extraction": { "$ref": "#/$defs/command" },
+        "semantics": { "$ref": "#/$defs/command" },
+        "navmesh": { "$ref": "#/$defs/command" }
+      },
+      "additionalProperties": false
+    },
+    "performed_actions": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "enum": ["EXTRACT_MAP_ASSETS", "BUILD_ROAD_SEMANTICS", "BUILD_NAVMESH"]
+      }
+    },
+    "execution_authority": { "const": false }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "DRY_RUN" } } },
+      "then": { "required": ["commands"] },
+      "else": { "required": ["final_state", "performed_actions"] }
+    }
+  ],
+  "additionalProperties": false
+}

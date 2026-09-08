@@ -1,0 +1,26 @@
+{
+  "schema_version": "0.1",
+  "integration_id": "recast.navigation",
+  "purpose": "Portable tiled navmesh generation and runtime path queries behind NavigationMeshPort",
+  "deployment_state": "staged",
+  "upstream_url": "https://github.com/recastnavigation/recastnavigation",
+  "license": "Zlib",
+  "pinned_ref": "9f4ce64458dfae86e1239c525ddc219c4e9e06f1",
+  "artifacts": [
+    {
+      "name": "recastnavigation-9f4ce644.zip",
+      "source_url": "https://github.com/recastnavigation/recastnavigation/archive/9f4ce64458dfae86e1239c525ddc219c4e9e06f1.zip",
+      "sha256": "27E297810CED58F13723771F0B7768339D93561E202762A4B713E849CECA90E4"
+    }
+  ],
+  "local_paths": [
+    "E:\\WoWserver\\PerfectAssassin-Dependencies\\navigation\\recastnavigation",
+    "E:\\WoWserver\\PerfectAssassin-Dependencies\\navigation\\releases\\9f4ce64458dfae86e1239c525ddc219c4e9e06f1"
+  ],
+  "limitations": [
+    "Source is staged but not linked into Perfect Assassin runtime",
+    "CMaNGOS mmap output is LAB oracle only and cannot feed Champion path proposals",
+    "Client geometry extraction, tile signatures and target-specific pose providers remain pending"
+  ],
+  "verified_at": "2026-08-22T16:00:00+03:00"
+}

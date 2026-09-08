@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/world-map-registry-audit.schema.json",
+  "title": "TBC 2.4.3 world map registry audit v1",
+  "$defs": {
+    "map": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "map_id", "internal_name", "runtime_profile_declared",
+        "runtime_profile_ready", "semantic_catalog_declared",
+        "semantic_catalog_ready", "structure_index_declared",
+        "structure_index_ready", "structure_access_graph_declared",
+        "structure_access_graph_ready", "autonomous_ready",
+        "queue_known", "queue_state"
+      ],
+      "properties": {
+        "map_id": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "internal_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "runtime_profile_declared": { "type": "boolean" },
+        "runtime_profile_ready": { "type": "boolean" },
+        "semantic_catalog_declared": { "type": "boolean" },
+        "semantic_catalog_ready": { "type": "boolean" },
+        "structure_index_declared": { "type": "boolean" },
+        "structure_index_ready": { "type": "boolean" },
+        "structure_access_graph_declared": { "type": "boolean" },
+        "structure_access_graph_ready": { "type": "boolean" },
+        "topographic_ready": { "type": "boolean" },
+        "autonomous_ready": { "type": "boolean" },
+        "queue_known": { "type": "boolean" },
+        "queue_state": { "type": ["string", "null"], "maxLength": 64 }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type", "schema_version", "client_build", "registry_reference",
+    "queue_reference", "inventory_map_count", "registry_map_count",
+    "queue_map_count", "queue_complete_map_count", "autonomous_ready_map_count",
+    "maps", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "world_map_registry_audit" },
+    "schema_version": { "const": "1.0" },
+    "client_build": { "const": "2.4.3.8606" },
+    "registry_reference": { "type": "string", "minLength": 1, "maxLength": 320 },
+    "queue_reference": { "type": "string", "minLength": 1, "maxLength": 8192 },
+    "queue_references": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 32,
+      "items": { "type": "string", "minLength": 1, "maxLength": 320 }
+    },
+    "inventory_map_count": { "type": "integer", "minimum": 0, "maximum": 65535 },
+    "registry_map_count": { "type": "integer", "minimum": 0, "maximum": 65535 },
+    "queue_map_count": { "type": "integer", "minimum": 0, "maximum": 65535 },
+    "queue_complete_map_count": { "type": "integer", "minimum": 0, "maximum": 65535 },
+    "topographic_ready_map_count": { "type": "integer", "minimum": 0, "maximum": 65535 },
+    "autonomous_ready_map_count": { "type": "integer", "minimum": 0, "maximum": 65535 },
+    "maps": { "type": "array", "minItems": 1, "maxItems": 65535, "items": { "$ref": "#/$defs/map" } },
+    "execution_authority": { "const": false }
+  }
+}

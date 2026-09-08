@@ -1,0 +1,45 @@
+{
+  "record_type": "semantic_location_catalog",
+  "schema_version": "1.0",
+  "map_name": "Azeroth",
+  "zone_index": 25,
+  "coordinate_system": "tbc243_client_world_xy",
+  "atlas_calibration": "WorldMapArea.dbc:Tirisfal",
+  "locations": [
+    {
+      "id": "settlement:deathknell",
+      "name": "Deathknell",
+      "world": [1843.55, 1589.97],
+      "arrival_radius_yards": 35.0,
+      "provenance": "reviewed_live_position_and_client_atlas"
+    },
+    {
+      "id": "landmark:deathknell-crypt",
+      "name": "Deathknell Crypt",
+      "world": [1676.35, 1677.45],
+      "arrival_radius_yards": 22.0,
+      "provenance": "reviewed_journey_route_and_live_crypt_spawn"
+    },
+    {
+      "id": "settlement:brill",
+      "name": "Brill",
+      "world": [2259.25, 290.43],
+      "arrival_radius_yards": 45.0,
+      "provenance": "reviewed_live_position_and_client_atlas"
+    },
+    {
+      "id": "landmark:brill-south-road-bend",
+      "name": "Brill South Road Bend",
+      "world": [2043.75, 285.416656],
+      "arrival_radius_yards": 12.0,
+      "provenance": "client_atlas_road_semantics"
+    },
+    {
+      "id": "landmark:deathknell-south-gate",
+      "name": "Deathknell South Gate",
+      "world": [1900.0, 1400.0],
+      "arrival_radius_yards": 18.0,
+      "provenance": "reviewed_journey_route_world_map_transform"
+    }
+  ]
+}

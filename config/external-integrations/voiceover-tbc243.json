@@ -1,0 +1,50 @@
+{
+  "schema_version": "0.1",
+  "integration_id": "voiceover.tbc243",
+  "purpose": "Optional NPC and quest voice presentation for Predator Journey and video capture",
+  "deployment_state": "deployed_unverified",
+  "upstream_url": "https://www.curseforge.com/wow/addons/voiceover-tbc-wotlk",
+  "license": "MIT for the deployed CurseForge player and audio modules",
+  "pinned_ref": "player 1.4.7; Vanilla 1.0.0; VanillaExtra 1.5; TBC 1.4",
+  "artifacts": [
+    {
+      "name": "AI_VoiceOver_v1.4.7.zip",
+      "source_url": "https://www.curseforge.com/api/v1/mods/1383122/files/8192507/download",
+      "sha256": "44F2E078E64B4919A63556C9ED644AA744764CEAE23EA0BC69DE8D3C214EB064"
+    },
+    {
+      "name": "AI_VoiceOverData_Vanilla-v1.0.0.zip",
+      "source_url": "https://github.com/mrthinger/wow-voiceover/releases/download/v1.3.1/AI_VoiceOverData_Vanilla-v1.0.0.zip",
+      "sha256": "29F585A308BEDD3165BCE2325C62905B1E0ABB26E402C68BB90F64AAD1A5F385"
+    },
+    {
+      "name": "AI_VoiceOverData_VanillaExtra_v1.5.zip",
+      "source_url": "https://www.curseforge.com/api/v1/mods/1431228/files/8188401/download",
+      "sha256": "B7B0464B25E74D1A004BDA2BF97D81A6CEAD771EAC210054152234F5B3F9CFCE"
+    },
+    {
+      "name": "AI_VoiceOverData_TBC_v1.4.zip",
+      "source_url": "https://www.curseforge.com/api/v1/mods/1431201/files/8188228/download",
+      "sha256": "5082A1CD49B630E2C65FC24ED9AC794475D7C21E92E5D674EE148690F787BC46"
+    }
+  ],
+  "local_paths": [
+    "E:\\WoWserver\\PerfectAssassin-Dependencies\\voiceover",
+    "E:\\Games\\WoW TBC 2.4.3\\Interface\\AddOns\\AI_VoiceOver",
+    "E:\\Games\\WoW TBC 2.4.3\\Interface\\AddOns\\AI_VoiceOverData_Vanilla",
+    "E:\\Games\\WoW TBC 2.4.3\\Interface\\AddOns\\AI_VoiceOverData_VanillaExtra",
+    "E:\\Games\\WoW TBC 2.4.3\\Interface\\AddOns\\AI_VoiceOverData_TBC"
+  ],
+  "deployment_adjustments": [
+    "AI_VoiceOver.toc materialized from the bundled 2.4.3 variant",
+    "All four deployed TOC Interface values set to 20400; third-party archives remain unchanged in staging",
+    "Controlled client smoke showed all four VoiceOver entries enabled with Load out of date AddOns disabled"
+  ],
+  "limitations": [
+    "Addon discovery and main player load are controlled-live verified; audible NPC or quest playback is still pending",
+    "Legacy client refuses Remote Desktop; live verification requires a local-console Windows session",
+    "Emulator quest text or IDs may not match the audio corpus",
+    "Legacy 2.4.3 audio interruption uses a music-channel compatibility path"
+  ],
+  "verified_at": "2026-08-22T15:30:20+03:00"
+}

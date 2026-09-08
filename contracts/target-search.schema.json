@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/target-search.schema.json",
+  "title": "Hybrid target search decision v1.0",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "decision_id", "search_id", "policy_id",
+    "policy_version", "action_id", "reason_code", "explanation", "confidence",
+    "target_name", "region_id", "destination", "sweep_sector", "command_family",
+    "command_preview", "evidence_refs", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "target_search_decision" },
+    "schema_version": { "const": "1.0" },
+    "decision_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$" },
+    "search_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$" },
+    "policy_id": { "const": "hybrid_target_search_v1" },
+    "policy_version": { "const": "1.0.0" },
+    "action_id": {
+      "enum": [
+        "hunting.stop_unsafe", "hunting.engage_confirmed_target",
+        "hunting.reject_current_target", "hunting.inspect_visible_candidate",
+        "hunting.move_to_search_region", "hunting.probe_exact_name",
+        "hunting.visual_sweep", "hunting.patrol_search_region",
+        "hunting.mark_region_negative", "hunting.request_route_knowledge"
+      ]
+    },
+    "reason_code": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "explanation": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "confidence": { "type": "number", "exclusiveMinimum": 0, "maximum": 1 },
+    "target_name": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "minLength": 1, "maxLength": 64 }
+      ]
+    },
+    "region_id": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$" }
+      ]
+    },
+    "destination": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["x", "y"],
+          "properties": {
+            "x": { "type": "number", "minimum": 0, "maximum": 1 },
+            "y": { "type": "number", "minimum": 0, "maximum": 1 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "sweep_sector": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "integer", "minimum": 0, "maximum": 7 }
+      ]
+    },
+    "command_family": {
+      "oneOf": [
+        { "type": "null" },
+        { "const": "target_exact" }
+      ]
+    },
+    "command_preview": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^/targetexact [^/\\r\\n]{1,64}$" }
+      ]
+    },
+    "evidence_refs": {
+      "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1, "maxLength": 256 }
+    },
+    "execution_authority": { "const": false }
+  },
+  "additionalProperties": false
+}

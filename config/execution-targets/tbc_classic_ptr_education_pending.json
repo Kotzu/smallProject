@@ -1,0 +1,27 @@
+{
+  "record_type": "execution_target_authorization",
+  "schema_version": "2.0",
+  "authorization_id": "execution:tbc-classic-ptr:education-pending",
+  "target_profile": "tbc_classic_ptr_education",
+  "environment_scope": "blizzard_ptr",
+  "actor_binding": null,
+  "status": "pending_evidence",
+  "purpose": "education_research_content",
+  "client_match": null,
+  "realm_match": null,
+  "permitted_modes": [],
+  "permitted_capabilities": [],
+  "restrictions": [
+    "ptr_only",
+    "no_public_live",
+    "no_herbing",
+    "no_mining",
+    "no_fishing",
+    "no_economy_farming_or_auctioning",
+    "no_memory_or_kernel_access",
+    "redacted_platform_authorization_must_be_archived",
+    "exact_build_and_realm_must_be_fingerprinted"
+  ],
+  "approval": null,
+  "runtime_arm_required": true
+}

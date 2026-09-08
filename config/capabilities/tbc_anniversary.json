@@ -1,0 +1,24 @@
+{
+  "profile": "tbc_anniversary",
+  "version": "0.1.0-unverified",
+  "default": "deny",
+  "capabilities": {
+    "combat_log": "unknown",
+    "target_state": "unknown",
+    "self_state": "unknown",
+    "self_spellbook": "unknown",
+    "loot_observation": "unknown",
+    "level_progress": "unknown",
+    "inspect_enemy": "restricted",
+    "global_player_positions": "unavailable",
+    "server_patrol_paths": "unavailable",
+    "server_spawn_state": "unavailable",
+    "wowhead_lookup_in_combat": "unavailable",
+    "zygor_route_guidance": "restricted",
+    "window_capture": "restricted",
+    "client_process_memory_read": "unavailable",
+    "kernel_hid_input": "unavailable",
+    "user_mode_synthetic_input": "unavailable",
+    "autonomous_input": "unavailable"
+  }
+}

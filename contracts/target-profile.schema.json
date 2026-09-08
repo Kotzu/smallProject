@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/target-profile.schema.json",
+  "title": "Perfect Assassin target discovery and negotiation v0.1",
+  "$defs": {
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "fingerprint": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "fingerprint_id", "game_family",
+        "client_version", "client_build", "locale", "server_kind",
+        "observed_at", "evidence_refs"
+      ],
+      "properties": {
+        "record_type": { "const": "target_fingerprint" },
+        "schema_version": { "const": "0.1" },
+        "fingerprint_id": { "type": "string", "minLength": 1 },
+        "game_family": { "const": "world_of_warcraft" },
+        "product_family": { "type": "string", "minLength": 1 },
+        "client_version": { "type": "string", "minLength": 1 },
+        "client_build": { "type": "string", "minLength": 1 },
+        "locale": { "type": "string", "pattern": "^[a-z]{2}[A-Z]{2}$" },
+        "server_kind": { "enum": ["private_lab", "private_external", "official", "unknown"] },
+        "server_core_hint": { "type": "string", "minLength": 1 },
+        "observed_at": { "type": "string", "format": "date-time" },
+        "evidence_refs": { "$ref": "#/$defs/evidence_refs" }
+      },
+      "additionalProperties": false
+    },
+    "negotiation": {
+      "type": "object",
+      "required": [
+        "record_type", "schema_version", "negotiation_id", "fingerprint_id",
+        "adapter_id", "adapter_version", "status", "capability_profile",
+        "execution_mode", "confidence", "negotiated_at", "evidence_refs"
+      ],
+      "properties": {
+        "record_type": { "const": "capability_negotiation" },
+        "schema_version": { "const": "0.1" },
+        "negotiation_id": { "type": "string", "minLength": 1 },
+        "fingerprint_id": { "type": "string", "minLength": 1 },
+        "adapter_id": { "type": "string", "minLength": 1 },
+        "adapter_version": { "type": "string", "minLength": 1 },
+        "status": { "enum": ["exact", "compatible", "observe_only", "unsupported"] },
+        "capability_profile": { "type": "string", "minLength": 1 },
+        "execution_mode": {
+          "enum": ["FULL_AI", "MOVEMENT_ONLY", "COMBAT_ONLY", "OBSERVE_ONLY", "MANUAL"]
+        },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "compatibility_notes": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "negotiated_at": { "type": "string", "format": "date-time" },
+        "evidence_refs": { "$ref": "#/$defs/evidence_refs" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["observe_only", "unsupported"] } } },
+          "then": { "properties": { "execution_mode": { "enum": ["OBSERVE_ONLY", "MANUAL"] } } }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/fingerprint" },
+    { "$ref": "#/$defs/negotiation" }
+  ]
+}

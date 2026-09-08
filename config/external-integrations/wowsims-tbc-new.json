@@ -1,0 +1,31 @@
+{
+  "schema_version": "0.1",
+  "integration_id": "wowsims.tbc-new",
+  "purpose": "Local PvE Rogue simulation engine and operator UI behind PveSimulationPort",
+  "deployment_state": "staged",
+  "upstream_url": "https://github.com/wowsims/tbc-new",
+  "license": "MIT",
+  "pinned_ref": "v0.0.119 / 3267f8dfa4a20746d4982c1522fdec1d4eb77f4c",
+  "artifacts": [
+    {
+      "name": "wowsimcli-windows.exe.zip",
+      "source_url": "https://github.com/wowsims/tbc-new/releases/download/v0.0.119/wowsimcli-windows.exe.zip",
+      "sha256": "87C1803FF000928621FEFEADDCE882DEDE4F36A44FF7A25F58F1A95CA803D109"
+    },
+    {
+      "name": "wowsimtbc-windows.exe.zip",
+      "source_url": "https://github.com/wowsims/tbc-new/releases/download/v0.0.119/wowsimtbc-windows.exe.zip",
+      "sha256": "C2FEAE50734A48972811D96882E6B220CFE82D145B1C53060AE6233CCE83D671"
+    }
+  ],
+  "local_paths": [
+    "E:\\WoWserver\\PerfectAssassin-Dependencies\\wowsims\\tbc-new",
+    "E:\\WoWserver\\PerfectAssassin-Dependencies\\wowsims\\releases\\v0.0.119"
+  ],
+  "limitations": [
+    "Rogue UI responded locally at 127.0.0.1:3334; no gear recommendation has been trusted yet",
+    "Level 1-69 accuracy and TBC 2.4.3 calibration remain unverified",
+    "Go and make are not installed; official prebuilt Windows binaries are used"
+  ],
+  "verified_at": "2026-08-22T15:21:00+03:00"
+}

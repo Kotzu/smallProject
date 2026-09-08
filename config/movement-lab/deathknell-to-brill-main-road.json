@@ -1,0 +1,64 @@
+{
+  "record_type": "reviewed_journey_route",
+  "schema_version": "0.1",
+  "route_id": "tbc243:tirisfal:deathknell-crypt-to-brill-main-road:v1",
+  "map": "Azeroth",
+  "continent_index": 2,
+  "zone_index": 25,
+  "start": {
+    "name": "Undead level-1 crypt spawn",
+    "world": [1676.35, 1677.45, 121.67]
+  },
+  "goals": [
+    {
+      "name": "Deathknell crypt egress and settlement center",
+      "normalized": [0.319409857, 0.661908673],
+      "start_world_z_hint": 121.67
+    },
+    {
+      "name": "Main road gate south of Deathknell",
+      "normalized": [0.361456884, 0.643153485],
+      "start_world_z_hint": 93.30
+    },
+    {
+      "name": "Main road descent 1",
+      "normalized": [0.394519126, 0.621022363],
+      "start_world_z_hint": 72.75
+    },
+    {
+      "name": "Main road descent 2",
+      "normalized": [0.442797965, 0.592471324],
+      "start_world_z_hint": 92.16
+    },
+    {
+      "name": "Main road midpoint north",
+      "normalized": [0.483171964, 0.573443937],
+      "start_world_z_hint": 34.14
+    },
+    {
+      "name": "Main road midpoint south",
+      "normalized": [0.529644994, 0.551867172],
+      "start_world_z_hint": 34.00
+    },
+    {
+      "name": "Brill approach north",
+      "normalized": [0.565053017, 0.540248914],
+      "start_world_z_hint": 34.00
+    },
+    {
+      "name": "Brill approach",
+      "normalized": [0.598498108, 0.529935221],
+      "start_world_z_hint": 30.00
+    },
+    {
+      "name": "Brill arrival",
+      "normalized": [0.607004885, 0.523900366],
+      "start_world_z_hint": 35.38
+    }
+  ],
+  "provenance": {
+    "decision_source": "client_asset_navmesh_and_reviewed_world_map_road",
+    "lab_oracle_consumed_by_champion": false,
+    "teleports_after_start": 0
+  }
+}

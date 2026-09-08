@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/selected-target-range-awareness.schema.json",
+  "title": "Read-only selected-target range awareness v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_type", "schema_version", "observed_monotonic_s",
+    "expires_monotonic_s", "target_identity_crc16", "range_source",
+    "melee_minimum_yards", "melee_maximum_yards", "derived_relation",
+    "witnesses", "exact_distance_yards", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "selected_target_range_awareness" },
+    "schema_version": { "const": "1.0" },
+    "observed_monotonic_s": { "type": "number", "minimum": 0 },
+    "expires_monotonic_s": { "type": "number", "minimum": 0 },
+    "target_identity_crc16": { "type": "integer", "minimum": 1, "maximum": 65535 },
+    "range_source": { "const": "CLIENT_ACTION_RANGE_WITNESSES" },
+    "melee_minimum_yards": { "const": 0.0 },
+    "melee_maximum_yards": { "const": 5.0 },
+    "derived_relation": {
+      "enum": ["IN_RANGE_0_TO_5", "TOO_FAR_OVER_5", "INCONSISTENT", "UNKNOWN"]
+    },
+    "witnesses": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ability_id", "minimum_yards", "maximum_yards", "client_in_range"],
+        "properties": {
+          "ability_id": { "type": "string", "minLength": 1, "maxLength": 96 },
+          "minimum_yards": { "type": "number", "minimum": 0, "maximum": 100 },
+          "maximum_yards": { "type": "number", "exclusiveMinimum": 0, "maximum": 100 },
+          "client_in_range": { "type": ["boolean", "null"] }
+        }
+      }
+    },
+    "exact_distance_yards": { "type": "null" },
+    "execution_authority": { "const": false }
+  }
+}

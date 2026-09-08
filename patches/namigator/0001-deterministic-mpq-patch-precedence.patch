@@ -1,0 +1,26 @@
+diff --git a/parser/MpqManager.hpp b/parser/MpqManager.hpp
+--- a/parser/MpqManager.hpp
++++ b/parser/MpqManager.hpp
+@@
+-#include <unordered_map>
++#include <unordered_map>
++#include <utility>
+ #include <vector>
+@@
+-    std::unordered_map<std::string, HANDLE> MpqHandles;
++    // MPQ lookup order is patch precedence.  An unordered_map made the
++    // selected client asset depend on hash-bucket iteration and could mix
++    // files from different patch levels in one navmesh build.
++    std::vector<std::pair<std::string, HANDLE>> MpqHandles;
+diff --git a/parser/MpqManager.cpp b/parser/MpqManager.cpp
+--- a/parser/MpqManager.cpp
++++ b/parser/MpqManager.cpp
+@@
+-    if (ec)
+-        MpqHandles[filePath.string()] = archive;
+-    else
+-        MpqHandles[utility::lower(rel.string())] = archive;
++    if (ec)
++        MpqHandles.emplace_back(filePath.string(), archive);
++    else
++        MpqHandles.emplace_back(utility::lower(rel.string()), archive);

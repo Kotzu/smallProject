@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/fight-learning-bundle.schema.json",
+  "title": "Perfect Assassin fight learning bundle",
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "encounter_id", "run_id", "memory_scope",
+    "manifest", "timeline", "action_chains", "outcome", "metrics", "diagnosis",
+    "promotion", "artifacts", "execution_authority"
+  ],
+  "properties": {
+    "record_type": { "const": "fight_learning_bundle" },
+    "schema_version": { "const": "1.0" },
+    "encounter_id": { "type": "string", "minLength": 1 },
+    "run_id": { "type": "string", "minLength": 1 },
+    "memory_scope": { "enum": ["lab_clone", "champion_lived"] },
+    "manifest": {
+      "type": "object",
+      "required": [
+        "encounter_type", "target_profile", "client_build", "realm_fingerprint_sha256",
+        "brain_version", "policy_sha256", "spellbook_sha256", "talents_sha256",
+        "gear_sha256", "map_id", "environment_sha256", "started_at", "ended_at",
+        "participants"
+      ],
+      "properties": {
+        "encounter_type": { "enum": ["pvp", "pve", "mixed"] },
+        "target_profile": { "type": "string", "minLength": 1 },
+        "client_build": { "type": "string", "minLength": 1 },
+        "realm_fingerprint_sha256": { "$ref": "#/$defs/sha256" },
+        "brain_version": { "type": "string", "minLength": 1 },
+        "policy_sha256": { "$ref": "#/$defs/sha256" },
+        "spellbook_sha256": { "$ref": "#/$defs/sha256" },
+        "talents_sha256": { "$ref": "#/$defs/sha256" },
+        "gear_sha256": { "$ref": "#/$defs/sha256" },
+        "map_id": { "type": "integer", "minimum": 0 },
+        "environment_sha256": { "$ref": "#/$defs/sha256" },
+        "started_at": { "type": "string", "format": "date-time" },
+        "ended_at": { "type": "string", "format": "date-time" },
+        "participants": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "object",
+            "required": ["participant_ref", "role", "class", "level", "profile_sha256"],
+            "properties": {
+              "participant_ref": { "type": "string", "minLength": 1 },
+              "role": { "enum": ["predator", "opponent", "ally", "third_party"] },
+              "class": { "type": "string", "minLength": 1 },
+              "level": { "type": "integer", "minimum": 1 },
+              "profile_sha256": { "$ref": "#/$defs/sha256" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "timeline": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["sequence", "event_id", "monotonic_ms", "kind", "source", "evidence_refs", "payload"],
+        "properties": {
+          "sequence": { "type": "integer", "minimum": 1 },
+          "event_id": { "type": "string", "minLength": 1 },
+          "monotonic_ms": { "type": "number", "minimum": 0 },
+          "kind": { "enum": ["OBSERVATION", "DECISION", "AUTHORIZATION", "INPUT", "EFFECT", "POST_FIGHT_SCORE"] },
+          "source": { "enum": ["CLIENT_VISIBLE", "DECISION_BRAIN", "EXECUTION_GATEWAY", "WINDOW_INPUT", "LAB_SCORER_POST_FIGHT"] },
+          "evidence_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+          "payload": { "type": "object" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "action_chains": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "action_id", "observation_ref", "decision_ref", "authorization_ref",
+          "input_ref", "effect_ref", "effect_status"
+        ],
+        "properties": {
+          "action_id": { "type": "string", "minLength": 1 },
+          "observation_ref": { "type": "string", "minLength": 1 },
+          "decision_ref": { "type": "string", "minLength": 1 },
+          "authorization_ref": { "type": "string", "minLength": 1 },
+          "input_ref": { "type": "string", "minLength": 1 },
+          "effect_ref": { "type": ["string", "null"], "minLength": 1 },
+          "effect_status": { "enum": ["CONFIRMED", "NOT_OBSERVED", "REJECTED", "CANCELLED"] }
+        },
+        "additionalProperties": false
+      }
+    },
+    "outcome": { "enum": ["VICTORY", "DEFEAT", "ESCAPE", "RESET", "INCOMPLETE"] },
+    "metrics": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[a-z][a-z0-9_]*$" },
+      "additionalProperties": { "type": "number" }
+    },
+    "diagnosis": {
+      "type": "object",
+      "required": ["primary_cause", "cause_scores", "mistakes", "counterfactuals"],
+      "properties": {
+        "primary_cause": { "enum": ["DECISION", "EXECUTION", "PERCEPTION", "MOVEMENT_ENVIRONMENT", "GAME_VARIANCE", "NONE", "UNASSESSED"] },
+        "cause_scores": {
+          "type": "object",
+          "required": ["decision", "execution", "perception", "movement_environment", "game_variance"],
+          "properties": {
+            "decision": { "$ref": "#/$defs/confidence" },
+            "execution": { "$ref": "#/$defs/confidence" },
+            "perception": { "$ref": "#/$defs/confidence" },
+            "movement_environment": { "$ref": "#/$defs/confidence" },
+            "game_variance": { "$ref": "#/$defs/confidence" }
+          },
+          "additionalProperties": false
+        },
+        "mistakes": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "counterfactuals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["changed_choice", "simulator_version", "estimated_delta", "confidence", "evidence_refs"],
+            "properties": {
+              "changed_choice": { "type": "string", "minLength": 1 },
+              "simulator_version": { "type": "string", "minLength": 1 },
+              "estimated_delta": { "type": "object", "additionalProperties": { "type": "number" } },
+              "confidence": { "$ref": "#/$defs/confidence" },
+              "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "promotion": {
+      "type": "object",
+      "required": ["status", "promotion_eligible", "reason"],
+      "properties": {
+        "status": { "enum": ["EVALUATION_ONLY", "CANDIDATE_EVIDENCE", "REJECTED"] },
+        "promotion_eligible": { "const": false },
+        "reason": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "artifact_ref", "sha256"],
+        "properties": {
+          "kind": { "enum": ["TELEMETRY_JSONL", "DECISION_REPLAY", "VIDEO_CLIP", "FRAME", "SCORER_REPORT"] },
+          "artifact_ref": { "type": "string", "minLength": 1 },
+          "sha256": { "$ref": "#/$defs/sha256" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "execution_authority": { "const": false }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+  },
+  "additionalProperties": false
+}

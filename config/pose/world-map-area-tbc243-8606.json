@@ -1,0 +1,24 @@
+{
+  "profile": "world_map_area_tbc243_8606",
+  "profile_version": "0.2.0",
+  "target_profile": "tbc_243_lab",
+  "client_build": "2.4.3.8606",
+  "build_signature": "wow-tbc-2.4.3.8606-enGB:sha256:406DA0C1C22D6E9121FD3BC17740A0D013660A03748CFE2A235768B8C574D3E6",
+  "asset_name": "WorldMapArea.dbc",
+  "asset_relative_path": "dbc/WorldMapArea.dbc",
+  "asset_sha256": "918BF402A83BAA78B0D35F0978BC760683291EE8CF48D7CE8C90E3814AA1BC7B",
+  "record_fingerprint_sha256": "82CB76957FC8BB0A6DB94AC1F179BE5EA3B96033AEA02ED3B597D030D9A66215",
+  "map_bindings": [
+    {
+      "continent_index": 2,
+      "zone_index": 25,
+      "internal_name": "Tirisfal",
+      "map_id": 0,
+      "area_id": 85
+    }
+  ],
+  "coordinate_space": "wow_world_map_2d",
+  "provenance_origin": "client_asset_calibration",
+  "asset_location_policy": "external_user_extracted",
+  "execution_authority": false
+}

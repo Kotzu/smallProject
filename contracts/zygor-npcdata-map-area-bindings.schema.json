@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/zygor-npcdata-map-area-bindings.schema.json",
+  "title": "Zygor NPCData map-area bindings v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record_type", "schema_version", "client_build", "provenance", "map_areas", "execution_authority"],
+  "properties": {
+    "record_type": { "const": "zygor_npcdata_map_area_bindings" },
+    "schema_version": { "const": "1.0" },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 32 },
+    "provenance": { "const": "librover_static_map_table_reviewed" },
+    "map_areas": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["map_id", "map_name"],
+        "properties": {
+          "map_id": { "type": "integer", "minimum": 0 },
+          "map_name": { "type": "string", "pattern": "^[A-Za-z0-9_][A-Za-z0-9_ '-]{0,95}$" }
+        }
+      }
+    },
+    "execution_authority": { "const": false }
+  }
+}

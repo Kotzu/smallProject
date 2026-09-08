@@ -1,0 +1,418 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://perfect-assassin.local/contracts/navigation-debug-snapshot.schema.json",
+  "title": "Perfect Assassin non-decision Navigation Debug snapshot v1",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "utc_timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}([.][0-9]{1,6})?Z$"
+    },
+    "vector3": {
+      "type": "object",
+      "required": ["x", "y", "z"],
+      "properties": {
+        "x": { "type": "number" },
+        "y": { "type": "number" },
+        "z": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "nullable_vector3": {
+      "oneOf": [
+        { "$ref": "#/$defs/vector3" },
+        { "type": "null" }
+      ]
+    },
+    "bounds3": {
+      "type": "object",
+      "required": ["minimum", "maximum"],
+      "properties": {
+        "minimum": { "$ref": "#/$defs/vector3" },
+        "maximum": { "$ref": "#/$defs/vector3" }
+      },
+      "additionalProperties": false
+    },
+    "coordinate_system": {
+      "type": "object",
+      "required": [
+        "space_id", "units", "handedness", "axes",
+        "triangle_winding", "world_to_nav_row_major"
+      ],
+      "properties": {
+        "space_id": { "$ref": "#/$defs/identifier" },
+        "units": { "enum": ["world_units", "meters"] },
+        "handedness": { "enum": ["right_handed", "left_handed"] },
+        "axes": {
+          "type": "object",
+          "required": ["x", "y", "z"],
+          "properties": {
+            "x": { "enum": ["east", "west", "north", "south", "up", "down"] },
+            "y": { "enum": ["east", "west", "north", "south", "up", "down"] },
+            "z": { "enum": ["east", "west", "north", "south", "up", "down"] }
+          },
+          "additionalProperties": false
+        },
+        "triangle_winding": { "enum": ["clockwise", "counter_clockwise"] },
+        "world_to_nav_row_major": {
+          "type": "array",
+          "minItems": 16,
+          "maxItems": 16,
+          "items": { "type": "number" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact_scope": {
+      "type": "object",
+      "required": ["asset_trust", "promotion_state", "decision_scope"],
+      "properties": {
+        "asset_trust": { "const": "candidate_untrusted" },
+        "promotion_state": { "const": "unpromoted" },
+        "decision_scope": {
+          "enum": [
+            "unpromoted_evaluation_only", "lab_evaluation_only",
+            "synthetic_fixture"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "actor_binding": {
+      "type": "object",
+      "required": [
+        "schema_version", "instance_id", "actor_role", "actor_id",
+        "decision_context", "memory_namespace", "expected_character_name",
+        "credential_alias", "binding_assurance"
+      ],
+      "properties": {
+        "schema_version": { "const": "1.0" },
+        "instance_id": { "$ref": "#/$defs/identifier" },
+        "actor_role": { "enum": ["champion_journey", "lab_clone"] },
+        "actor_id": { "$ref": "#/$defs/identifier" },
+        "decision_context": { "enum": ["champion", "lab_clone"] },
+        "memory_namespace": { "$ref": "#/$defs/identifier" },
+        "expected_character_name": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "credential_alias": { "$ref": "#/$defs/identifier" },
+        "binding_assurance": {
+          "type": "object",
+          "required": ["state", "evidence_refs"],
+          "properties": {
+            "state": { "const": "configured_expected_only" },
+            "evidence_refs": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": { "$ref": "#/$defs/identifier" }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "champion_journey" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "champion" },
+              "memory_namespace": { "pattern": "^memory:champion:" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "actor_role": { "const": "lab_clone" } },
+            "required": ["actor_role"]
+          },
+          "then": {
+            "properties": {
+              "decision_context": { "const": "lab_clone" },
+              "memory_namespace": { "pattern": "^memory:lab:" }
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "provenance": {
+      "type": "object",
+      "required": [
+        "source_id", "origin", "scope", "capability",
+        "evidence_refs", "observed_at", "confidence"
+      ],
+      "properties": {
+        "source_id": { "$ref": "#/$defs/identifier" },
+        "origin": {
+          "enum": [
+            "navigation_runtime", "lab_oracle",
+            "server_ground_truth", "server_mmap"
+          ]
+        },
+        "scope": {
+          "enum": ["unpromoted_evaluation_only", "lab_evaluation_only"]
+        },
+        "capability": { "$ref": "#/$defs/identifier" },
+        "evidence_refs": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "observed_at": { "$ref": "#/$defs/utc_timestamp" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "enum": ["lab_oracle", "server_ground_truth", "server_mmap"]
+              }
+            },
+            "required": ["origin"]
+          },
+          "then": {
+            "properties": { "scope": { "const": "lab_evaluation_only" } }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "debug_tile_hash": {
+      "type": "object",
+      "required": ["tile_id", "tile_sha256", "bounds"],
+      "properties": {
+        "tile_id": { "$ref": "#/$defs/identifier" },
+        "tile_sha256": { "$ref": "#/$defs/sha256" },
+        "bounds": { "$ref": "#/$defs/bounds3" }
+      },
+      "additionalProperties": false
+    },
+    "debug_polygon": {
+      "type": "object",
+      "required": [
+        "polygon_ref", "source_tile_id", "source_polygon_index", "vertices", "area", "flags",
+        "traversal_cost", "blocked"
+      ],
+      "properties": {
+        "polygon_ref": { "$ref": "#/$defs/identifier" },
+        "source_tile_id": { "$ref": "#/$defs/identifier" },
+        "source_polygon_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 524282
+        },
+        "vertices": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 12,
+          "items": { "$ref": "#/$defs/vector3" }
+        },
+        "area": { "$ref": "#/$defs/identifier" },
+        "flags": {
+          "type": "array",
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifier" }
+        },
+        "traversal_cost": { "type": "number", "minimum": 0, "maximum": 1000000000000 },
+        "blocked": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "type": "object",
+  "required": [
+    "record_type", "schema_version", "format", "format_version", "hash_wire_format", "snapshot_id",
+    "mode", "view_kind", "purpose", "target_profile", "actor_binding",
+    "authorization_sha256", "client_build", "build_signature", "map_ref",
+    "map_signature", "ordered_asset_manifest_sha256",
+    "navigation_mesh_content_sha256", "navigation_mesh_artifact_scope",
+    "recast_pin", "agent_profile_hash", "coordinate_system", "bounds",
+    "tile_hashes", "player_position", "target_position", "uncertainty_radius",
+    "route_points", "mesh_polygons", "provenance", "render_only",
+    "decision_input", "execution_authority", "created_at", "content_sha256"
+  ],
+  "properties": {
+    "record_type": { "const": "navigation_debug_snapshot" },
+    "schema_version": { "const": "1.0" },
+    "format": { "const": "navigation-debug-snapshot" },
+    "format_version": { "const": 1 },
+    "hash_wire_format": { "const": "pa-nav-wire-v1" },
+    "snapshot_id": { "$ref": "#/$defs/identifier" },
+    "mode": { "enum": ["OFF", "ROUTE", "MESH"] },
+    "view_kind": { "const": "top_down" },
+    "purpose": { "const": "debug_visualization_only" },
+    "target_profile": { "$ref": "#/$defs/identifier" },
+    "actor_binding": { "$ref": "#/$defs/actor_binding" },
+    "authorization_sha256": {
+      "type": "string",
+      "pattern": "^[A-F0-9]{64}$"
+    },
+    "client_build": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "build_signature": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "map_ref": { "$ref": "#/$defs/identifier" },
+    "map_signature": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "ordered_asset_manifest_sha256": { "$ref": "#/$defs/sha256" },
+    "navigation_mesh_content_sha256": { "$ref": "#/$defs/sha256" },
+    "navigation_mesh_artifact_scope": { "$ref": "#/$defs/artifact_scope" },
+    "recast_pin": { "const": "9f4ce64458dfae86e1239c525ddc219c4e9e06f1" },
+    "agent_profile_hash": { "$ref": "#/$defs/sha256" },
+    "coordinate_system": { "$ref": "#/$defs/coordinate_system" },
+    "bounds": { "$ref": "#/$defs/bounds3" },
+    "tile_hashes": {
+      "type": "array",
+      "maxItems": 1024,
+      "items": { "$ref": "#/$defs/debug_tile_hash" }
+    },
+    "player_position": { "$ref": "#/$defs/nullable_vector3" },
+    "target_position": { "$ref": "#/$defs/nullable_vector3" },
+    "uncertainty_radius": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 1000000000
+    },
+    "route_points": {
+      "oneOf": [
+        { "type": "array", "maxItems": 0 },
+        {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 4096,
+          "items": { "$ref": "#/$defs/vector3" }
+        }
+      ]
+    },
+    "mesh_polygons": {
+      "type": "array",
+      "maxItems": 16384,
+      "items": { "$ref": "#/$defs/debug_polygon" }
+    },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "render_only": { "const": true },
+    "decision_input": { "const": false },
+    "execution_authority": { "const": false },
+    "created_at": { "$ref": "#/$defs/utc_timestamp" },
+    "content_sha256": { "$ref": "#/$defs/sha256" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "mode": { "const": "OFF" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "tile_hashes": { "maxItems": 0 },
+          "player_position": { "type": "null" },
+          "target_position": { "type": "null" },
+          "uncertainty_radius": { "type": "null" },
+          "route_points": { "maxItems": 0 },
+          "mesh_polygons": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "mode": { "const": "ROUTE" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "tile_hashes": { "minItems": 1 },
+          "player_position": { "$ref": "#/$defs/vector3" },
+          "route_points": { "minItems": 2 },
+          "mesh_polygons": { "maxItems": 0 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "mode": { "const": "MESH" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "tile_hashes": { "minItems": 1 },
+          "mesh_polygons": { "minItems": 1 }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "actor_binding": {
+            "properties": { "decision_context": { "const": "champion" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "navigation_mesh_artifact_scope": {
+            "properties": {
+              "decision_scope": { "const": "unpromoted_evaluation_only" }
+            }
+          },
+          "provenance": {
+            "properties": {
+              "origin": { "const": "navigation_runtime" },
+              "scope": { "const": "unpromoted_evaluation_only" }
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "provenance": {
+            "properties": { "scope": { "const": "lab_evaluation_only" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provenance": {
+            "properties": {
+              "origin": {
+                "enum": ["lab_oracle", "server_ground_truth", "server_mmap"]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "actor_binding": {
+            "properties": {
+              "actor_role": { "const": "lab_clone" },
+              "decision_context": { "const": "lab_clone" }
+            }
+          },
+          "navigation_mesh_artifact_scope": {
+            "properties": {
+              "decision_scope": { "const": "lab_evaluation_only" }
+            }
+          },
+          "provenance": {
+            "properties": { "scope": { "const": "lab_evaluation_only" } }
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

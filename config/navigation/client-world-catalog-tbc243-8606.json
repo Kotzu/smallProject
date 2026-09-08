@@ -1,0 +1,130 @@
+{
+  "record_type": "client_world_catalog",
+  "schema_version": "1.0",
+  "catalog_id": "wow.tbc.2.4.3.8606.client-world-v1",
+  "target_profile": "tbc_243_lab",
+  "product": "wow",
+  "expansion": "the_burning_crusade",
+  "client_version": "2.4.3",
+  "client_build": "2.4.3.8606",
+  "asset_container": "mpq",
+  "asset_parser_profile": "wow-wdbc-map-v1",
+  "world_catalog_asset": "DBFilesClient/Map.dbc",
+  "world_catalog_asset_sha256": "fadae9835a1180641d2eb2f811fa7fc905694a3563a8a0208a47488d4a42b9f2",
+  "nav_profile_id": "tbc243-human-road-corridor-v6",
+  "maps": [
+    {
+      "map_id": 0,
+      "internal_name": "Azeroth",
+      "classification": "continent",
+      "map_artifact": "Azeroth.map",
+      "map_artifact_sha256": "375821add0bb1974eaac87f070cb3901f81261b3c74bb636754fcbc67530b119",
+      "nav_tiles_sha256": "8ce0b390097e85f4068f6bd978e9c6bfdc56fdcf230076f06d815236aec9722f",
+      "coverage_state": "partial",
+      "interior_coverage": "partial",
+      "road_semantic_coverage": "partial",
+      "road_semantics_sha256": "c2e375f598d732c61cfbf5e4e9f51a1efcf9c379a1f7ce84ceec80dd110f9d34",
+      "tiles": [
+        {
+          "grid_x": 28,
+          "grid_y": 27,
+          "artifact": "28_27.nav",
+          "sha256": "241a71e35e66f7d0d8b1bb0cc20680558ce0ec13ab6f5f46592d37392dc860f5"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 28,
+          "artifact": "28_28.nav",
+          "sha256": "0d47cbf86c3f63bb54cfb7c6adcdf2dd56ceda2d06aa8cc6111de1cd07ae5572"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 27,
+          "artifact": "29_27.nav",
+          "sha256": "d0dba949b55eb837e2ec5761389c68807e030536092c02f5f7e5a9b5e0fd715b"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 28,
+          "artifact": "29_28.nav",
+          "sha256": "ce96d853f220fb7bb4b576ea3b25d6ca19e2c482f9cc3b4c405d40fec689fac9"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 27,
+          "artifact": "30_27.nav",
+          "sha256": "7c65511d5698c5b0453dd25d1017fc4c2f3570f1afc9b45dab740f842b4bbe3c"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 28,
+          "artifact": "30_28.nav",
+          "sha256": "395946e6235589ae3d1ac51b321fb5a6de36e2d69d040d591ff75d288b166249"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 27,
+          "artifact": "31_27.nav",
+          "sha256": "2e83a024108fbe8077cde690793cb785529f41a8a703d3741976ca53d94bd67e"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 28,
+          "artifact": "31_28.nav",
+          "sha256": "b943675aa1c1a70ddea7bda74785389e8c01d20b32440c422ec7c7dc15836611"
+        }
+      ],
+      "road_semantics": [
+        {
+          "grid_x": 28,
+          "grid_y": 27,
+          "artifact": "Azeroth_28_27.road",
+          "sha256": "e59735380525d3070b2215ed1fb271dab502df5d85ac7a1ff9b539f6ba7a8a45"
+        },
+        {
+          "grid_x": 28,
+          "grid_y": 28,
+          "artifact": "Azeroth_28_28.road",
+          "sha256": "ec3e85a93c3c61adc972d8c2d388df7955ffc9df19d371764320663d08ccd5fc"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 27,
+          "artifact": "Azeroth_29_27.road",
+          "sha256": "3f74d952110965f4f7cb308e2f456ef588c9f841349c6e5eadb25f483b417627"
+        },
+        {
+          "grid_x": 29,
+          "grid_y": 28,
+          "artifact": "Azeroth_29_28.road",
+          "sha256": "b91e09385165d55bd14a8a18f0e073e28ff47b142ecd161f3d896fd4bb16211b"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 27,
+          "artifact": "Azeroth_30_27.road",
+          "sha256": "684009c094fc761b0594100e39a0967c33c62d126789b3605558e463a4a2ff15"
+        },
+        {
+          "grid_x": 30,
+          "grid_y": 28,
+          "artifact": "Azeroth_30_28.road",
+          "sha256": "25766ebe3e320c91ab41635ab87691e446dbfb411cd61f666670f9942b85df27"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 27,
+          "artifact": "Azeroth_31_27.road",
+          "sha256": "88c0e91f8cf63935576b8cf6b65298a1a6741923938ee1ffa7531c0e6dabbc08"
+        },
+        {
+          "grid_x": 31,
+          "grid_y": 28,
+          "artifact": "Azeroth_31_28.road",
+          "sha256": "19a22dd658d9644eacc37d9fe54eb277252c29f4bc57107094f867a3d58cb2ae"
+        }
+      ]
+    }
+  ],
+  "execution_authority": false
+}
