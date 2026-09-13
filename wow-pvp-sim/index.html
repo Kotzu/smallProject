@@ -1,1 +1,116 @@
-<!doctype html><html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WoW PvP Simulator</title><link rel="stylesheet" href="styles.css"></head><body><main class="app"><h1>WoW PvP Classic / Forever Simulator</h1><p class="muted">Online build · Strict Accuracy ON</p><section class="grid"><article class="card"><h2>Player A</h2><label>Clasa</label><select id="ac"></select><label>Spec</label><select id="as"></select><label>Race</label><select id="ar"></select><label>Gear</label><select id="ag"></select></article><article class="card"><h2>Player B</h2><label>Clasa</label><select id="bc"></select><label>Spec</label><select id="bs"></select><label>Race</label><select id="br"></select><label>Gear</label><select id="bg"></select></article></section><section class="card"><label>Codul duelului</label><input value="1337"><p class="warn">Același cod = același duel reproductibil.</p></section><section class="lock"><b>Duelul este momentan blocat intenționat.</b><br>Nu pornim până nu avem date exacte pentru ambii jucători.</section></main><script src="app.js"></script></body></html>
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WoW PvP Simulator</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="app">
+  <header class="hero">
+    <div>
+      <h1>WoW PvP Classic / Forever Simulator</h1>
+      <p>v0.7 · Strict Accuracy ON · live preview</p>
+    </div>
+    <div class="badge ok">DATA-FIRST</div>
+  </header>
+
+  <section class="grid players">
+    <article class="card player-card">
+      <h2>Player A</h2>
+      <div class="field-grid">
+        <label>Clasă<select id="ac"></select></label>
+        <label>Spec<select id="as"></select></label>
+        <label>Race<select id="ar"></select></label>
+        <label>Gear<select id="ag"></select></label>
+      </div>
+      <div id="aStatus" class="status-line"></div>
+    </article>
+    <article class="card player-card">
+      <h2>Player B</h2>
+      <div class="field-grid">
+        <label>Clasă<select id="bc"></select></label>
+        <label>Spec<select id="bs"></select></label>
+        <label>Race<select id="br"></select></label>
+        <label>Gear<select id="bg"></select></label>
+      </div>
+      <div id="bStatus" class="status-line"></div>
+    </article>
+  </section>
+
+  <section class="card duel-bar">
+    <label>Codul duelului<input id="duelCode" inputmode="numeric" value="1337"></label>
+    <button id="runBtn" disabled>▶ Run 1 duel</button>
+    <button id="batchBtn" disabled>Run 10.000</button>
+    <div id="gateReason" class="gate-reason"></div>
+  </section>
+
+  <section class="metrics">
+    <div class="metric"><span>Clase</span><b>9</b></div>
+    <div class="metric"><span>Spec-uri</span><b>27</b></div>
+    <div class="metric"><span>Reguli core verificate</span><b id="ruleCount">4</b></div>
+    <div class="metric"><span>Rogue PvP gear</span><b class="green">17/17</b></div>
+    <div class="metric"><span>Spellbooks complete</span><b class="red">0/9</b></div>
+  </section>
+
+  <nav class="tabs">
+    <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="gear">Gear Rogue</button>
+    <button data-tab="rules">Combat rules</button>
+    <button data-tab="lab">Rule lab</button>
+  </nav>
+
+  <section id="overview" class="tab active card">
+    <h2>Stare simulator</h2>
+    <div class="progress-list">
+      <div><span>UI + selectors</span><b class="green">gata</b></div>
+      <div><span>27 ClassCombat.lua</span><b class="green">structură gata</b></div>
+      <div><span>Rogue Subtlety lvl60 PvP static gear</span><b class="green">verificat</b></div>
+      <div><span>Rogue base stats + race</span><b class="amber">în lucru</b></div>
+      <div><span>Rogue spellbook</span><b class="amber">în lucru</b></div>
+      <div><span>Frost Mage PvP gear + stats</span><b class="amber">următorul profil</b></div>
+      <div><span>Duel real</span><b class="red">blocat până datele sunt complete</b></div>
+    </div>
+    <div class="note">Regula proiectului: dacă nu știm exact o valoare, simulatorul nu o inventează.</div>
+  </section>
+
+  <section id="gear" class="tab card">
+    <h2>Rogue Subtlety/Hemo — Level 60 PvP Phase 6</h2>
+    <div class="stat-grid" id="rogueStats"></div>
+    <div class="table-wrap"><table><thead><tr><th>Slot</th><th>Item</th><th>ID</th><th>STA</th><th>AGI</th><th>AP</th><th>Hit</th><th>Crit</th></tr></thead><tbody id="gearRows"></tbody></table></div>
+    <div class="note">Stats-urile de mai sus sunt contribuția gear-ului, nu totalul final al personajului.</div>
+  </section>
+
+  <section id="rules" class="tab card">
+    <h2>Reguli Classic verificate și active</h2>
+    <div id="ruleCards" class="rule-grid"></div>
+  </section>
+
+  <section id="lab" class="tab card">
+    <h2>Rule lab</h2>
+    <div class="lab-grid">
+      <div class="lab-card">
+        <h3>Armor reduction</h3>
+        <label>Armor țintă<input id="armorInput" type="number" value="3000"></label>
+        <label>Level atacator<input id="levelInput" type="number" value="60"></label>
+        <output id="armorOut"></output>
+      </div>
+      <div class="lab-card">
+        <h3>Spell miss</h3>
+        <label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label>
+        <output id="spellOut"></output>
+      </div>
+      <div class="lab-card">
+        <h3>Melee special miss</h3>
+        <label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label>
+        <output id="meleeOut"></output>
+      </div>
+    </div>
+  </section>
+</main>
+<script src="data.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
