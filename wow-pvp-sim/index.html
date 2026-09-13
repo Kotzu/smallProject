@@ -11,7 +11,7 @@
   <header class="hero">
     <div>
       <h1>WoW PvP Classic / Forever Simulator</h1>
-      <p>v0.7 · Strict Accuracy ON · live preview</p>
+      <p>v0.8 · Strict Accuracy ON · live preview</p>
     </div>
     <div class="badge ok">DATA-FIRST</div>
   </header>
@@ -49,13 +49,14 @@
   <section class="metrics">
     <div class="metric"><span>Clase</span><b>9</b></div>
     <div class="metric"><span>Spec-uri</span><b>27</b></div>
-    <div class="metric"><span>Reguli core verificate</span><b id="ruleCount">4</b></div>
+    <div class="metric"><span>Reguli/formule verificate</span><b id="ruleCount">10</b></div>
     <div class="metric"><span>Rogue PvP gear</span><b class="green">17/17</b></div>
-    <div class="metric"><span>Spellbooks complete</span><b class="red">0/9</b></div>
+    <div class="metric"><span>Base chars lvl60</span><b class="green">2/2</b></div>
   </section>
 
   <nav class="tabs">
     <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="character">Character math</button>
     <button data-tab="gear">Gear Rogue</button>
     <button data-tab="rules">Combat rules</button>
     <button data-tab="lab">Rule lab</button>
@@ -66,13 +67,31 @@
     <div class="progress-list">
       <div><span>UI + selectors</span><b class="green">gata</b></div>
       <div><span>27 ClassCombat.lua</span><b class="green">structură gata</b></div>
+      <div><span>Undead Rogue lvl60 base stats</span><b class="green">verificat</b></div>
+      <div><span>Gnome Mage lvl60 base stats</span><b class="green">verificat</b></div>
+      <div><span>HP / Mana / AP / Armor / weapon damage formulas</span><b class="green">implementate</b></div>
       <div><span>Rogue Subtlety lvl60 PvP static gear</span><b class="green">verificat</b></div>
-      <div><span>Rogue base stats + race</span><b class="amber">în lucru</b></div>
-      <div><span>Rogue spellbook</span><b class="amber">în lucru</b></div>
-      <div><span>Frost Mage PvP gear + stats</span><b class="amber">următorul profil</b></div>
+      <div><span>Rogue talent build + spellbook</span><b class="amber">în lucru</b></div>
+      <div><span>Frost Mage PvP gear + spellbook</span><b class="amber">următorul profil</b></div>
       <div><span>Duel real</span><b class="red">blocat până datele sunt complete</b></div>
     </div>
     <div class="note">Regula proiectului: dacă nu știm exact o valoare, simulatorul nu o inventează.</div>
+  </section>
+
+  <section id="character" class="tab card">
+    <h2>Character math verificat</h2>
+    <div class="grid char-grid">
+      <div>
+        <h3>Undead Rogue 60 + profil PvP</h3>
+        <div id="rogueCharacter" class="stat-grid"></div>
+        <div class="note">Baseline fără talent modifiers/proc-uri. Nu este încă „final PvP combat-ready”.</div>
+      </div>
+      <div>
+        <h3>Gnome Mage 60 — naked baseline</h3>
+        <div id="mageCharacter" class="stat-grid"></div>
+        <div class="note">Include Expansive Mind +5% INT. Gear-ul Mage nu este încă încărcat.</div>
+      </div>
+    </div>
   </section>
 
   <section id="gear" class="tab card">
@@ -85,32 +104,30 @@
   <section id="rules" class="tab card">
     <h2>Reguli Classic verificate și active</h2>
     <div id="ruleCards" class="rule-grid"></div>
+    <h2 style="margin-top:16px">Character formulas verificate</h2>
+    <div class="rule-grid">
+      <div class="rule-card"><h3 class="green">✓ HP din Stamina</h3><code>min(STA,20) + max(STA-20,0) × 10</code></div>
+      <div class="rule-card"><h3 class="green">✓ Mana din Intellect</h3><code>min(INT,20) + max(INT-20,0) × 15</code></div>
+      <div class="rule-card"><h3 class="green">✓ Rogue melee AP</h3><code>level × 2 + STR + AGI - 20 + flat AP</code></div>
+      <div class="rule-card"><h3 class="green">✓ Armor din Agility</h3><code>2 × AGI</code></div>
+      <div class="rule-card"><h3 class="green">✓ Weapon AP damage</h3><code>AP / 14 × weapon speed</code></div>
+      <div class="rule-card"><h3 class="green">✓ Gnome Expansive Mind</h3><code>Total INT × 1.05, apoi trunchiat ca stat integer</code></div>
+    </div>
   </section>
 
   <section id="lab" class="tab card">
     <h2>Rule lab</h2>
     <div class="lab-grid">
-      <div class="lab-card">
-        <h3>Armor reduction</h3>
-        <label>Armor țintă<input id="armorInput" type="number" value="3000"></label>
-        <label>Level atacator<input id="levelInput" type="number" value="60"></label>
-        <output id="armorOut"></output>
-      </div>
-      <div class="lab-card">
-        <h3>Spell miss</h3>
-        <label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label>
-        <output id="spellOut"></output>
-      </div>
-      <div class="lab-card">
-        <h3>Melee special miss</h3>
-        <label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label>
-        <output id="meleeOut"></output>
-      </div>
+      <div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div>
+      <div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div>
+      <div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div>
     </div>
   </section>
 </main>
 <script src="data.js"></script>
+<script src="character-data.js"></script>
 <script src="engine.js"></script>
+<script src="character-engine.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
