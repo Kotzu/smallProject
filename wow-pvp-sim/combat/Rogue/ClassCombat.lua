@@ -2,7 +2,7 @@ local Combat = {}
 
 Combat.id = "Rogue_ClassCombat"
 Combat.class = "Rogue"
-Combat.version = "0.25"
+Combat.version = "0.26"
 Combat.activeSpec = "Subtlety"
 
 Combat.specStatus = {
@@ -20,7 +20,7 @@ Combat.buildStatus = {
 -- This block is the ONLY learner-tunable part of Rogue combat.
 -- WoW formulas, talent effects, hit/crit/resist/proc rules stay in CombatEngine/data.
 Combat.policy = {
-    id = "rogue_cb_hemo_champion_g2_evis4_pool55",
+    id = "rogue_cb_hemo_champion_g3_evis4_pool65",
     vanishOnRoot = true,
     prepWhenRootedAndVanishDown = true,
     kickEnabled = true,
@@ -32,7 +32,7 @@ Combat.policy = {
     executeEvisHpPct = 0,
     executeEvisMinCp = 4,
     coldBloodMinCp = 5,
-    hemoMinEnergy = 55,
+    hemoMinEnergy = 65,
 }
 
 Combat.policyEvidence = {
@@ -41,6 +41,7 @@ Combat.policyEvidence = {
     generations = {
         { change = "Eviscerate threshold: 5 CP -> 4 CP", fights = 1000, beforeWins = 838, afterWins = 892, deltaWinRate = 5.4 },
         { change = "Hemorrhage pool: 35 Energy -> 55 Energy", fights = 1000, beforeWins = 892, afterWins = 920, deltaWinRate = 2.8 },
+        { change = "Hemorrhage pool: 55 Energy -> 65 Energy", fights = 1000, beforeWins = 920, afterWins = 930, deltaWinRate = 1.0 },
     },
 }
 
@@ -128,7 +129,7 @@ local function chooseCbHemo(ctx)
     end
 
     if hasTalent(ctx, "Hemorrhage") and me.energy >= p.hemoMinEnergy then
-        return { action = "Hemorrhage", reason = "policy: pool to 55 Energy before builder" }
+        return { action = "Hemorrhage", reason = "policy: pool to 65 Energy before builder" }
     end
 
     return { action = "WAIT", reason = "policy: pool Energy" }
