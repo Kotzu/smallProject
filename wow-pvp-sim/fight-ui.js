@@ -1,10 +1,10 @@
 (()=>{
   const $=id=>document.getElementById(id);
-  const DUEL=window.WOW_DUEL,D=window.WOW_DATA,CE=window.WOW_CHARACTER_ENGINE,CD=window.WOW_CHARACTER_DATA,A=window.WOW_ARMORY,AN=window.WOW_FIGHT_ANALYZER;
+  const DUEL=window.WOW_DUEL,D=window.WOW_DATA,CE=window.WOW_CHARACTER_ENGINE,CD=window.WOW_CHARACTER_DATA,A=window.WOW_ARMORY,AN=window.WOW_FIGHT_ANALYZER,T=window.WOW_TALENTS;
   let result=null,index=0,timer=null,speed=2,analysisShown=false;
   const cfg=()=>({
-    a:{class:$('ac').value,spec:$('as').value,race:$('ar').value,gear:$('ag').value},
-    b:{class:$('bc').value,spec:$('bs').value,race:$('br').value,gear:$('bg').value}
+    a:{class:$('ac').value,spec:$('as').value,race:$('ar').value,gear:$('ag').value,build:$('abuild')?.value||T?.defaultBuild($('ac').value,$('as').value)},
+    b:{class:$('bc').value,spec:$('bs').value,race:$('br').value,gear:$('bg').value,build:$('bbuild')?.value||T?.defaultBuild($('bc').value,$('bs').value)}
   });
   function maxHp(){
     const P=D.profiles.rogue_subtlety_lvl60_pvp_bis_p6_baseline;
@@ -18,12 +18,13 @@
   function ensureDialog(){
     let root=$('fightAnalysisModal');if(root)return root;
     root=document.createElement('div');root.id='fightAnalysisModal';root.className='fight-modal hidden';
-    root.innerHTML='<div class="fight-modal-card"><button class="fight-modal-close" id="fightAnalysisClose">×</button><div id="fightAnalysisBody"></div><div class="fight-modal-actions"><button id="fightAnalysisAgain" class="fight-primary">Fight Again</button><button id="fightAnalysisCombat">Open Combat.lua</button></div></div>';
+    root.innerHTML='<div class="fight-modal-card"><button class="fight-modal-close" id="fightAnalysisClose">×</button><div id="fightAnalysisBody"></div><div class="fight-modal-actions"><button id="fightAnalysisAgain" class="fight-primary">Fight Again</button><button id="fightAnalysisCombat">Open Combat.lua</button><button id="fightAnalysisTalents">Open Talents</button></div></div>';
     document.body.appendChild(root);
     $('fightAnalysisClose').onclick=()=>root.classList.add('hidden');
     root.addEventListener('click',e=>{if(e.target===root)root.classList.add('hidden');});
     $('fightAnalysisAgain').onclick=()=>{root.classList.add('hidden');startFight(true);};
     $('fightAnalysisCombat').onclick=()=>{root.classList.add('hidden');switchTab('combat');};
+    $('fightAnalysisTalents').onclick=()=>{root.classList.add('hidden');switchTab('talents');};
     return root;
   }
   function listHtml(title,items,cls=''){
@@ -34,8 +35,10 @@
     const m=maxHp(),report=AN?.analyze(result,cfg(),m);if(!report)return;
     const root=ensureDialog();
     const winner=report.winner,loser=report.loser;
+    const buildLine=[report.winnerBuild?.build?`${winner}: ${report.winnerBuild.build.name} ${report.winnerBuild.build.points}`:null,report.loserBuild?.build?`${loser}: ${report.loserBuild.build.name} ${report.loserBuild.build.points}`:null].filter(Boolean).join(' · ');
     $('fightAnalysisBody').innerHTML=`
       <div class="fight-analysis-title"><span>Fight complete · ${report.duration}s</span><strong>${winner==='Timeout'||winner==='Draw'?winner:`${winner} WINS`}</strong></div>
+      ${buildLine?`<div class="fight-build-line"><b>Talent builds:</b> ${buildLine}</div>`:''}
       <div class="fight-analysis-grid">
         <div>${listHtml(`De ce a câștigat ${winner}`,report.whyWinner,'winner-side')}${listHtml(`Ce poate îmbunătăți ${winner}`,report.winnerImprovements,'winner-side')}</div>
         <div>${listHtml(`De ce a pierdut ${loser}`,report.whyLoser,'loser-side')}${listHtml(`Ce poate îmbunătăți ${loser}`,report.loserImprovements,'loser-side')}</div>
@@ -76,12 +79,12 @@
   function play(){stop();timer=setInterval(step,Math.max(80,420/speed));}
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   function startFight(autoPlay=true){
-    const c=cfg(),ga=DUEL.canRun(c),aa=A.audit(c.a),ab=A.audit(c.b);
-    if(!ga.ready||!aa.pass||!ab.pass){$('fightError').textContent='Fight blocat: '+[...(ga.missing||[]),!aa.pass?'Player A stat audit':'',!ab.pass?'Player B stat audit':''].filter(Boolean).join(' · ');return;}
+    const c=cfg(),ga=DUEL.canRun(c),aa=A.audit(c.a),ab=A.audit(c.b),ta=T?.auditSelection(c.a),tb=T?.auditSelection(c.b);
+    if(!ga.ready||!aa.pass||!ab.pass||!ta?.pass||!tb?.pass){$('fightError').textContent='Fight blocat: '+[...(ga.missing||[]),!aa.pass?'Player A stat audit':'',!ab.pass?'Player B stat audit':'',!ta?.pass?'Player A talent build':'',!tb?.pass?'Player B talent build':''].filter(Boolean).join(' · ');return;}
     $('fightError').textContent='';
     const seed=(Number($('duelCode').value)||1337)>>>0;result=DUEL.run(seed,c);resetView();switchTab('fight');
     if(result.error){$('fightError').textContent=result.error+': '+result.missing.join(', ');return;}
-    setText('fightAction','Duel #'+seed+' loaded · '+result.timeline.length+' events');
+    setText('fightAction','Duel #'+seed+' loaded · '+result.timeline.length+' events · builds verified');
     if(autoPlay)play();
   }
   $('fightRunBtn')?.addEventListener('click',()=>startFight(true));
@@ -92,5 +95,5 @@
   $('fightSpeed')?.addEventListener('change',e=>{speed=Number(e.target.value)||2;if(timer)play();});
   $('runBtn')?.addEventListener('click',()=>setTimeout(()=>startFight(true),0));
   resetView();
-  window.WOW_FIGHT_UI={startFight,showAnalysis,version:'0.15'};
+  window.WOW_FIGHT_UI={startFight,showAnalysis,version:'0.16'};
 })();
