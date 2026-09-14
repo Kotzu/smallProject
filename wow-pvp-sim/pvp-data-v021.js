@@ -26,6 +26,23 @@
     }
   };
 
+  // Exact action inventory gaps that must be represented before the first matchup can be called complete.
+  D.v027={
+    rogueBlind:{
+      status:'VERIFIED_DATA_KERNEL_LOCKED_HEARTBEAT',spellId:2094,cost:30,range:10,gcdMs:1000,cooldownMs:300000,durationMs:10000,
+      school:'Nature',dispelType:'Poison',mechanic:'Disoriented',breaksOnDamage:true,stopsAutoAttack:true,heartbeatResist:true,
+      source:'Wowhead Classic spell 2094 + CMaNGOS aura heartbeat system',
+      blocker:'Exact retail heartbeat-resist distribution is not sufficiently verified; CMaNGOS labels its heartbeat approximation experimental.'
+    },
+    mageInsignia18859:{
+      status:'VERIFIED_KERNEL_PENDING',itemId:18859,cooldownMs:300000,
+      removes:['Fear','Polymorph','Slowing'],
+      relevantCurrentMatchup:'Crippling Poison slow',
+      source:'Wowhead Classic item 18859',
+      blocker:'Mage action policy + web-kernel use path not active yet.'
+    }
+  };
+
   const canonical=T?.get?.('rogue_imp_sprint_backstab_16_12_23');
   if(canonical){
     canonical.kernelBlockers=[
@@ -36,7 +53,7 @@
     ];
     canonical.auditNotes=[...(canonical.auditNotes||[]),
       'CMaNGOS rear arc: default PI radians / 180 degrees — verified',
-      'Rogue ClassCombat.lua now emits MOVE_BEHIND before positional dagger attacks'
+      'Rogue ClassCombat.lua emits MOVE_BEHIND before positional dagger attacks'
     ];
   }
   const variant=T?.get?.('rogue_imp_sprint_backstab_17_12_22');
