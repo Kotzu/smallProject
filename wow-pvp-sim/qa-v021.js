@@ -27,15 +27,16 @@
     add('Canonical dagger blockers narrowed',Array.isArray(canonical?.kernelBlockers)&&canonical.kernelBlockers.some(x=>String(x).includes('MOVE_BEHIND'))&&canonical.kernelBlockers.some(x=>String(x).includes('Initiative'))&&!canonical.kernelBlockers.some(x=>String(x).includes('behind-state model')),canonical?.kernelBlockers?.join(' · ')||'missing');
     const variant=T?.get?.('rogue_imp_sprint_backstab_17_12_22');
     add('17/12/22 has no false Initiative blocker',Array.isArray(variant?.kernelBlockers)&&!variant.kernelBlockers.some(x=>String(x).includes('Initiative')),variant?.kernelBlockers?.join(' · ')||'missing');
-  }catch(err){add('v0.22 QA runtime',false,String(err?.stack||err));}
+
+    const blind=D?.v027?.rogueBlind||{};
+    add('Blind exact static data registered',blind.spellId===2094&&blind.cost===30&&blind.range===10&&blind.durationMs===10000&&blind.cooldownMs===300000&&blind.school==='Nature'&&blind.breaksOnDamage===true,`${blind.status||'missing'} · ${blind.blocker||''}`);
+    add('Blind stays strict-locked on heartbeat uncertainty',String(blind.status||'').includes('LOCKED_HEARTBEAT'),blind.blocker||'missing blocker');
+    const insignia=D?.v027?.mageInsignia18859||{};
+    add('Mage Insignia 18859 action registered',insignia.itemId===18859&&insignia.cooldownMs===300000&&insignia.removes?.includes('Slowing'),`${insignia.status||'missing'} · ${insignia.relevantCurrentMatchup||''}`);
+  }catch(err){add('v0.27 QA runtime',false,String(err?.stack||err));}
 
   const passed=checks.filter(x=>x.pass).length,failed=checks.length-passed;
   const root=document.getElementById('qaReport');
-  if(root)root.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">QA ${failed?'FAIL':'PASS'} · ${passed}/${checks.length}</div><div class="result-meta">Talent runtime + Rogue dagger formulas + verified CMaNGOS rear arc + strict kernel gates.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;
-  window.WOW_QA={version:'0.22-qa',checks,passed,failed,pass:failed===0};
-
-  const hero=document.querySelector('.hero p');
-  if(hero)hero.textContent='v0.22 · talent runtime active · verified Rogue rear arc · MOVE_BEHIND policy · post-fight coaching';
-  const combatNote=document.querySelector('#combat .note');
-  if(combatNote)combatNote.textContent='CB/Hemo rămâne kernelul calibrat. Pentru dagger Rogue, rear-arc-ul de 180° este verificat din CMaNGOS, iar ClassCombat.lua emite acum MOVE_BEHIND. Mai lipsesc execuția web a MOVE_BEHIND/Backstab/Ambush/Gouge, combat-reach radius parity și Lua↔web policy parity înainte să deblocăm build-ul.';
+  if(root)root.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">QA ${failed?'FAIL':'PASS'} · ${passed}/${checks.length}</div><div class="result-meta">Talent runtime + Rogue policy evidence + dagger formulas + rear arc + strict action-inventory gates.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;
+  window.WOW_QA={version:'0.27-qa',checks,passed,failed,pass:failed===0};
 })();
