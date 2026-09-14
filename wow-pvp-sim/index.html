@@ -12,7 +12,7 @@
 <body>
 <main class="app">
   <header class="hero">
-    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.17 · talent-build aware · build-specific Armory · ClassCombat.lua per class</p></div>
+    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.18 · talent-build aware · Rogue dagger builds audited · ClassCombat.lua per class</p></div>
     <div class="badge ok">STRICT DATA</div>
   </header>
 
@@ -64,7 +64,7 @@
     <div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div>
   </section>
 
-  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua</h2><div class="muted">Un fișier per clasă. Talent build-ul selectat schimbă ramura de decizie din ClassCombat.lua.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>TalentBuilds.lua</b><br><span class="muted">ce talente există</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">alege acțiunea</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">rezolvă regulile WoW</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Rogue are acum două politici de build în același ClassCombat.lua: CB/Hemo activ și Improved Sprint Backstab verificat, dar încă kernel-locked.</div></section>
+  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua</h2><div class="muted">Un fișier per clasă. Talent build-ul selectat schimbă ramura de decizie din ClassCombat.lua.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>TalentBuilds.lua</b><br><span class="muted">ce talente există</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">alege acțiunea</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">rezolvă regulile WoW</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Rogue are CB/Hemo activ și două build-uri Improved Sprint/Backstab verificate: 16/12/23 canonical și 17/12/22 Expose Armor variant. Build-urile dagger rămân kernel-locked până trec positioning, Initiative/Gouge/Elusiveness și dagger-skill QA.</div></section>
 
   <section id="duel" class="tab card"><h2>Duel log</h2><div id="duelSummary" class="duel-summary"><span class="muted">Rulează Fight.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline complet</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div><div class="note">Același Cod al duelului + aceeași configurație = același rezultat.</div></section>
 
@@ -76,7 +76,7 @@
     <section class="tech-section"><h2>Rule lab</h2><div class="lab-grid"><div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div><div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div><div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div></div></section>
   </div></section>
 
-  <div class="metrics"><div class="metric"><span>Fight kernel</span><b class="green">1 calibrated</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files · 2 active classes</b></div><div class="metric"><span>Talent builds</span><b class="green">3 verified · 2 kernel-active</b></div><div class="metric"><span>Rogue builds</span><b class="green">2 verified</b></div><div class="metric"><span>QA</span><b class="green">strict</b></div></div>
+  <div class="metrics"><div class="metric"><span>Fight kernel</span><b class="green">1 active</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files · 2 active classes</b></div><div class="metric"><span>Talent builds</span><b class="green">4 verified · 2 kernel-active</b></div><div class="metric"><span>Rogue builds</span><b class="green">3 verified · 1 active</b></div><div class="metric"><span>QA</span><b class="green">strict</b></div></div>
 </main>
 
 <script src="data.js"></script>
@@ -86,6 +86,7 @@
 <script src="pvp-data-v011.js"></script>
 <script src="pvp-data-v012.js"></script>
 <script src="pvp-data-v017.js"></script>
+<script src="pvp-data-v018.js"></script>
 <script src="rogue-dagger-profile-v017.js"></script>
 <script src="classic-stat-system.js"></script>
 <script src="talent-builds.js"></script>
@@ -99,6 +100,7 @@
 <script src="armory.js"></script>
 <script src="talent-ui.js"></script>
 <script src="qa.js"></script>
+<script src="qa-v018.js"></script>
 <script src="fight-analyzer.js"></script>
 <script src="fight-ui.js"></script>
 <script src="combat-viewer.js"></script>
