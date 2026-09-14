@@ -1,6 +1,6 @@
 local TalentBuilds = {}
 
-TalentBuilds.version = "0.17"
+TalentBuilds.version = "0.18"
 
 TalentBuilds.Rogue = {
     rogue_cb_hemo_21_3_27 = {
@@ -27,7 +27,7 @@ TalentBuilds.Rogue = {
     },
 
     rogue_imp_sprint_backstab_17_12_22 = {
-        name = "Improved Sprint Backstab",
+        name = "Improved Sprint Backstab - Expose Armor variant",
         class = "Rogue",
         spec = "Subtlety",
         level = 60,
@@ -56,9 +56,52 @@ TalentBuilds.Rogue = {
             coldBlood = false,
         },
         kernelBlockers = {
-            "Backstab/Ambush positional damage path not calibrated",
-            "Dagger loadout must pass independent stat audit",
-            "Improved Sprint root/snare removal needs dedicated policy parity QA",
+            "positional behind-state model",
+            "Gouge control/break-on-damage path",
+            "dagger weapon-skill PvP combat-table validation",
+            "policy parity QA",
+        },
+    },
+
+    rogue_imp_sprint_backstab_16_12_23 = {
+        name = "Improved Sprint Backstab - 16/12/23",
+        class = "Rogue",
+        spec = "Subtlety",
+        level = 60,
+        points = "16/12/23",
+        status = "VERIFIED_LOCKED_KERNEL",
+        calculator = "305020105-320302002-05024303030012",
+        loadoutId = "rogue_p6_pvp_daggers_kingsfall_deaths_sting",
+        modifiers = {
+            improvedEvisceratePct = 15,
+            meleeCritPct = 5,
+            murderDamagePct = 2,
+            relentlessEnergy = 25,
+            relentlessChancePerComboPct = 20,
+            builderCritMultiplier = 2.30,
+            gougeDurationBonusMs = 1500,
+            sinisterStrikeEnergy = 40,
+            backstabCritBonusPct = 30,
+            meleeHitPct = 2,
+            improvedSprint = true,
+            opportunityDamagePct = 20,
+            elusiveness = true,
+            camouflageRank = 4,
+            initiativeProcPct = 75,
+            ambushCritBonusPct = 45,
+            improvedSapStayStealthPct = 90,
+            preparation = true,
+            cheapShotEnergy = 40,
+            hemorrhage = false,
+            coldBlood = false,
+        },
+        kernelBlockers = {
+            "positional behind-state model",
+            "Initiative extra-combo-point proc path",
+            "Gouge control/break-on-damage path",
+            "Elusiveness cooldown adjustments",
+            "dagger weapon-skill PvP combat-table validation",
+            "policy parity QA",
         },
     },
 }
