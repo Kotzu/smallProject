@@ -14,7 +14,14 @@ window.WOW_CHARACTER_ENGINE=(function(){
     const armor=(profile.combinedStaticTotals.armor||0)+armorFromAgility(s.agi);
     const mh=window.WOW_DATA.items[String(profile.slots['Main Hand'])].weapon;
     const oh=window.WOW_DATA.items[String(profile.slots['Off Hand'])].weapon;
-    return {stats:s,health:hp,attackPower:ap,armor,mainHand:weaponDamageRange(mh.minDamage,mh.maxDamage,mh.speed,ap,0),offHandBeforeOffhandPenalty:weaponDamageRange(oh.minDamage,oh.maxDamage,oh.speed,ap,0),hitPct:profile.combinedStaticTotals.hit||0,shadowResistance:(profile.combinedStaticTotals.shadowRes||0)+(character.racialCombat.shadowResistance||0)};
+    return {
+      stats:s,health:hp,attackPower:ap,armor,
+      mainHand:weaponDamageRange(mh.minDamage,mh.maxDamage,mh.speed,ap,profile.mainHandFlatDamage||0),
+      offHandBeforeOffhandPenalty:weaponDamageRange(oh.minDamage,oh.maxDamage,oh.speed,ap,profile.offHandFlatDamage||0),
+      hitPct:profile.combinedStaticTotals.hit||0,
+      shadowResistance:(profile.combinedStaticTotals.shadowRes||0)+(character.racialCombat.shadowResistance||0),
+      weaponSkill:{...(profile.weaponSkill||{})}
+    };
   }
   function gnomeMage60Naked(character){
     const raw=character.createStats;
