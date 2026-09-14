@@ -34,8 +34,7 @@
     const root=$(p+'TalentPanel');if(!root)return;
     const s=playerState(p),audit=T.auditSelection(s);
     if(!audit.pass){root.innerHTML=`<div class="talent-locked"><b>TALENT BUILD: ${esc(audit.status)}</b><span>${esc(audit.reason)}</span></div>`;return;}
-    const b=audit.build,active=!!audit.kernelReady;
-    const blockers=(b.kernelBlockers||[]).map(x=>`<li>${esc(x)}</li>`).join('');
+    const b=audit.build,active=!!audit.kernelReady,blockers=(b.kernelBlockers||[]).map(x=>`<li>${esc(x)}</li>`).join('');
     root.innerHTML=`
       <div class="talent-head"><div><h3>${esc(b.name)}</h3><span>${esc(b.class)} ${esc(b.spec)} · ${esc(b.points)} · ${T.pointTotal(b.points)} points</span></div><div class="audit-badge ${active?'pass':'fail'}">${active?'BUILD + KERNEL: PASS':'BUILD VERIFIED · KERNEL LOCKED'}</div></div>
       <div class="talent-role">${esc(b.role||'PvP build')}${b.weaponStyle?` · ${esc(b.weaponStyle)}`:''}</div>
@@ -47,10 +46,11 @@
     if(fightLabel)fightLabel.textContent=`${b.name} · ${b.points}${active?'':' · LOCKED'}`;
   }
   function refreshAll(){refreshSelect('a');refreshSelect('b');window.WOW_ARMORY_UI?.render?.();}
+  function notifyGate(p){const gear=$(p+'g');gear?.dispatchEvent(new Event('change'));}
   ['ac','as','ar','ag'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(()=>refreshSelect('a'),0)));
   ['bc','bs','br','bg'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(()=>refreshSelect('b'),0)));
-  $('abuild')?.addEventListener('change',()=>{renderPlayer('a');window.WOW_ARMORY_UI?.render?.();});
-  $('bbuild')?.addEventListener('change',()=>{renderPlayer('b');window.WOW_ARMORY_UI?.render?.();});
+  $('abuild')?.addEventListener('change',()=>{renderPlayer('a');window.WOW_ARMORY_UI?.render?.();notifyGate('a');});
+  $('bbuild')?.addEventListener('change',()=>{renderPlayer('b');window.WOW_ARMORY_UI?.render?.();notifyGate('b');});
   setTimeout(refreshAll,0);
   window.WOW_TALENT_UI={refreshAll,renderPlayer,version:'0.17'};
 })();
