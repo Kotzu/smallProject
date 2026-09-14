@@ -2,7 +2,7 @@ local Combat = {}
 
 Combat.id = "Rogue_ClassCombat"
 Combat.class = "Rogue"
-Combat.version = "0.23"
+Combat.version = "0.24"
 Combat.activeSpec = "Subtlety"
 Combat.specStatus = {
     Assassination = "LOCKED",
@@ -19,7 +19,7 @@ Combat.buildStatus = {
 -- Only this policy block is learner-tunable.
 -- CombatEngine formulas are NEVER optimized by the learner.
 Combat.policy = {
-    id = "rogue_cb_hemo_champion_g0",
+    id = "rogue_cb_hemo_champion_g1_evis4",
     vanishOnRoot = true,
     prepWhenRootedAndVanishDown = true,
     kickEnabled = true,
@@ -27,11 +27,21 @@ Combat.policy = {
     sprintMinRange = 5.1,
     kidneyMinCp = 5,
     kidneyEnergyReserve = 0,
-    evisMinCp = 5,
+    evisMinCp = 4,
     executeEvisHpPct = 0,
     executeEvisMinCp = 4,
     coldBloodMinCp = 5,
     hemoMinEnergy = 35,
+}
+
+Combat.policyEvidence = {
+    method = "paired deterministic seeds",
+    fights = 1000,
+    baselineWins = 838,
+    promotedWins = 892,
+    baselineWinRate = 83.8,
+    promotedWinRate = 89.2,
+    deltaWinRate = 5.4,
 }
 
 local function buildId(ctx)
