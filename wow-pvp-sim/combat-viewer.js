@@ -2,7 +2,8 @@
   const $=id=>document.getElementById(id);
   const policies={
     rogue:{label:'Rogue · Subtlety',path:'combat/Rogue/Subtlety/ClassCombat.lua'},
-    mage:{label:'Mage · Frost',path:'combat/Mage/Frost/ClassCombat.lua'}
+    mage:{label:'Mage · Frost',path:'combat/Mage/Frost/ClassCombat.lua'},
+    engine:{label:'Combat Engine',path:'combat/CombatEngine.lua'}
   };
   const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   async function load(key){
@@ -14,7 +15,7 @@
       const r=await fetch(p.path+'?v='+Date.now(),{cache:'no-store'});
       if(!r.ok)throw new Error('HTTP '+r.status);
       const text=await r.text();$('combatCode').innerHTML=esc(text);
-    }catch(err){$('combatCode').textContent='Nu pot încărca ClassCombat.lua: '+err;}
+    }catch(err){$('combatCode').textContent='Nu pot încărca fișierul Lua: '+err;}
   }
   document.querySelectorAll('.combat-selector button').forEach(b=>b.addEventListener('click',()=>load(b.dataset.policy)));
   load('rogue');
