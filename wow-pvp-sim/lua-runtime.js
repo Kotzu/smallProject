@@ -1,5 +1,5 @@
 (()=>{
-  const FENGARI_URLS=['/vendor/fengari-web.min.js','https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js','https://unpkg.com/fengari-web@0.1.4/dist/fengari-web.js'];
+  const FENGARI_URLS=['/vendor/fengari-web.js','https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js','https://unpkg.com/fengari-web@0.1.4/dist/fengari-web.js'];
   const sourceCache=new Map();
   let initPromise=null;
 
