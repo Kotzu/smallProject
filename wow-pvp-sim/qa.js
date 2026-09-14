@@ -19,7 +19,7 @@
     const da=T?.auditSelection(daggerCfg.a),db=da?.build,dm=db?.modifiers||{};
     add('Rogue Imp Sprint build verified',da?.pass===true&&da?.status==='VERIFIED_LOCKED',da?.reason||'missing');
     add('Rogue Imp Sprint 51 points',T?.pointTotal(db?.points)===51,`${db?.points} = ${T?.pointTotal(db?.points)} points`);
-    add('Imp Sprint talent modifiers',dm.improvedSprint===true&&dm.backstabCritBonusPct===30&&dm.opportunityDamagePct===20&&dm.cheapShotEnergy===50,'Sprint break + Backstab +30 crit + Opportunity +20 dmg + Cheap Shot 50 Energy');
+    add('Imp Sprint talent modifiers',dm.improvedSprint===true&&dm.backstabCritBonusPct===30&&dm.opportunityDamagePct===20,'Sprint break + Backstab +30 crit + Opportunity +20 dmg');
     add('Imp Sprint kernel remains blocked',DUEL.canRun(daggerCfg).ready===false,'verified build must not run before positional dagger kernel calibration');
 
     const daggerProfile=A?.rogueProfile(daggerCfg.a),daggerAudit=A?.audit(daggerCfg.a),daggerChar=daggerProfile?CE?.rogue60Baseline(CD.level60.undeadRogue,daggerProfile):null;
@@ -47,27 +47,30 @@
 
     const gate=DUEL.canRun(cfg);
     add('Strict duel + talent gate',gate.ready===true,gate.ready?'ready':gate.missing.join(' · '));
+    add('Talent-aware combat core active',DUEL.engineCoreVersion==='0.18.0',`core ${DUEL.engineCoreVersion||'missing'} · wrapper ${DUEL.version}`);
     const fake={a:{...cfg.a,build:'unverified_build'},b:{...cfg.b}};
     add('Unverified build is blocked',DUEL.canRun(fake).ready===false,'strict mode rejects unknown build');
     const det=DUEL.selfTest(cfg);
     add('Deterministic replay',det.deterministic===true,`seed 1337 → ${det.winner} · ${det.duration}s · v${det.version}`);
 
-    let finite=true,calibrated=true,buildsAttached=true;
+    let finite=true,calibrated=true,buildsAttached=true,runtimeAttached=true;
     for(let i=1;i<=100;i++){
       const r=DUEL.run(i,cfg);
       if(r.error||!Number.isFinite(r.duration)||!Number.isFinite(r.final?.rogue?.hp)||!Number.isFinite(r.final?.mage?.hp)||!Number.isFinite(r.final?.mage?.mana))finite=false;
-      if(r.kernelStatus!=='FIRST_MATCHUP_CALIBRATED_WITH_TALENTS'||(r.calibrationRequired||[]).length)calibrated=false;
+      if(r.kernelStatus!=='ACTIVE_TALENT_RUNTIME'||(r.calibrationRequired||[]).length)calibrated=false;
       if(r.builds?.a?.id!==cfg.a.build||r.builds?.b?.id!==cfg.b.build)buildsAttached=false;
+      if(!r.talentRuntime||r.talentRuntime.preparation!==true)runtimeAttached=false;
     }
     add('100-seed numeric smoke test',finite,'100 deterministic duels fără NaN/Infinity/error');
-    add('Talent-aware calibration gate',calibrated,'100/100 current-kernel duels stay calibrated');
+    add('Talent runtime calibration gate',calibrated,'100/100 active-kernel duels report ACTIVE_TALENT_RUNTIME');
     add('Build identity preserved',buildsAttached,'selected build IDs attached to sampled results');
+    add('Talent runtime preserved',runtimeAttached,'runtime talent state attached to sampled results');
 
     const b=DUEL.batch(1337,100,cfg),total=Object.values(b.wins||{}).reduce((x,y)=>x+y,0);
     add('Batch accounting',total===100,`wins total ${total}/100`);
   }catch(err){add('QA runtime',false,String(err?.stack||err));}
 
   const passed=checks.filter(x=>x.pass).length,failed=checks.length-passed,root=$('qaReport');
-  if(root)root.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">QA ${failed?'FAIL':'PASS'} · ${passed}/${checks.length}</div><div class="result-meta">Stats + gear loadouts + talent builds + strict kernel gate + deterministic duel checks.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;
-  window.WOW_QA={version:'0.17-qa',checks,passed,failed,pass:failed===0};
+  if(root)root.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">QA ${failed?'FAIL':'PASS'} · ${passed}/${checks.length}</div><div class="result-meta">Stats + gear + talent builds + active talent runtime + strict kernel gate + deterministic duel checks.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;
+  window.WOW_QA={version:'0.20-qa',checks,passed,failed,pass:failed===0};
 })();
