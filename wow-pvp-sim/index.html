@@ -12,7 +12,7 @@
 <body>
 <main class="app">
   <header class="hero">
-    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.23 · precision-first combat · Rogue policy learning · talent-aware kernel</p></div>
+    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.27 · Rogue ClassCombat learning · talent-aware combat · strict accuracy</p></div>
     <div class="badge ok">STRICT DATA</div>
   </header>
 
@@ -27,7 +27,7 @@
   <nav class="tabs"><button data-tab="fight" class="active">Fight</button><button data-tab="armory">Armory</button><button data-tab="talents">Talents</button><button data-tab="combat">Combat.lua</button><button data-tab="duel">Duel log</button><button data-tab="technical">Technical</button></nav>
 
   <section id="fight" class="tab active card">
-    <div class="combat-head"><div><h2>Fight</h2><div class="muted">Combatul este calculat complet. Rezultatul, log-ul, analiza și învățarea Rogue apar imediat; Replay este doar pentru debugging.</div></div><button id="fightRunBtn" class="fight-primary">▶ Start Fight</button></div>
+    <div class="combat-head"><div><h2>Fight</h2><div class="muted">Combatul este calculat complet pentru acțiunile active în kernel. Rezultatul, log-ul, analiza și învățarea Rogue apar imediat; Replay este pentru debugging.</div></div><button id="fightRunBtn" class="fight-primary">▶ Start Fight</button></div>
     <div id="fightError" class="red" style="margin:8px 0"></div>
     <div class="fight-layout">
       <article class="fighter"><div><h3>Undead Rogue</h3><div id="fightRogueBuild" class="sub">Subtlety · build loading…</div></div><div class="bar-label"><span>HP</span><b id="fightRogueHp">—</b></div><div class="bar"><i id="fightRogueHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightRogueRes">100 Energy</b></div><div class="bar resource"><i style="width:100%"></i></div></article>
@@ -40,9 +40,9 @@
 
   <section id="armory" class="tab card"><h2>Mini Armory</h2><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Gear, enchants și stats intră prin audit; learner-ul nu are voie să le modifice.</div></section>
 
-  <section id="talents" class="tab card"><div class="combat-head"><div><h2>Talent Builds</h2><div class="muted">Talent effects sunt input de combat. Build-urile neverificate rămân blocate.</div></div><div class="badge ok">BUILD STRICT MODE</div></div><div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div></section>
+  <section id="talents" class="tab card"><div class="combat-head"><div><h2>Talent Builds</h2><div class="muted">Talent effects sunt input de combat. Build-urile neverificate sau cu mecanici lipsă rămân blocate.</div></div><div class="badge ok">BUILD STRICT MODE</div></div><div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div></section>
 
-  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua</h2><div class="muted">Rogue learner modifică numai policy thresholds/priorități. CombatEngine rămâne arbitru neutru.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>TalentBuilds.lua</b><br><span class="muted">talent effects</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">decizie/timing</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">reguli WoW</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Policy g1 a promovat Eviscerate la 4+ CP după 1.000 de seed-uri paired: 83.8% → 89.2% Rogue win rate în matchup-ul calibrat curent.</div></section>
+  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua</h2><div class="muted">Rogue learner modifică numai policy thresholds/priorități. CombatEngine rămâne arbitru neutru.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>TalentBuilds.lua</b><br><span class="muted">talent effects</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">decizie/timing</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">reguli WoW</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Rogue champion g3: Eviscerate la 4+ CP și pool 65 Energy înainte de Hemorrhage. Pe 1.000 de seed-uri paired: 83.8% baseline → 89.2% → 92.0% → 93.0%. Dagger policy există în Lua, dar duel kernel-ul rămâne strict blocat până la parity exactă pentru poziționare/Gouge/Initiative.</div></section>
 
   <section id="duel" class="tab card"><h2>Duel log</h2><div id="duelSummary" class="duel-summary"><span class="muted">Rulează Fight.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline complet</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div><div class="note">Același Cod al duelului + aceeași configurație + aceeași politică Rogue = același rezultat.</div></section>
 
@@ -54,7 +54,7 @@
     <section class="tech-section"><h2>Rule lab</h2><div class="lab-grid"><div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div><div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div><div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div></div></section>
   </div></section>
 
-  <div class="metrics"><div class="metric"><span>Fight core</span><b class="green">policy-driven</b></div><div class="metric"><span>Rogue champion</span><b class="green">g1 · Evis 4 CP</b></div><div class="metric"><span>Evidence</span><b class="green">1.000 paired seeds</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files</b></div><div class="metric"><span>Talent builds</span><b class="green">strict</b></div></div>
+  <div class="metrics"><div class="metric"><span>Fight core</span><b class="green">policy-driven</b></div><div class="metric"><span>Rogue champion</span><b class="green">g3 · Evis 4 CP · Hemo 65</b></div><div class="metric"><span>Evidence</span><b class="green">3 × 1.000 paired seeds</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files</b></div><div class="metric"><span>Talent builds</span><b class="green">strict</b></div></div>
 </main>
 
 <script src="data.js"></script>
