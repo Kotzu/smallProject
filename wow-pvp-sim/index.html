@@ -34,11 +34,12 @@
       <div><span>STAT AUDIT pentru profilele active</span><b class="green">activ</b></div>
       <div><span>Undead Rogue lvl60 + P6 static gear</span><b class="green">verificat</b></div>
       <div><span>Gnome Frost Mage + P6 PvP core</span><b class="green">încărcat</b></div>
+      <div><span>Mage mana formula audit</span><b class="green">6258 PASS</b></div>
       <div><span>Rogue auto-attacks MH/OH + dual-wield miss/50% OH</span><b class="green">v0.10</b></div>
       <div><span>Crippling + Mind-numbing + Hand of Justice</span><b class="green">v0.10</b></div>
       <div><span>Ice Barrier R4 + Mana Shield gloves + Escape Artist</span><b class="green">v0.10</b></div>
-      <div><span>Batch 1k / 10k / 100k + reproducibilitate</span><b class="green">activ</b></div>
-      <div><span>Crusader PPM + poison binary resist</span><b class="amber">calibrare deschisă</b></div>
+      <div><span>Crusader PPM + Bonescythe 2p PPM</span><b class="green">1 PPM verificat; activare kernel următoare</b></div>
+      <div><span>Poison binary resistance</span><b class="amber">calibrare deschisă</b></div>
       <div><span>Restul matchup-urilor/spec-urilor</span><b class="amber">în extindere</b></div>
     </div>
     <div class="note">Regulă: simulatorul nu inventează valori. Armory-ul arată separat ce este verificat, ce vine din profil agregat și ce mai trebuie descompus pe slot.</div>
@@ -48,11 +49,11 @@
 
   <section id="duel" class="tab card"><h2>Duel determinist</h2><div id="duelSummary" class="duel-summary"><span class="muted">Rulează duelul de sus.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div><div class="note">Același Cod al duelului = aceleași roll-uri și același rezultat.</div></section>
 
-  <section id="character" class="tab card"><h2>Character math verificat</h2><div class="grid char-grid"><div><h3>Undead Rogue 60 + profil PvP</h3><div id="rogueCharacter" class="stat-grid"></div><div class="note">Static baseline + enchants. Proc-urile cu rată încă nefixată nu intră în rezultat.</div></div><div><h3>Gnome Frost Mage 60 + PvP P6 core</h3><div id="mageCharacter" class="stat-grid"></div><div class="note">Include PvP 3p, 6 piese Frostfire și bonusul de absorb de pe mănuși.</div></div></div></section>
+  <section id="character" class="tab card"><h2>Character math verificat</h2><div class="grid char-grid"><div><h3>Undead Rogue 60 + profil PvP</h3><div id="rogueCharacter" class="stat-grid"></div><div class="note">Static baseline + enchants. Proc-urile cu rată verificată intră în kernel numai după activarea explicită a mecanicii.</div></div><div><h3>Gnome Frost Mage 60 + PvP P6 core</h3><div id="mageCharacter" class="stat-grid"></div><div class="note">Include PvP 3p, 6 piese Frostfire și bonusul de absorb de pe mănuși.</div></div></div></section>
 
   <section id="gear" class="tab card"><h2>Rogue Subtlety/Hemo — Level 60 PvP Phase 6</h2><div class="stat-grid" id="rogueStats"></div><div class="table-wrap"><table><thead><tr><th>Slot</th><th>Item</th><th>ID</th><th>STA</th><th>AGI</th><th>AP</th><th>Hit</th><th>Crit</th></tr></thead><tbody id="gearRows"></tbody></table></div><div class="note">Stats-urile de mai sus sunt contribuția gear-ului, nu totalul final al personajului.</div></section>
 
-  <section id="rules" class="tab card"><h2>Reguli Classic verificate și active</h2><div id="ruleCards" class="rule-grid"></div><h2 style="margin-top:16px">Reguli v0.10+</h2><div class="rule-grid"><div class="rule-card"><h3 class="green">✓ Dual wield white miss</h3><code>5% base + 19% dual-wield penalty − Hit</code></div><div class="rule-card"><h3 class="green">✓ Off-hand damage</h3><code>50% damage fără Dual Wield Specialization</code></div><div class="rule-card"><h3 class="green">✓ Crippling Poison II</h3><code>30% proc · -70% movement · 12s</code></div><div class="rule-card"><h3 class="green">✓ Mind-numbing III</h3><code>20% proc · +60% cast time · 14s</code></div><div class="rule-card"><h3 class="green">✓ Hand of Justice</h3><code>2% melee proc · extra attack · 2s ICD</code></div><div class="rule-card"><h3 class="green">✓ Ice Barrier R4</h3><code>818 + 10% spell power absorb</code></div><div class="rule-card"><h3 class="green">✓ Field Marshal 3p</h3><code>Blink 15s → 13.5s</code></div><div class="rule-card"><h3 class="green">✓ Class stat system</h3><code>STR/AGI/STA/INT/SPI calculate diferit per clasă</code></div></div></section>
+  <section id="rules" class="tab card"><h2>Reguli Classic verificate și active</h2><div id="ruleCards" class="rule-grid"></div><h2 style="margin-top:16px">Reguli v0.10+</h2><div class="rule-grid"><div class="rule-card"><h3 class="green">✓ Dual wield white miss</h3><code>5% base + 19% dual-wield penalty − Hit</code></div><div class="rule-card"><h3 class="green">✓ Off-hand damage</h3><code>50% damage fără Dual Wield Specialization</code></div><div class="rule-card"><h3 class="green">✓ Crippling Poison II</h3><code>30% proc · -70% movement · 12s</code></div><div class="rule-card"><h3 class="green">✓ Mind-numbing III</h3><code>20% proc · +60% cast time · 14s</code></div><div class="rule-card"><h3 class="green">✓ Hand of Justice</h3><code>2% melee proc · extra attack · 2s ICD</code></div><div class="rule-card"><h3 class="green">✓ Ice Barrier R4</h3><code>818 + 10% spell power absorb</code></div><div class="rule-card"><h3 class="green">✓ Field Marshal 3p</h3><code>Blink 15s → 13.5s</code></div><div class="rule-card"><h3 class="green">✓ Class stat system</h3><code>STR/AGI/STA/INT/SPI calculate diferit per clasă</code></div><div class="rule-card"><h3 class="green">✓ Crusader</h3><code>1 PPM · +100 STR · 15s · heal 75–125</code></div><div class="rule-card"><h3 class="green">✓ Bonescythe 2p</h3><code>1 PPM · heal 90–110</code></div></div></section>
 
   <section id="lab" class="tab card"><h2>Rule lab</h2><div class="lab-grid"><div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div><div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div><div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div></div></section>
 </main>
@@ -60,6 +61,7 @@
 <script src="character-data.js"></script>
 <script src="pvp-data.js"></script>
 <script src="pvp-data-v010.js"></script>
+<script src="pvp-data-v011.js"></script>
 <script src="classic-stat-system.js"></script>
 <script src="armory-data.js"></script>
 <script src="engine.js"></script>
