@@ -11,7 +11,7 @@
   <header class="hero">
     <div>
       <h1>WoW PvP Classic / Forever Simulator</h1>
-      <p>v0.8 · Strict Accuracy ON · live preview</p>
+      <p>v0.9 · Strict Accuracy ON · deterministic duel kernel</p>
     </div>
     <div class="badge ok">DATA-FIRST</div>
   </header>
@@ -46,16 +46,19 @@
     <div id="gateReason" class="gate-reason"></div>
   </section>
 
+  <section id="quickResult" class="card quick-result hidden"></section>
+
   <section class="metrics">
     <div class="metric"><span>Clase</span><b>9</b></div>
     <div class="metric"><span>Spec-uri</span><b>27</b></div>
     <div class="metric"><span>Reguli/formule verificate</span><b id="ruleCount">10</b></div>
     <div class="metric"><span>Rogue PvP gear</span><b class="green">17/17</b></div>
-    <div class="metric"><span>Base chars lvl60</span><b class="green">2/2</b></div>
+    <div class="metric"><span>Kernel activ</span><b class="green">1 matchup</b></div>
   </section>
 
   <nav class="tabs">
     <button data-tab="overview" class="active">Overview</button>
+    <button data-tab="duel">Duel</button>
     <button data-tab="character">Character math</button>
     <button data-tab="gear">Gear Rogue</button>
     <button data-tab="rules">Combat rules</button>
@@ -67,15 +70,24 @@
     <div class="progress-list">
       <div><span>UI + selectors</span><b class="green">gata</b></div>
       <div><span>27 ClassCombat.lua</span><b class="green">structură gata</b></div>
-      <div><span>Undead Rogue lvl60 base stats</span><b class="green">verificat</b></div>
-      <div><span>Gnome Mage lvl60 base stats</span><b class="green">verificat</b></div>
-      <div><span>HP / Mana / AP / Armor / weapon damage formulas</span><b class="green">implementate</b></div>
-      <div><span>Rogue Subtlety lvl60 PvP static gear</span><b class="green">verificat</b></div>
-      <div><span>Rogue talent build + spellbook</span><b class="amber">în lucru</b></div>
-      <div><span>Frost Mage PvP gear + spellbook</span><b class="amber">următorul profil</b></div>
-      <div><span>Duel real</span><b class="red">blocat până datele sunt complete</b></div>
+      <div><span>Undead Rogue lvl60 base + P6 static gear</span><b class="green">verificat</b></div>
+      <div><span>Gnome Frost Mage P6 PvP core</span><b class="green">încărcat</b></div>
+      <div><span>Rogue 21/3/27 + Mage 17/0/34</span><b class="green">kernel v1</b></div>
+      <div><span>HP / Mana / AP / Armor / weapon/spell damage</span><b class="green">implementate</b></div>
+      <div><span>Rogue Subtlety vs Frost Mage</span><b class="green">duel + batch activ</b></div>
+      <div><span>Restul matchup-urilor/spec-urilor</span><b class="amber">în extindere</b></div>
+      <div><span>Self-learning / matchup matrix</span><b class="amber">după kernel-urile exacte</b></div>
     </div>
-    <div class="note">Regula proiectului: dacă nu știm exact o valoare, simulatorul nu o inventează.</div>
+    <div class="note">STRICT: primul duel activ este un kernel verificabil pentru Rogue Subtlety/Hemo vs Frost Mage. Terrain, facing, Engineering, consumables și weapon swaps nu sunt încă modelate, deci nu este încă verdictul final 1:1 pentru toate situațiile.</div>
+  </section>
+
+  <section id="duel" class="tab card">
+    <h2>Duel determinist</h2>
+    <div id="duelSummary" class="duel-summary"><span class="muted">Rulează duelul de sus.</span></div>
+    <div id="batchSummary" class="batch-summary"></div>
+    <h3 class="section-title">Timeline</h3>
+    <div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div>
+    <div class="note">Același „Cod al duelului” = aceleași roll-uri și același rezultat. Batch-ul schimbă determinist codul pentru fiecare duel.</div>
   </section>
 
   <section id="character" class="tab card">
@@ -84,12 +96,12 @@
       <div>
         <h3>Undead Rogue 60 + profil PvP</h3>
         <div id="rogueCharacter" class="stat-grid"></div>
-        <div class="note">Baseline fără talent modifiers/proc-uri. Nu este încă „final PvP combat-ready”.</div>
+        <div class="note">Static baseline + enchants. Talentele și proc-urile sunt aplicate în duel kernel, nu în cardul static.</div>
       </div>
       <div>
-        <h3>Gnome Mage 60 — naked baseline</h3>
+        <h3>Gnome Frost Mage 60 + PvP P6 core</h3>
         <div id="mageCharacter" class="stat-grid"></div>
-        <div class="note">Include Expansive Mind +5% INT. Gear-ul Mage nu este încă încărcat.</div>
+        <div class="note">Gear aggregate + Gnome racial. Arcane Resilience și talent modifiers sunt aplicate separat în duel.</div>
       </div>
     </div>
   </section>
@@ -111,7 +123,7 @@
       <div class="rule-card"><h3 class="green">✓ Rogue melee AP</h3><code>level × 2 + STR + AGI - 20 + flat AP</code></div>
       <div class="rule-card"><h3 class="green">✓ Armor din Agility</h3><code>2 × AGI</code></div>
       <div class="rule-card"><h3 class="green">✓ Weapon AP damage</h3><code>AP / 14 × weapon speed</code></div>
-      <div class="rule-card"><h3 class="green">✓ Gnome Expansive Mind</h3><code>Total INT × 1.05, apoi trunchiat ca stat integer</code></div>
+      <div class="rule-card"><h3 class="green">✓ Base movement</h3><code>7 yd/s = 100% run speed</code></div>
     </div>
   </section>
 
@@ -126,8 +138,10 @@
 </main>
 <script src="data.js"></script>
 <script src="character-data.js"></script>
+<script src="pvp-data.js"></script>
 <script src="engine.js"></script>
 <script src="character-engine.js"></script>
+<script src="duel-engine.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
