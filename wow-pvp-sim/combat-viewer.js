@@ -5,6 +5,10 @@
     mage:{label:'Mage · Frost',path:'combat/Mage/Frost/ClassCombat.lua'},
     engine:{label:'Combat Engine',path:'combat/CombatEngine.lua'}
   };
+  const selector=document.querySelector('.combat-selector');
+  if(selector&&!selector.querySelector('[data-policy="engine"]')){
+    const b=document.createElement('button');b.dataset.policy='engine';b.textContent='Combat Engine';selector.appendChild(b);
+  }
   const esc=s=>String(s??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
   async function load(key){
     const p=policies[key];if(!p)return;
