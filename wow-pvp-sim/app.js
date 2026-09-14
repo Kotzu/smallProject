@@ -28,20 +28,23 @@
   }
   function renderStatus(p){
     const s=state[p],prof=exactProfile(s);
-    let txt=prof?'<span class="green">✓ exact kernel profile</span>':'<span class="amber">date exacte încă neîncărcate pentru această combinație</span>';
+    let txt=prof?'<span class="green">✓ v0.10 kernel profile</span>':'<span class="amber">date exacte încă neîncărcate pentru această combinație</span>';
     if(s.class==='Rogue'&&s.race==='Undead')txt+=' · <span class="green">base stats ✓</span>';
     if(s.class==='Mage'&&s.race==='Gnome')txt+=' · <span class="green">base stats ✓</span>';
     $(p+'Status').innerHTML=txt;updateGate();
   }
+  function setBatchButtons(disabled){['batch1Btn','batchBtn','batch100Btn'].forEach(id=>{if($(id))$(id).disabled=disabled;});}
   function updateGate(){
     if(!DUEL)return;
-    const gate=DUEL.canRun(config());$('runBtn').disabled=!gate.ready;$('batchBtn').disabled=!gate.ready;
-    if(gate.ready){const t=DUEL.selfTest(config());$('gateReason').innerHTML=`<span class="green">READY · deterministic test ${t.deterministic?'✓':'FAIL'}</span>`;}
-    else $('gateReason').textContent='STRICT DATA GATE: '+gate.missing.join(' · ');
+    const gate=DUEL.canRun(config());$('runBtn').disabled=!gate.ready;setBatchButtons(!gate.ready);
+    if(gate.ready){
+      const t=DUEL.selfTest(config());
+      $('gateReason').innerHTML=`<span class="green">RUNNABLE v${DUEL.version} · reproducibil ${t.deterministic?'✓':'FAIL'}</span><br><span class="amber">3 calibrări stricte rămase</span>`;
+    } else $('gateReason').textContent='STRICT DATA GATE: '+gate.missing.join(' · ');
   }
   bind('a');bind('b');
 
-  $('ruleCount').textContent=D.rules.rules.length+6;
+  $('ruleCount').textContent=D.rules.rules.length+19;
   function openTab(id){
     document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));
     document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.id===id));
@@ -56,8 +59,10 @@
   const rogue=CE.rogue60Baseline(CD.level60.undeadRogue,P);
   const mp=D.pvpProfiles.mage_frost_gnome_p6_core;
   const mageArmor=Math.trunc(mp.stats.armorBeforeTalents+mp.stats.intellect*0.5);
-  $('rogueCharacter').innerHTML=[['STR total',rogue.stats.str],['AGI total',rogue.stats.agi],['STA total',rogue.stats.sta],['HP',rogue.health],['Melee AP',rogue.attackPower],['Armor',rogue.armor],['MH damage',rogue.mainHand.min.toFixed(1)+'–'+rogue.mainHand.max.toFixed(1)],['Shadow Resist',rogue.shadowResistance]].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
-  $('mageCharacter').innerHTML=[['HP',mp.stats.health],['Mana',mp.stats.mana],['STA',mp.stats.stamina],['INT',mp.stats.intellect],['Spell Damage',mp.stats.spellDamage],['Spell Crit',mp.stats.spellCritPct+'%'],['Frost/Fire Hit cu talent',(mp.stats.spellHitPct+6)+'%'],['Armor cu Arcane Resilience',mageArmor],['Spell Pen',mp.stats.spellPen],['Dodge + AGM',(mp.stats.dodgePct+1).toFixed(2)+'%']].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+  const barrier=Math.round(D.pvpSpellbooks.Mage.iceBarrier.absorbBase+mp.stats.spellDamage*D.pvpSpellbooks.Mage.iceBarrier.spCoeff);
+  const manaShield=D.pvpSpellbooks.Mage.manaShield.absorbBase+(mp.gearEffects?.manaShieldBonusAbsorb||0);
+  $('rogueCharacter').innerHTML=[['STR total',rogue.stats.str],['AGI total',rogue.stats.agi],['STA total',rogue.stats.sta],['HP',rogue.health],['Melee AP',rogue.attackPower],['Armor',rogue.armor],['MH damage',rogue.mainHand.min.toFixed(1)+'–'+rogue.mainHand.max.toFixed(1)],['White miss dual wield',Math.max(0,24-rogue.hitPct).toFixed(1)+'%'],['Crippling MH','30% proc'],['Mind-numbing OH','20% proc']].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
+  $('mageCharacter').innerHTML=[['HP',mp.stats.health],['Mana',mp.stats.mana],['STA',mp.stats.stamina],['INT',mp.stats.intellect],['Spell Damage',mp.stats.spellDamage],['Spell Crit',mp.stats.spellCritPct+'%'],['Frost/Fire Hit cu talent',(mp.stats.spellHitPct+6)+'%'],['Armor cu Arcane Resilience',mageArmor],['Spell Pen',mp.stats.spellPen],['Dodge + AGM',(mp.stats.dodgePct+1).toFixed(2)+'%'],['Ice Barrier R4',barrier],['Mana Shield + gloves',manaShield],['Blink CD','13.5s'],['Frostfire','6p active']].map(x=>`<div class="stat"><span>${x[0]}</span><b>${x[1]}</b></div>`).join('');
 
   $('ruleCards').innerHTML=D.rules.rules.map(r=>`<div class="rule-card"><h3 class="green">✓ ${r.id}</h3><p>${r.scope}</p><code>${r.formula}</code></div>`).join('');
   function updateLab(){
@@ -71,7 +76,8 @@
   function renderDuel(r){
     if(r.error){$('duelSummary').innerHTML=`<div class="red"><b>${r.error}</b>: ${r.missing.join(', ')}</div>`;return;}
     const winClass=r.winner==='Timeout'?'amber':'winner';
-    $('duelSummary').innerHTML=`<div class="${winClass}">WINNER: ${r.winner}</div><div class="result-meta">Durată ${r.duration}s · Rogue ${r.final.rogue.hp} HP · Mage ${r.final.mage.hp} HP / ${r.final.mage.mana} mana · range ${r.final.range} yd</div>`;
+    const cal=(r.calibrationRequired||[]).map(x=>`<li>${x}</li>`).join('');
+    $('duelSummary').innerHTML=`<div class="${winClass}">WINNER: ${r.winner}</div><div class="result-meta">Durată ${r.duration}s · Rogue ${r.final.rogue.hp} HP · Mage ${r.final.mage.hp} HP / ${r.final.mage.mana} mana · range ${r.final.range} yd</div>${cal?`<div class="calibration"><b>Încă neincluse în rezultat:</b><ul>${cal}</ul></div>`:''}`;
     $('timeline').innerHTML=r.timeline.map(e=>`<div class="timeline-row ${e.kind}"><span>${e.t.toFixed(1)}s</span><b>${e.actor}</b><em>${e.text}</em></div>`).join('');
     $('quickResult').classList.remove('hidden');
     $('quickResult').innerHTML=`<span class="${winClass}">WINNER: ${r.winner}</span><span>${r.duration}s</span><button id="seeTimeline">Timeline</button>`;
@@ -81,14 +87,19 @@
     const seed=(Number($('duelCode').value)||1337)>>>0;
     const r=DUEL.run(seed,config());renderDuel(r);$('batchSummary').innerHTML='';openTab('duel');
   };
-  $('batchBtn').onclick=()=>{
-    const btn=$('batchBtn'),seed=(Number($('duelCode').value)||1337)>>>0;btn.disabled=true;btn.textContent='Simulez…';
+  function runBatch(button,count){
+    const seed=(Number($('duelCode').value)||1337)>>>0;
+    setBatchButtons(true);$('runBtn').disabled=true;
+    const old=button.textContent;button.textContent='Simulez…';
     setTimeout(()=>{
-      const b=DUEL.batch(seed,10000,config());
+      const b=DUEL.batch(seed,count,config());
       if(b.error)$('batchSummary').innerHTML=`<span class="red">${b.error}: ${b.missing.join(', ')}</span>`;
       else $('batchSummary').innerHTML=`<div class="batch-grid"><div><span>Duels</span><b>${b.count.toLocaleString('ro-RO')}</b></div><div><span>Rogue</span><b>${b.rates.Rogue}%</b></div><div><span>Mage</span><b>${b.rates.Mage}%</b></div><div><span>Timeout</span><b>${b.rates.Timeout}%</b></div><div><span>Avg</span><b>${b.avgDuration}s</b></div></div>`;
-      btn.disabled=false;btn.textContent='Run 10.000';openTab('duel');
+      button.textContent=old;$('runBtn').disabled=false;setBatchButtons(false);openTab('duel');
     },30);
-  };
+  }
+  $('batch1Btn').onclick=()=>runBatch($('batch1Btn'),1000);
+  $('batchBtn').onclick=()=>runBatch($('batchBtn'),10000);
+  $('batch100Btn').onclick=()=>runBatch($('batch100Btn'),100000);
   updateGate();
 })();
