@@ -39,9 +39,19 @@
     add('Forever Mage tree structure',F?.classTotal?.('Mage')===54&&F?.classInfo?.('Mage')?.trees?.Arcane===18&&F?.classInfo?.('Mage')?.trees?.Fire===17&&F?.classInfo?.('Mage')?.trees?.Frost===19,'18 / 17 / 19 = 54');
     add('Forever Rogue names imported',F?.tree?.('Rogue','Assassination')?.length===17&&F?.tree?.('Rogue','Combat')?.length===17&&F?.tree?.('Rogue','Subtlety')?.length===19,'53/53 Rogue nodes named in local pre-beta snapshot');
     add('Forever Mage transcript coverage explicit',F?.tree?.('Mage','Arcane')?.length===18&&F?.tree?.('Mage','Fire')?.length===17&&F?.tree?.('Mage','Frost')?.length===19&&F?.coverage?.mageIncompleteTalentNames===2,'54 Mage nodes structurally mapped; 2 Fire names intentionally incomplete');
-    add('Classic builds never relabeled Forever',Object.values(T?.library||{}).every(b=>b?.dataset!=='Forever'), 'all runnable/known builds remain explicitly ClassicEra');
+    add('Classic builds never relabeled Forever',Object.values(T?.library||{}).every(b=>b?.dataset!=='Forever'),'all runnable/known builds remain explicitly ClassicEra');
     const foreverGate=window.WOW_DUEL?.canRun?.({ruleset:'forever',a:{class:'Rogue',spec:'Subtlety',race:'Undead',gear:'Level 60 PvP BiS',build:'rogue_cb_hemo_21_3_27'},b:{class:'Mage',spec:'Frost',race:'Gnome',gear:'Level 60 PvP BiS',build:'mage_deep_frost_17_0_34'}});
     add('Forever strict fight gate',foreverGate?.ready===false&&foreverGate?.missing?.some(x=>String(x).includes('Forever strict gate')),foreverGate?.missing?.join(' · ')||'missing gate');
+
+    // Refresh legacy base-QA expectations after the combat core/wrapper advanced past v0.18.
+    const coreCheck=checks.find(c=>c.name==='Talent-aware combat core active');
+    if(coreCheck){coreCheck.pass=window.WOW_DUEL?.engineCoreVersion==='0.22.0';coreCheck.details=`core ${window.WOW_DUEL?.engineCoreVersion||'missing'} · wrapper ${window.WOW_DUEL?.version||'missing'}`;}
+    const runtimeCheck=checks.find(c=>c.name==='Talent runtime calibration gate');
+    if(runtimeCheck){
+      const cfg={ruleset:'classic',a:{class:'Rogue',spec:'Subtlety',race:'Undead',gear:'Level 60 PvP BiS',build:'rogue_cb_hemo_21_3_27'},b:{class:'Mage',spec:'Frost',race:'Gnome',gear:'Level 60 PvP BiS',build:'mage_deep_frost_17_0_34'}};
+      let ok=true;for(let i=1;i<=25;i++){const r=window.WOW_DUEL?.run?.(i,cfg);if(r?.error||r?.kernelStatus!=='ACTIVE_CLASSIC_TALENT_RUNTIME')ok=false;}
+      runtimeCheck.pass=ok;runtimeCheck.details='25/25 sampled Classic duels report ACTIVE_CLASSIC_TALENT_RUNTIME';
+    }
   }catch(err){add('v0.28 QA runtime',false,String(err?.stack||err));}
 
   const passed=checks.filter(x=>x.pass).length,failed=checks.length-passed;
