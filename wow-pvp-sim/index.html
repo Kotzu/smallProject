@@ -12,7 +12,7 @@
 <body>
 <main class="app">
   <header class="hero">
-    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.21 · talent runtime active · Rogue dagger math in Lua engine · post-fight coaching</p></div>
+    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.22 · precision-first combat · evidence-based Rogue learning · talent-aware kernel</p></div>
     <div class="badge ok">STRICT DATA</div>
   </header>
 
@@ -46,14 +46,14 @@
   </nav>
 
   <section id="fight" class="tab active card">
-    <div class="combat-head"><div><h2>Fight</h2><div class="muted">Fight rulează numai dacă build-ul, gear-ul și kernelul au toate PASS. Talent effects sunt aplicate de combat core, nu doar afișate.</div></div><button id="fightRunBtn" class="fight-primary">▶ Start Fight</button></div>
+    <div class="combat-head"><div><h2>Fight</h2><div class="muted">Fight-ul este calculat complet de engine. Playback-ul este doar debug; rezultatul, log-ul, analiza și învățarea Rogue apar imediat.</div></div><button id="fightRunBtn" class="fight-primary">▶ Start Fight</button></div>
     <div id="fightError" class="red" style="margin:8px 0"></div>
     <div class="fight-layout">
       <article class="fighter"><div><h3>Undead Rogue</h3><div id="fightRogueBuild" class="sub">Subtlety · build loading…</div></div><div class="bar-label"><span>HP</span><b id="fightRogueHp">—</b></div><div class="bar"><i id="fightRogueHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightRogueRes">100 Energy</b></div><div class="bar resource"><i style="width:100%"></i></div></article>
       <div class="fight-center"><div class="fight-vs">VS</div><div id="fightTime" class="fight-time">0.0s</div><div id="fightAction" class="fight-action">Ready</div></div>
       <article class="fighter"><div><h3>Gnome Mage</h3><div id="fightMageBuild" class="sub">Frost · build loading…</div></div><div class="bar-label"><span>HP</span><b id="fightMageHp">—</b></div><div class="bar"><i id="fightMageHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightMageRes">— Mana</b></div><div class="bar resource"><i style="width:100%"></i></div></article>
     </div>
-    <div class="fight-controls"><button id="fightPlayBtn">Play</button><button id="fightPauseBtn">Pause</button><button id="fightStepBtn">Step</button><button id="fightResetBtn">Reset</button><label style="min-width:100px">Speed<select id="fightSpeed"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option><option value="8">8×</option></select></label></div>
+    <div class="fight-controls"><button id="fightPlayBtn">Replay</button><button id="fightPauseBtn">Pause</button><button id="fightStepBtn">Step</button><button id="fightResetBtn">Reset</button><label style="min-width:100px">Speed<select id="fightSpeed"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option><option value="8">8×</option></select></label></div>
     <div id="fightLiveLog" class="fight-log"></div>
   </section>
 
@@ -64,9 +64,9 @@
     <div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div>
   </section>
 
-  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua</h2><div class="muted">Un fișier per clasă. Talent build-ul selectat schimbă ramura de decizie din ClassCombat.lua.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>TalentBuilds.lua</b><br><span class="muted">ce talente există</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">alege acțiunea</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">rezolvă regulile WoW</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">CB/Hemo rulează pe core-ul talent-aware. În CombatEngine.lua sunt acum și formulele verificate pentru Backstab R9, Ambush R6, normalized dagger speed 1.7, Improved Gouge și Improved Sprint. Dagger build-ul rămâne strict-locked până închidem modelul 2D/facing și execuția web direct din ClassCombat.lua.</div></section>
+  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua</h2><div class="muted">Un fișier per clasă. Pentru Rogue, learner-ul schimbă numai politica de decizie; formulele WoW nu sunt optimizate.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>TalentBuilds.lua</b><br><span class="muted">ce talente există</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">alege acțiunea</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">rezolvă regulile WoW</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Regulă de proiect: learner-ul are voie să schimbe priorități/timing în Rogue ClassCombat policy. Nu are voie să schimbe damage, hit, crit, proc, resist sau alte reguli de engine.</div></section>
 
-  <section id="duel" class="tab card"><h2>Duel log</h2><div id="duelSummary" class="duel-summary"><span class="muted">Rulează Fight.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline complet</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div><div class="note">Același Cod al duelului + aceeași configurație = același rezultat.</div></section>
+  <section id="duel" class="tab card"><h2>Duel log</h2><div id="duelSummary" class="duel-summary"><span class="muted">Rulează Fight.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline complet</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div><div class="note">Același Cod al duelului + aceeași configurație + aceeași politică Rogue = același rezultat.</div></section>
 
   <section id="technical" class="tab card"><div class="tech-stack">
     <section class="tech-section"><h2>Character math</h2><div class="grid char-grid"><div><h3>Undead Rogue 60</h3><div id="rogueCharacter" class="stat-grid"></div></div><div><h3>Gnome Frost Mage 60</h3><div id="mageCharacter" class="stat-grid"></div></div></div></section>
@@ -76,7 +76,7 @@
     <section class="tech-section"><h2>Rule lab</h2><div class="lab-grid"><div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div><div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div><div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div></div></section>
   </div></section>
 
-  <div class="metrics"><div class="metric"><span>Fight kernel</span><b class="green">v0.18 core / v0.20 guard</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files · 2 active classes</b></div><div class="metric"><span>Talent builds</span><b class="green">4 verified · 2 kernel-active</b></div><div class="metric"><span>Rogue dagger math</span><b class="green">v0.21 Lua verified</b></div><div class="metric"><span>Post-fight coaching</span><b class="green">build-aware</b></div></div>
+  <div class="metrics"><div class="metric"><span>Fight core</span><b class="green">v0.22 policy-driven</b></div><div class="metric"><span>Rogue learner</span><b class="green">paired evidence</b></div><div class="metric"><span>Promotion gate</span><b class="green">1.000 seeds</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files</b></div><div class="metric"><span>Talent builds</span><b class="green">strict</b></div></div>
 </main>
 
 <script src="data.js"></script>
@@ -96,8 +96,9 @@
 <script src="armory-data.js"></script>
 <script src="engine.js"></script>
 <script src="character-engine.js"></script>
-<script src="duel-engine-v018.js"></script>
+<script src="duel-engine-v022.js"></script>
 <script src="duel-build-guard-v020.js"></script>
+<script src="rogue-learning-v022.js"></script>
 <script src="app.js"></script>
 <script src="armory.js"></script>
 <script src="talent-ui.js"></script>
