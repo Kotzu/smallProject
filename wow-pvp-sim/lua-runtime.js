@@ -1,5 +1,5 @@
 (()=>{
-  const FENGARI_URLS=['https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js','https://unpkg.com/fengari-web@0.1.4/dist/fengari-web.js'];
+  const FENGARI_URLS=['/vendor/fengari-web.min.js','https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js','https://unpkg.com/fengari-web@0.1.4/dist/fengari-web.js'];
   const sourceCache=new Map();
   let initPromise=null;
 
@@ -16,7 +16,7 @@
   function loadScript(src){
     return new Promise((resolve,reject)=>{
       if(window.fengari?.load){resolve(window.fengari);return;}
-      let s=[...document.scripts].find(x=>x.src===src);
+      let s=[...document.scripts].find(x=>x.src===new URL(src,location.href).href);
       const cleanup=()=>{s?.removeEventListener('load',onload);s?.removeEventListener('error',onerror);};
       const onload=()=>{cleanup();waitForFengari(3000).then(resolve,reject);};
       const onerror=()=>{cleanup();reject(new Error('Nu pot încărca '+src));};
@@ -26,11 +26,7 @@
   }
   async function init(){
     if(window.fengari?.load)return window.fengari;
-    if(!initPromise)initPromise=(async()=>{
-      let last;
-      for(const url of FENGARI_URLS){try{return await loadScript(url);}catch(err){last=err;}}
-      throw last||new Error('Fengari runtime unavailable');
-    })();
+    if(!initPromise)initPromise=(async()=>{let last;for(const url of FENGARI_URLS){try{return await loadScript(url);}catch(err){last=err;}}throw last||new Error('Fengari runtime unavailable');})();
     return initPromise;
   }
 
