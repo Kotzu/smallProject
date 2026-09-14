@@ -2,6 +2,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const {runTraining, runDuel} = require('./headless-runner');
 
 const root = path.resolve(__dirname);
 const port = Number(process.env.PORT || 10000);
@@ -36,10 +37,48 @@ function fetchRemote(url, redirects, cb) {
   request.on('error', cb);
 }
 
+function sendJson(res, status, value) {
+  const body = JSON.stringify(value);
+  res.writeHead(status, {
+    'content-type':'application/json; charset=utf-8',
+    'cache-control':'no-store',
+    'content-length':Buffer.byteLength(body)
+  });
+  res.end(body);
+}
+
 http.createServer((req, res) => {
-  let pathname;
-  try { pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); }
-  catch { res.writeHead(400).end('Bad request'); return; }
+  let parsed, pathname;
+  try {
+    parsed = new URL(req.url, 'http://localhost');
+    pathname = decodeURIComponent(parsed.pathname);
+  } catch {
+    res.writeHead(400).end('Bad request'); return;
+  }
+
+  if (pathname === '/api/rogue-train') {
+    try {
+      const count = Math.max(100, Math.min(2500, Math.trunc(Number(parsed.searchParams.get('count')) || 1000)));
+      const seed = (Number(parsed.searchParams.get('seed')) || 1337) >>> 0;
+      const started = Date.now();
+      const result = runTraining(count, seed);
+      result.elapsedMs = Date.now() - started;
+      result.scope = 'Rogue Subtlety CB/Hemo vs Gnome Frost Mage; paired deterministic seeds; policy-only variants';
+      return sendJson(res, 200, result);
+    } catch (err) {
+      return sendJson(res, 500, {error:'TRAINING_FAILED',message:String(err?.stack || err)});
+    }
+  }
+
+  if (pathname === '/api/duel') {
+    try {
+      const seed = (Number(parsed.searchParams.get('seed')) || 1337) >>> 0;
+      const result = runDuel(seed);
+      return sendJson(res, 200, result);
+    } catch (err) {
+      return sendJson(res, 500, {error:'DUEL_FAILED',message:String(err?.stack || err)});
+    }
+  }
 
   if (pathname === '/vendor/fengari-web.js') {
     const key = 'fengari-web-0.1.4';
