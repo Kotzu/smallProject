@@ -2,12 +2,16 @@ local Combat = {}
 
 Combat.id = "Mage_ClassCombat"
 Combat.class = "Mage"
-Combat.version = "0.15"
+Combat.version = "0.27"
 Combat.activeSpec = "Frost"
 Combat.specStatus = {
     Arcane = "LOCKED",
     Fire = "LOCKED",
-    Frost = "ACTIVE_CALIBRATED",
+    Frost = "ACTIVE_CORE_WEB_ACTION_GAP",
+}
+
+Combat.actionStatus = {
+    ["Insignia of the Alliance"] = "VERIFIED_POLICY_KERNEL_PENDING",
 }
 
 local function chooseFrost(ctx)
@@ -20,15 +24,25 @@ local function chooseFrost(ctx)
     if me.casting then
         return { action = "WAIT", reason = "cast in progress" }
     end
+
+    -- Blink can be used while stunned and is the verified immediate escape in this profile.
     if me.stunned then
         if ctx.range <= 5 and ctx:ready("Blink") then
             return { action = "Blink", reason = "escape stun/melee" }
         end
         return { action = "WAIT", reason = "stunned" }
     end
+
+    -- Classic Mage Insignia 18859 dispels Fear, Polymorph and Slowing effects.
+    -- It does NOT claim to remove roots here. Preserve Escape Artist for root/immobilize.
+    if me.slowed and not me.rooted and ctx:ready("Insignia of the Alliance") then
+        return { action = "Insignia of the Alliance", reason = "remove Crippling/Slowing effect; preserve Escape Artist" }
+    end
+
     if (me.rooted or me.slowed) and ctx:ready("Escape Artist") then
         return { action = "Escape Artist", reason = "remove root/snare" }
     end
+
     if me.healthPct < 28 and ctx:ready("Ice Block") then
         return { action = "Ice Block", reason = "emergency immunity" }
     end
