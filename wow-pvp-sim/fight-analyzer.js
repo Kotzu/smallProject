@@ -22,13 +22,16 @@
       const sprint=count(events,'Rogue','Sprint');
       const kidney=count(events,'Rogue','Kidney Shot');
       const coldBlood=count(events,'Rogue','Cold Blood');
+      const prep=count(events,'Rogue','Preparation');
       const frostCasts=enemy.filter(e=>has(e,'Frostbolt cast started')).length;
       const roots=enemy.filter(e=>has(e,'Frost Nova')||has(e,'rooted')).length;
       if(frostCasts>0&&kick===0) improvements.push('Prioritize Kick against exposed Frostbolt casts; the selected build has enough control tools to deny free casts.');
-      if(roots>0&&vanish===0) improvements.push('Preserve Vanish as a root-break/reopen tool when Frost Nova creates a losing distance window.');
+      if(roots>0&&vanish===0&&!(build?.modifiers?.improvedSprint)) improvements.push('Preserve Vanish as a root-break/reopen tool when Frost Nova creates a losing distance window.');
+      if(roots>0&&build?.modifiers?.improvedSprint&&sprint===0) improvements.push('Improved Sprint is in this build, but no Sprint root-break was logged during movement-impair pressure.');
       if(sprint===0) improvements.push('Use Sprint more deliberately after Blink/Nova to recover melee range instead of accepting free ranged pressure.');
       if(kidney===0) improvements.push('Build a cleaner Kidney Shot control window before committing the finisher when the target is not already stunned.');
       if(build?.modifiers?.coldBlood&&coldBlood===0) improvements.push(`${build.name} includes Cold Blood, but this fight logged no Cold Blood use; review finisher timing in Rogue ClassCombat.lua.`);
+      if(build?.modifiers?.preparation&&result?.final?.rogue?.hp>0&&prep===0&&pct(result.final.rogue.hp,maxHp.rogue)<25) improvements.push('Preparation remained unused in a low-HP finish; test whether an earlier reset creates a safer second control cycle.');
       if(won&&pct(result.final.rogue.hp,maxHp.rogue)<30) improvements.push('The win was expensive: reduce damage traded during control gaps so the same line is safer across more RNG seeds.');
       if(!improvements.length) improvements.push(`Current ${build?.name||'Rogue'} priority handled this seed cleanly; next tuning target is timing efficiency rather than adding more actions.`);
     }
@@ -68,8 +71,17 @@
     const whyWinner=[];
     const whyLoser=[];
 
+    if(result?.engineCoreVersion)facts.push(`Combat core: v${result.engineCoreVersion}; wrapper: v${window.WOW_DUEL?.version||'?'}.`);
     if(winnerBuild?.build)facts.push(`${winner} build: ${winnerBuild.build.name} ${winnerBuild.build.points}.`);
     if(loserBuild?.build)facts.push(`${loser} build: ${loserBuild.build.name} ${loserBuild.build.points}.`);
+    if(result?.talentRuntime){
+      const tr=result.talentRuntime;
+      facts.push(`Rogue talent runtime: Initiative ${tr.initiativePct||0}%, Ruthlessness ${tr.ruthlessnessPct||0}%, Preparation ${tr.preparation?'ON':'OFF'}, Elusiveness CD reduction ${tr.elusivenessMs||0} ms.`);
+    }
+    if(result?.final?.rogue){
+      const rr=result.final.rogue;
+      facts.push(`Talent procs/uses: Initiative ${rr.initiativeProcs||0}, Ruthlessness ${rr.ruthlessnessProcs||0}, Relentless Strikes ${rr.relentlessProcs||0}, Preparation ${rr.preparationUses||0}.`);
+    }
     if(winner==='Rogue'){
       facts.push(`Rogue final: ${result.final.rogue.hp} HP, ${result.final.rogue.energy} Energy, ${result.final.rogue.combo} CP.`);
       facts.push(`Mage final: ${result.final.mage.hp} HP, ${result.final.mage.mana} Mana.`);
@@ -101,17 +113,10 @@
 
     return {
       winner,loser,duration:result.duration,winnerBuild,loserBuild,
-      whyWinner:whyWinner.slice(0,5),
-      whyLoser:whyLoser.slice(0,5),
-      winnerImprovements,
-      loserImprovements,
-      facts,
-      policyTargets:{
-        winner:winner==='Rogue'?'combat/Rogue/ClassCombat.lua':winner==='Mage'?'combat/Mage/ClassCombat.lua':'—',
-        loser:loser==='Rogue'?'combat/Rogue/ClassCombat.lua':loser==='Mage'?'combat/Mage/ClassCombat.lua':'—'
-      }
+      whyWinner:whyWinner.slice(0,5),whyLoser:whyLoser.slice(0,5),winnerImprovements,loserImprovements,facts,
+      policyTargets:{winner:winner==='Rogue'?'combat/Rogue/ClassCombat.lua':winner==='Mage'?'combat/Mage/ClassCombat.lua':'—',loser:loser==='Rogue'?'combat/Rogue/ClassCombat.lua':loser==='Mage'?'combat/Mage/ClassCombat.lua':'—'}
     };
   }
 
-  window.WOW_FIGHT_ANALYZER={analyze,version:'0.16'};
+  window.WOW_FIGHT_ANALYZER={analyze,version:'0.20'};
 })();
