@@ -11,9 +11,9 @@
   <header class="hero">
     <div>
       <h1>WoW PvP Classic / Forever Simulator</h1>
-      <p>v0.9 · Strict Accuracy ON · deterministic duel kernel</p>
+      <p>v0.10 · deterministic duel kernel · CMaNGOS/WoW Classic data-first</p>
     </div>
-    <div class="badge ok">DATA-FIRST</div>
+    <div class="badge ok">STRICT DATA</div>
   </header>
 
   <section class="grid players">
@@ -41,8 +41,10 @@
 
   <section class="card duel-bar">
     <label>Codul duelului<input id="duelCode" inputmode="numeric" value="1337"></label>
-    <button id="runBtn" disabled>▶ Run 1 duel</button>
-    <button id="batchBtn" disabled>Run 10.000</button>
+    <button id="runBtn" disabled>▶ 1 duel</button>
+    <button id="batch1Btn" disabled>1.000</button>
+    <button id="batchBtn" disabled>10.000</button>
+    <button id="batch100Btn" disabled>100.000</button>
     <div id="gateReason" class="gate-reason"></div>
   </section>
 
@@ -51,7 +53,7 @@
   <section class="metrics">
     <div class="metric"><span>Clase</span><b>9</b></div>
     <div class="metric"><span>Spec-uri</span><b>27</b></div>
-    <div class="metric"><span>Reguli/formule verificate</span><b id="ruleCount">10</b></div>
+    <div class="metric"><span>Reguli/formule verificate</span><b id="ruleCount">16</b></div>
     <div class="metric"><span>Rogue PvP gear</span><b class="green">17/17</b></div>
     <div class="metric"><span>Kernel activ</span><b class="green">1 matchup</b></div>
   </section>
@@ -70,15 +72,18 @@
     <div class="progress-list">
       <div><span>UI + selectors</span><b class="green">gata</b></div>
       <div><span>27 ClassCombat.lua</span><b class="green">structură gata</b></div>
-      <div><span>Undead Rogue lvl60 base + P6 static gear</span><b class="green">verificat</b></div>
-      <div><span>Gnome Frost Mage P6 PvP core</span><b class="green">încărcat</b></div>
-      <div><span>Rogue 21/3/27 + Mage 17/0/34</span><b class="green">kernel v1</b></div>
-      <div><span>HP / Mana / AP / Armor / weapon/spell damage</span><b class="green">implementate</b></div>
-      <div><span>Rogue Subtlety vs Frost Mage</span><b class="green">duel + batch activ</b></div>
+      <div><span>Undead Rogue lvl60 + P6 static gear</span><b class="green">verificat</b></div>
+      <div><span>Gnome Frost Mage + P6 PvP core</span><b class="green">încărcat</b></div>
+      <div><span>Rogue auto-attacks MH/OH + dual-wield miss/50% OH</span><b class="green">v0.10</b></div>
+      <div><span>Crippling + Mind-numbing + Hand of Justice</span><b class="green">v0.10</b></div>
+      <div><span>Ice Barrier R4 + Mana Shield gloves + Escape Artist</span><b class="green">v0.10</b></div>
+      <div><span>Mage PvP 3p Blink + Frostfire 6p + Elemental Precision cost</span><b class="green">v0.10</b></div>
+      <div><span>Batch 1k / 10k / 100k + reproducibilitate</span><b class="green">activ</b></div>
+      <div><span>Crusader PPM + Bonescythe 2p PPM + poison binary resist</span><b class="amber">calibrare deschisă</b></div>
       <div><span>Restul matchup-urilor/spec-urilor</span><b class="amber">în extindere</b></div>
       <div><span>Self-learning / matchup matrix</span><b class="amber">după kernel-urile exacte</b></div>
     </div>
-    <div class="note">STRICT: primul duel activ este un kernel verificabil pentru Rogue Subtlety/Hemo vs Frost Mage. Terrain, facing, Engineering, consumables și weapon swaps nu sunt încă modelate, deci nu este încă verdictul final 1:1 pentru toate situațiile.</div>
+    <div class="note">Nu inventăm valorile lipsă. Mecanismele cu surse contradictorii sunt marcate „calibrare” și nu sunt introduse în rezultat până nu le fixăm exact.</div>
   </section>
 
   <section id="duel" class="tab card">
@@ -87,7 +92,7 @@
     <div id="batchSummary" class="batch-summary"></div>
     <h3 class="section-title">Timeline</h3>
     <div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div>
-    <div class="note">Același „Cod al duelului” = aceleași roll-uri și același rezultat. Batch-ul schimbă determinist codul pentru fiecare duel.</div>
+    <div class="note">Același „Cod al duelului” = aceleași roll-uri și același rezultat. Batch-ul derivă determinist câte un cod pentru fiecare duel.</div>
   </section>
 
   <section id="character" class="tab card">
@@ -96,12 +101,12 @@
       <div>
         <h3>Undead Rogue 60 + profil PvP</h3>
         <div id="rogueCharacter" class="stat-grid"></div>
-        <div class="note">Static baseline + enchants. Talentele și proc-urile sunt aplicate în duel kernel, nu în cardul static.</div>
+        <div class="note">Static baseline + enchants. Proc-urile cu rată încă nefixată nu intră în rezultat.</div>
       </div>
       <div>
         <h3>Gnome Frost Mage 60 + PvP P6 core</h3>
         <div id="mageCharacter" class="stat-grid"></div>
-        <div class="note">Gear aggregate + Gnome racial. Arcane Resilience și talent modifiers sunt aplicate separat în duel.</div>
+        <div class="note">Include PvP 3p, 6 piese Frostfire și bonusul de absorb de pe mănuși.</div>
       </div>
     </div>
   </section>
@@ -116,11 +121,27 @@
   <section id="rules" class="tab card">
     <h2>Reguli Classic verificate și active</h2>
     <div id="ruleCards" class="rule-grid"></div>
+    <h2 style="margin-top:16px">Reguli v0.10</h2>
+    <div class="rule-grid">
+      <div class="rule-card"><h3 class="green">✓ Dual wield white miss</h3><code>5% base + 19% dual-wield penalty − Hit</code></div>
+      <div class="rule-card"><h3 class="green">✓ Off-hand damage</h3><code>50% din damage-ul normal fără Dual Wield Specialization</code></div>
+      <div class="rule-card"><h3 class="green">✓ Crippling Poison II</h3><code>30% proc · -70% movement · 12s</code></div>
+      <div class="rule-card"><h3 class="green">✓ Mind-numbing III</h3><code>20% proc · +60% cast time · 14s</code></div>
+      <div class="rule-card"><h3 class="green">✓ Hand of Justice</h3><code>2% melee proc · extra attack · 2s ICD</code></div>
+      <div class="rule-card"><h3 class="green">✓ Ice Barrier R4</h3><code>818 + 10% spell power absorb · 30s CD</code></div>
+      <div class="rule-card"><h3 class="green">✓ Mana Shield + gloves</h3><code>570 + 285 = 855 absorb · 2 mana / damage</code></div>
+      <div class="rule-card"><h3 class="green">✓ Field Marshal 3p</h3><code>Blink cooldown 15s → 13.5s</code></div>
+      <div class="rule-card"><h3 class="green">✓ Escape Artist</h3><code>0.5s cast · 60s CD · removes roots/snares</code></div>
+      <div class="rule-card"><h3 class="green">✓ Frostfire 6p</h3><code>20% proc · next spell receives +200 SP-equivalent by coefficient</code></div>
+      <div class="rule-card"><h3 class="green">✓ Elemental Precision 3/3</h3><code>+6% Frost/Fire hit · -3% Frost/Fire mana cost</code></div>
+      <div class="rule-card"><h3 class="amber">△ Calibration gate</h3><code>Crusader PPM · Bonescythe 2p PPM · binary poison resistance</code></div>
+    </div>
     <h2 style="margin-top:16px">Character formulas verificate</h2>
     <div class="rule-grid">
       <div class="rule-card"><h3 class="green">✓ HP din Stamina</h3><code>min(STA,20) + max(STA-20,0) × 10</code></div>
       <div class="rule-card"><h3 class="green">✓ Mana din Intellect</h3><code>min(INT,20) + max(INT-20,0) × 15</code></div>
       <div class="rule-card"><h3 class="green">✓ Rogue melee AP</h3><code>level × 2 + STR + AGI - 20 + flat AP</code></div>
+      <div class="rule-card"><h3 class="green">✓ Rogue crit/dodge @60</h3><code>29 AGI = 1% crit · 14.5 AGI = 1% dodge</code></div>
       <div class="rule-card"><h3 class="green">✓ Armor din Agility</h3><code>2 × AGI</code></div>
       <div class="rule-card"><h3 class="green">✓ Weapon AP damage</h3><code>AP / 14 × weapon speed</code></div>
       <div class="rule-card"><h3 class="green">✓ Base movement</h3><code>7 yd/s = 100% run speed</code></div>
@@ -139,9 +160,10 @@
 <script src="data.js"></script>
 <script src="character-data.js"></script>
 <script src="pvp-data.js"></script>
+<script src="pvp-data-v010.js"></script>
 <script src="engine.js"></script>
 <script src="character-engine.js"></script>
-<script src="duel-engine.js"></script>
+<script src="duel-engine-v010.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
