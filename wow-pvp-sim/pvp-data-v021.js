@@ -8,34 +8,47 @@
     source:'Warcraft Wiki Normalization; Classic patch 1.8+ instant weapon attacks'
   };
   D.v021.rogueDaggerAbilityMath={
-    backstab:{
-      status:'VERIFIED_LUA_ENGINE',spellId:11281,cost:60,weaponPct:150,flatDamage:210,requiresBehind:true,requiresDagger:true,
-      formula:'((weapon roll + flat weapon enchant + AP/14*1.7)*1.5 + 210) * (1 + Opportunity%)',
-      crit:'base 2.0 + 0.06 per Lethality rank'
-    },
-    ambush:{
-      status:'VERIFIED_LUA_ENGINE',spellId:11269,cost:60,weaponPct:250,flatDamage:290,requiresBehind:true,requiresStealth:true,requiresDagger:true,
-      formula:'((weapon roll + flat weapon enchant + AP/14*1.7)*2.5 + 290) * (1 + Opportunity%)',
-      crit:'base 2.0; Classic Lethality does not affect Ambush'
-    },
-    gouge:{
-      status:'VERIFIED_LUA_ENGINE',spellId:11286,cost:45,damage:75,cooldownMs:10000,baseDurationMs:4000,improvedGouge3DurationMs:5500,breaksOnDamage:true
+    backstab:{status:'VERIFIED_LUA_ENGINE',spellId:11281,cost:60,weaponPct:150,flatDamage:210,requiresBehind:true,requiresDagger:true,formula:'((weapon roll + flat weapon enchant + AP/14*1.7)*1.5 + 210) * (1 + Opportunity%)',crit:'base 2.0 + 0.06 per Lethality rank'},
+    ambush:{status:'VERIFIED_LUA_ENGINE',spellId:11269,cost:60,weaponPct:250,flatDamage:290,requiresBehind:true,requiresStealth:true,requiresDagger:true,formula:'((weapon roll + flat weapon enchant + AP/14*1.7)*2.5 + 290) * (1 + Opportunity%)',crit:'base 2.0; Classic Lethality does not affect Ambush'},
+    gouge:{status:'VERIFIED_LUA_ENGINE',spellId:11286,cost:45,damage:75,cooldownMs:10000,baseDurationMs:4000,improvedGouge3DurationMs:5500,breaksOnDamage:true}
+  };
+
+  D.v022={
+    positioning:{
+      status:'REAR_ARC_VERIFIED_RUNTIME_PARTIAL',
+      defaultBackArcRadians:Math.PI,
+      backArcDegrees:180,
+      meleeDistanceYards:5,
+      webDistanceModel:'center-to-center 2D',
+      exactParityPending:'CMaNGOS combat-reach/bounding-radius distance adjustment',
+      source:'CMaNGOS mangos-classic Object.cpp WorldObject::isInBack + HasInArc; PlayerbotRogueAI uses isInBackInMap(..., 5.0f) for Ambush',
+      policyAction:'MOVE_BEHIND'
     }
   };
 
-  for(const id of ['rogue_imp_sprint_backstab_16_12_23','rogue_imp_sprint_backstab_17_12_22']){
-    const b=T?.get?.(id);if(!b)continue;
-    b.kernelBlockers=[
-      '2D/facing positional behind-state model',
+  const canonical=T?.get?.('rogue_imp_sprint_backstab_16_12_23');
+  if(canonical){
+    canonical.kernelBlockers=[
+      'web-kernel MOVE_BEHIND execution + CMaNGOS combat-reach radius parity',
       'web-kernel execution of Backstab/Ambush/Gouge via ClassCombat policy',
-      'Initiative proc on Ambush/Garrote path',
+      'Initiative extra-combo-point execution on Ambush/Garrote/Cheap Shot',
       'Lua↔web policy parity QA'
     ];
-    b.auditNotes=[...(b.auditNotes||[]),
-      'Patch 1.8+ normalized dagger speed = 1.7 — verified',
-      'Backstab R9 normalized formula + Opportunity + Lethality interaction — verified in CombatEngine.lua',
-      'Ambush R6 normalized formula + Opportunity; Lethality excluded — verified in CombatEngine.lua',
-      'Gouge R5 4.0s / Improved Gouge 3/3 5.5s and break-on-damage semantics — implemented in CombatEngine.lua'
+    canonical.auditNotes=[...(canonical.auditNotes||[]),
+      'CMaNGOS rear arc: default PI radians / 180 degrees — verified',
+      'Rogue ClassCombat.lua now emits MOVE_BEHIND before positional dagger attacks'
+    ];
+  }
+  const variant=T?.get?.('rogue_imp_sprint_backstab_17_12_22');
+  if(variant){
+    variant.kernelBlockers=[
+      'web-kernel MOVE_BEHIND execution + CMaNGOS combat-reach radius parity',
+      'web-kernel execution of Backstab/Ambush/Gouge via ClassCombat policy',
+      'Lua↔web policy parity QA'
+    ];
+    variant.auditNotes=[...(variant.auditNotes||[]),
+      'CMaNGOS rear arc: default PI radians / 180 degrees — verified',
+      'No Initiative blocker: this 17/12/22 variant does not use Initiative'
     ];
   }
 })();
