@@ -11,7 +11,7 @@
 
   D.pvpMechanics=D.pvpMechanics||{};
   D.pvpMechanics.v010={
-    version:'0.10.0',
+    version:'0.10.1',
     dualWield:{baseSameLevelMissPct:5,whitePenaltyPct:19,offhandDamageMultiplier:0.50},
     poisons:{
       cripplingII:{itemId:3776,procPct:30,slowPct:70,durationMs:12000},
@@ -20,7 +20,7 @@
     handOfJustice:{itemId:11815,procPct:2,internalCooldownMs:2000,extraMainHandAttacks:1},
     bonescythe4p:{piecesRequired:4,energyOnBuilderCrit:5,builders:['Hemorrhage','Backstab','Sinister Strike']},
     bonescythe2p:{piecesRequired:2,healMin:90,healMax:110,status:'CALIBRATION_REQUIRED',note:'Current sources disagree on exact PPM; excluded from duel outcome until resolved.'},
-    crusader:{spellId:20034,strength:100,healMin:75,healMax:125,durationMs:15000,status:'CALIBRATION_REQUIRED',note:'Effect is exact; proc rate remains excluded from duel outcome until a primary/Blizzard-grade rate is fixed.'},
+    crusader:{effectId:1900,procSpellId:20007,ppm:1,strength:100,healMin:75,healMax:125,durationMs:15000,status:'VERIFIED',note:'WoWSims Classic uses a 1.0 PPM manager; Wowhead Classic Holy Strength confirms +100 STR and 75-125 heal for 15s at level 60.'},
     magePvpSet:{piecesEquipped:3,blinkCooldownReductionMs:1500},
     frostfire6p:{piecesEquipped:6,procPct:20,debuffMs:30000,bonusSpellPowerForNextHit:200},
     elementalPrecision:{rank:3,spellHitPct:6,manaCostReductionPct:3,schools:['Frost','Fire']},
@@ -30,6 +30,7 @@
       offhand:'WoW Classic Dual Wield: off-hand auto attacks deal 50% damage.',
       poisons:'Wowhead Classic Crippling Poison II / Mind-numbing Poison III tooltips.',
       hoj:'Wowhead Classic Hand of Justice: 2% proc, 2s cooldown.',
+      crusader:'WoWSims Classic enchant_effects.go: Crusader NewPPMManager(1.0); Wowhead Classic spell 20007: heal 75-125, +100 STR, 15s.',
       mageSpells:'Wowhead Classic spell tooltips; CMaNGOS spell bonus data for coefficients.',
       frostfire:'Wowhead Classic Frostfire Regalia / Elemental Vulnerability.',
       escapeArtist:'Wowhead Classic Escape Artist: 0.5s cast, 60s cooldown.'
@@ -53,8 +54,9 @@
       offhandDamageMultiplier:0.50,
       handOfJusticeProcPct:2,
       handOfJusticeIcdMs:2000,
-      bonescythe4pEnergyOnBuilderCrit:5
+      bonescythe4pEnergyOnBuilderCrit:5,
+      crusaderPpm:1
     };
-    rp.calibrationRequired=['Bonescythe 2p exact PPM','Crusader exact proc rate'];
+    rp.calibrationRequired=['Bonescythe 2p exact PPM','binary poison resistance vs target Nature resistance'];
   }
 })();
