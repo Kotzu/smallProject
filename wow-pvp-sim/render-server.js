@@ -22,7 +22,7 @@ const mime = {
 const vendorCache = new Map();
 function fetchRemote(url, redirects, cb) {
   if (redirects < 0) return cb(new Error('too many redirects'));
-  https.get(url, r => {
+  const request = https.get(url, {headers:{'user-agent':'wow-pvp-simulator-preview'}}, r => {
     if (r.statusCode >= 300 && r.statusCode < 400 && r.headers.location) {
       r.resume();
       return fetchRemote(new URL(r.headers.location, url).toString(), redirects - 1, cb);
@@ -31,7 +31,9 @@ function fetchRemote(url, redirects, cb) {
     const chunks = [];
     r.on('data', c => chunks.push(c));
     r.on('end', () => cb(null, Buffer.concat(chunks)));
-  }).on('error', cb);
+  });
+  request.setTimeout(8000, () => request.destroy(new Error('upstream timeout')));
+  request.on('error', cb);
 }
 
 http.createServer((req, res) => {
@@ -39,14 +41,14 @@ http.createServer((req, res) => {
   try { pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname); }
   catch { res.writeHead(400).end('Bad request'); return; }
 
-  if (pathname === '/vendor/fengari-web.min.js') {
+  if (pathname === '/vendor/fengari-web.js') {
     const key = 'fengari-web-0.1.4';
     const cached = vendorCache.get(key);
     if (cached) {
       res.writeHead(200, {'content-type':'application/javascript; charset=utf-8','cache-control':'public, max-age=86400'});
       res.end(cached); return;
     }
-    fetchRemote('https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.min.js', 3, (err, body) => {
+    fetchRemote('https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js', 3, (err, body) => {
       if (err) { res.writeHead(502, {'content-type':'text/plain; charset=utf-8'}).end('Vendor fetch failed: '+err.message); return; }
       vendorCache.set(key, body);
       res.writeHead(200, {'content-type':'application/javascript; charset=utf-8','cache-control':'public, max-age=86400'});
