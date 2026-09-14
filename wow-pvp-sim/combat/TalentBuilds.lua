@@ -15,7 +15,7 @@ TalentBuilds.Rogue = {
     rogue_imp_sprint_backstab_17_12_22 = {
         name = "Improved Sprint Backstab - Expose Armor variant", class = "Rogue", spec = "Subtlety", level = 60,
         points = "17/12/22", status = "VERIFIED_LOCKED_KERNEL", dataset = "ClassicEra",
-        calculator = "005320124-320302002-500253000330121", loadoutId = "rogue_p6_pvp_daggers_kingsfall_deaths_sting",
+        calculator = "005320124-320302002-05024303030011", loadoutId = "rogue_p6_pvp_daggers_kingsfall_deaths_sting",
         modifiers = {
             meleeCritPct = 5, meleeHitPct = 2, ruthlessnessProcPct = 60, murderDamagePct = 2,
             relentlessEnergy = 25, relentlessChancePerComboPct = 20, improvedExposeArmorPct = 50,
@@ -55,9 +55,6 @@ TalentBuilds.Mage = {
     },
 }
 
--- Current WoW Forever pre-beta tree structure from Wowhead, checked 2026-09-14.
--- These are NOT silently mapped onto Classic builds. Until a Forever build and every used
--- talent effect are calibrated in CombatEngine, Forever combat stays strict-locked.
 TalentBuilds.ForeverSnapshot = {
     id = "wowhead-forever-prebeta-2026-09-14",
     status = "PRE_BETA_DEMO_STRICT_LOCKED",
