@@ -1,12 +1,79 @@
 local Engine = {}
 
-Engine.version = "0.21-rogue-dagger-math"
+Engine.version = "0.22-rogue-positioning"
 Engine.scope = "Classic level 60 PvP combat rules. ClassCombat.lua chooses actions; CombatEngine resolves verified mechanics."
+
+local TAU = math.pi * 2
 
 local function clamp(v, lo, hi)
     if v < lo then return lo end
     if v > hi then return hi end
     return v
+end
+
+local function atan2(y, x)
+    if math.atan2 then return math.atan2(y, x) end
+    if x > 0 then return math.atan(y / x) end
+    if x < 0 and y >= 0 then return math.atan(y / x) + math.pi end
+    if x < 0 and y < 0 then return math.atan(y / x) - math.pi end
+    if x == 0 and y > 0 then return math.pi / 2 end
+    if x == 0 and y < 0 then return -math.pi / 2 end
+    return 0
+end
+
+function Engine.normalizeAngle(rad)
+    local a = rad or 0
+    while a <= -math.pi do a = a + TAU end
+    while a > math.pi do a = a - TAU end
+    return a
+end
+
+function Engine.distance2D(a, b)
+    local dx = (b.x or 0) - (a.x or 0)
+    local dy = (b.y or 0) - (a.y or 0)
+    return math.sqrt(dx * dx + dy * dy)
+end
+
+function Engine.angleTo(a, b)
+    return atan2((b.y or 0) - (a.y or 0), (b.x or 0) - (a.x or 0))
+end
+
+-- CMaNGOS WorldObject::HasInArc semantics: arc is the full angular width.
+function Engine.hasInArc(source, target, arc)
+    local width = clamp(arc or math.pi, 0, TAU)
+    if width >= TAU then return true end
+    local delta = math.abs(Engine.normalizeAngle(Engine.angleTo(source, target) - (source.o or 0)))
+    return delta <= width / 2 + 0.000000001
+end
+
+-- CMaNGOS WorldObject::isInBack uses a default PI rear arc and a distance check.
+-- This simulator currently uses center-to-center 2D distance; CMaNGOS combat reach radii
+-- remain a separate parity item and are not silently approximated here.
+function Engine.isInBack(target, attacker, maxDistance, arc)
+    if Engine.distance2D(target, attacker) > (maxDistance or 5) then return false end
+    return not Engine.hasInArc(target, attacker, TAU - (arc or math.pi))
+end
+
+function Engine.pointBehind(target, distance)
+    local d = distance or 2
+    local o = target.o or 0
+    return {
+        x = (target.x or 0) - math.cos(o) * d,
+        y = (target.y or 0) - math.sin(o) * d,
+        o = Engine.normalizeAngle(o),
+    }
+end
+
+function Engine.moveToward(from, to, maxDistance)
+    local d = Engine.distance2D(from, to)
+    local step = math.max(0, maxDistance or 0)
+    if d == 0 or step >= d then return { x = to.x or 0, y = to.y or 0, o = from.o or 0 } end
+    local r = step / d
+    return {
+        x = (from.x or 0) + ((to.x or 0) - (from.x or 0)) * r,
+        y = (from.y or 0) + ((to.y or 0) - (from.y or 0)) * r,
+        o = from.o or 0,
+    }
 end
 
 function Engine.physicalArmorReduction(armor, attackerLevel)
@@ -48,7 +115,7 @@ function Engine.normalizedWeaponSpeed(weaponType)
     if weaponType == "Dagger" then return 1.7 end
     if weaponType == "Ranged" then return 2.8 end
     if weaponType == "TwoHand" then return 3.3 end
-    return 2.4 -- other one-handed weapons
+    return 2.4
 end
 
 function Engine.normalizedWeaponDamage(minDamage, maxDamage, attackPower, weaponType, roll01, flatWeaponDamage)
@@ -69,8 +136,6 @@ function Engine.meleeCritDamage(damage)
     return damage * 2.0
 end
 
--- Classic Lethality adds 6 percentage points to the critical multiplier per rank
--- for Sinister Strike, Gouge, Backstab, Ghostly Strike and Hemorrhage. It does NOT affect Ambush.
 function Engine.rogueBuilderCritMultiplier(lethalityRank)
     return 2.0 + 0.06 * (lethalityRank or 0)
 end
@@ -83,8 +148,6 @@ function Engine.frostIceShardsCritDamage(damage)
     return damage * 2.0
 end
 
--- Backstab Rank 9: 60 Energy, 150% normalized MH dagger damage +210, requires behind.
--- Opportunity 5/5: +20% Backstab damage. Improved Backstab changes crit chance, not base damage.
 function Engine.rogueBackstabRaw(args)
     if not args.behindTarget then return nil, "REQUIRES_BEHIND" end
     if args.weaponType ~= "Dagger" then return nil, "REQUIRES_MH_DAGGER" end
@@ -96,8 +159,6 @@ function Engine.rogueBackstabRaw(args)
     return damage
 end
 
--- Ambush Rank 6: 60 Energy, 250% normalized MH dagger damage +290, requires Stealth + behind.
--- Opportunity applies; Lethality does not affect Ambush critical damage in Classic.
 function Engine.rogueAmbushRaw(args)
     if not args.stealthed then return nil, "REQUIRES_STEALTH" end
     if not args.behindTarget then return nil, "REQUIRES_BEHIND" end
@@ -110,8 +171,6 @@ function Engine.rogueAmbushRaw(args)
     return damage
 end
 
--- Gouge Rank 5: 45 Energy, 75 physical damage, 4s incapacitate, 10s cooldown.
--- Improved Gouge 3/3 adds 1.5s. Any damage breaks the incapacitate.
 function Engine.rogueGougeDurationMs(improvedGougeRank)
     return 4000 + 500 * (improvedGougeRank or 0)
 end
@@ -130,14 +189,12 @@ function Engine.breakIncapacitateOnDamage(state, nowMs)
     return false
 end
 
--- Initiative 3/3: 75% chance to add one CP on Ambush/Garrote/Cheap Shot.
 function Engine.rogueInitiativeExtraCombo(procRoll01, initiativeRank)
     local chance = 25 * (initiativeRank or 0)
     if chance <= 0 then return 0 end
     return ((procRoll01 or 1) * 100 < chance) and 1 or 0
 end
 
--- Improved Sprint 2/2: 100% chance to remove movement-impairing effects when Sprint is activated.
 function Engine.applyImprovedSprint(state, improvedSprintRank)
     if (improvedSprintRank or 0) >= 2 then
         state.rootUntil = 0
