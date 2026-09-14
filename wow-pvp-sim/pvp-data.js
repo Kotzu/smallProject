@@ -33,22 +33,20 @@
       sprint:{id:11305,name:'Sprint',cost:0,gcdMs:0,cooldownMs:300000}
     },
     Mage:{
-      frostbolt:{id:25304,name:'Frostbolt',cost:290,gcdMs:1500,range:30,castMs:3000,damage:[515,555],spCoeff:0.814,slowPct:40,slowMs:9000,school:'Frost'},
-      frostNova:{id:10230,name:'Frost Nova',cost:145,gcdMs:1500,cooldownMs:25000,radius:10,damage:[71,79],spCoeff:0.029,rootMs:8000,school:'Frost'},
-      coneOfCold:{id:10161,name:'Cone of Cold',cost:555,gcdMs:1500,cooldownMs:10000,radius:10,damage:[335,365],spCoeff:0.129,slowPct:50,slowMs:8000,school:'Frost'},
-      fireBlast:{id:10199,name:'Fire Blast',cost:340,gcdMs:1500,cooldownMs:8000,range:20,damage:[446,524],spCoeff:0.429,school:'Fire'},
+      frostbolt:{id:25304,name:'Frostbolt',cost:290,gcdMs:1500,range:30,castMs:3000,damage:[515,555],spCoeff:0.8143,slowPct:40,slowMs:9000,school:'Frost'},
+      frostNova:{id:10230,name:'Frost Nova',cost:145,gcdMs:1500,cooldownMs:25000,radius:10,damage:[71,79],spCoeff:0.193,rootMs:8000,school:'Frost'},
+      coneOfCold:{id:10161,name:'Cone of Cold',cost:555,gcdMs:1500,cooldownMs:10000,radius:10,damage:[335,365],spCoeff:0.1357,slowPct:50,slowMs:8000,school:'Frost'},
+      fireBlast:{id:10199,name:'Fire Blast',cost:340,gcdMs:1500,cooldownMs:8000,range:20,damage:[446,524],spCoeff:0.4286,school:'Fire'},
       polymorph:{id:12826,name:'Polymorph',cost:150,gcdMs:1500,range:30,castMs:1500,disorientMs:50000,breaksOnDamage:true,school:'Arcane'},
       blink:{id:1953,name:'Blink',costPctBaseMana:35,gcdMs:1500,cooldownMs:15000,distance:20,breaks:['stun','root']},
       counterspell:{id:2139,name:'Counterspell',cost:100,gcdMs:0,cooldownMs:30000,range:30,schoolLockMs:10000},
       iceBarrier:{id:11426,name:'Ice Barrier',cost:305,gcdMs:1500,cooldownMs:30000,durationMs:60000,absorbBase:455,spCoeff:0.10,school:'Frost'},
-      manaShield:{id:10193,name:'Mana Shield',cost:140,gcdMs:1500,durationMs:60000,absorb:570,manaPerDamage:2},
+      manaShield:{id:10193,name:'Mana Shield',cost:140,gcdMs:1500,durationMs:60000,absorb:570,manaPerDamage:2,schools:['Physical']},
       iceBlock:{id:11958,name:'Ice Block',cost:15,gcdMs:1500,cooldownMs:300000,durationMs:10000,immune:true,school:'Frost'},
       coldSnap:{id:12472,name:'Cold Snap',cost:0,gcdMs:0,cooldownMs:600000,resetsSchool:'Frost'}
     }
   };
 
-  // Exact aggregate from a current Classic Wowhead Gnome PvP gear planner.
-  // It intentionally keeps utility trinkets separate because PvP trinkets are matchup-dependent.
   D.pvpProfiles=D.pvpProfiles||{};
   D.pvpProfiles.mage_frost_gnome_p6_core={
     id:'mage_frost_gnome_p6_core',class:'Mage',spec:'Frost',race:'Gnome',level:60,gearLabel:'Level 60 PvP BiS',buildId:'mage_deep_frost_17_0_34',
@@ -57,24 +55,29 @@
     stats:{health:4280,mana:6257,armorBeforeTalents:1020,strength:25,agility:38,stamina:299,intellect:355,spirit:166,spellDamage:596,spellCritPct:14.16,spellHitPct:5,spellPen:101,dodgePct:5.15,resist:{arcane:15,fire:5,nature:5,frost:5,shadow:5}},
     utility:{arenaGrandMaster:{dodgePct:1,absorb:[750,1250],durationMs:20000,cooldownMs:1800000},insignia:{cooldownMs:300000,removes:['fear','polymorph','slow']}},
     kernelReady:true,
-    provenance:'Wowhead Classic Gnome Phase-6 PvP core gear aggregate + explicit utility trinkets. Talent modifiers are applied by the duel kernel.'
+    provenance:'Current Classic Wowhead Gnome Phase-6 PvP core aggregate + explicit utility trinkets. Talent modifiers are applied separately by the duel kernel.'
   };
 
   D.pvpProfiles.rogue_sub_undead_p6_static={
     id:'rogue_sub_undead_p6_static',class:'Rogue',spec:'Subtlety',race:'Undead',level:60,gearLabel:'Level 60 PvP BiS',buildId:'rogue_cb_hemo_21_3_27',
     kernelReady:true,
     dynamic:{energyMax:100,energyTick:20,energyTickMs:2000,bonescythe2pPPM:1,bonescythe4pEnergyOnBuilderCrit:5,crusaderPPM:1,crusaderStrength:100,crusaderDurationMs:15000,crusaderHeal:[75,125]},
-    provenance:'Existing 17-slot verified static profile + verified 21/3/27 PvP build. Dynamic PPM values are explicit and separated from static totals.'
+    provenance:'Existing 17-slot verified static profile + verified 21/3/27 PvP build. Dynamic PPM values are isolated from static totals.'
   };
 
   D.pvpKernel={
     id:'rogue_sub_vs_mage_frost_p6_v1',version:'0.9.0',
     supported:{a:{class:'Rogue',spec:'Subtlety',race:'Undead',gear:'Level 60 PvP BiS'},b:{class:'Mage',spec:'Frost',race:'Gnome',gear:'Level 60 PvP BiS'}},
     assumptions:[
-      'Duel starts at 10 yd: Rogue stealthed; Mage has Ice Barrier and Mana Shield pre-cast.',
-      'Arena Grand Master starts available; Mage uses it defensively.',
-      'No consumables or Engineering explosives in v1 kernel.',
-      'Facing/pathing is reduced to distance; exact spell costs, cooldowns, hit/crit/damage formulas remain deterministic.'
-    ]
+      'Duel starts at 5 yd: Rogue stealthed; Mage has Ice Barrier and Mana Shield pre-cast and starts with full mana.',
+      'Arena Grand Master starts available and is used defensively.',
+      'No consumables, Engineering explosives or matchup weapon swaps in kernel v1.',
+      'Movement is one-dimensional distance using the verified 7 yd/s base run speed; facing and terrain are not yet modeled.'
+    ],
+    sources:{
+      movement:'Warcraft Wiki API_GetUnitSpeed: normal run 7 yd/s',
+      damageCoefficients:'CMaNGOS classic spell_bonus_data / current Spell.sql fixes',
+      characterMath:'CMaNGOS classic StatSystem.cpp'
+    }
   };
 })();
