@@ -1,7 +1,7 @@
 (()=>{
   const $=id=>document.getElementById(id);
   const policies={
-    rogue:{label:'Rogue',path:'combat/Rogue/ClassCombat.lua',status:'ACTIVE'},
+    rogue:{label:'Rogue · 2 builds',path:'combat/Rogue/ClassCombat.lua',status:'ACTIVE'},
     mage:{label:'Mage',path:'combat/Mage/ClassCombat.lua',status:'ACTIVE'},
     warrior:{label:'Warrior',path:'combat/Warrior/ClassCombat.lua',status:'LOCKED'},
     paladin:{label:'Paladin',path:'combat/Paladin/ClassCombat.lua',status:'LOCKED'},
@@ -29,5 +29,5 @@
   }
   document.querySelectorAll('.combat-selector button').forEach(b=>b.addEventListener('click',()=>load(b.dataset.policy)));
   load('rogue');
-  window.WOW_COMBAT_VIEWER={load,policies,version:'0.16'};
+  window.WOW_COMBAT_VIEWER={load,policies,version:'0.17'};
 })();
