@@ -1,5 +1,5 @@
 (()=>{
-  const D=window.WOW_DATA,T=window.WOW_TALENTS,DUEL=window.WOW_DUEL;
+  const D=window.WOW_DATA,T=window.WOW_TALENTS,DUEL=window.WOW_DUEL,A=window.WOW_ARMORY;
   const base=window.WOW_QA||{checks:[]};
   const checks=[...(base.checks||[])];
   const add=(name,pass,details)=>checks.push({name,pass:!!pass,details});
@@ -18,6 +18,10 @@
     add('Canonical calculator identity',canonical?.calculator==='305020105-320302002-05024303030012',canonical?.calculator||'missing');
     add('Canonical dagger build remains strict-locked',T?.auditSelection(canonicalCfg.a)?.status==='VERIFIED_LOCKED'&&DUEL?.canRun(canonicalCfg)?.ready===false,'verified build cannot enter duel until positional/mechanic calibration passes');
     add('Forum 17/12/22 variant kept separate',variant?.calculator==='005320124-320302002-05024303030011'&&variant?.points==='17/12/22',`${variant?.name||'missing'} · ${variant?.points||'—'}`);
+
+    const canonicalArmory=A?.audit(canonicalCfg.a),canonicalProfile=A?.rogueProfile(canonicalCfg.a);
+    add('Canonical dagger Armory audit',canonicalArmory?.pass===true,canonicalArmory?.reason||'missing');
+    add('Canonical build uses dagger loadout',canonicalProfile?.slots?.['Main Hand']===22802&&canonicalProfile?.slots?.['Off Hand']===21126,'Kingsfall #22802 / Death\'s Sting #21126');
 
     const backstab=D?.pvpSpellbooks?.Rogue?.backstab;
     add('Backstab R9 exact data',backstab?.id===11281&&backstab?.cost===60&&backstab?.weaponDamagePct===150&&backstab?.flatDamage===210&&backstab?.requiresBehind===true,'spell 11281 · 60 Energy · 150% weapon +210 · behind');
