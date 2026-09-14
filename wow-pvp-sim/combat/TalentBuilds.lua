@@ -1,6 +1,6 @@
 local TalentBuilds = {}
 
-TalentBuilds.version = "0.16"
+TalentBuilds.version = "0.17"
 
 TalentBuilds.Rogue = {
     rogue_cb_hemo_21_3_27 = {
@@ -17,11 +17,48 @@ TalentBuilds.Rogue = {
             murderDamagePct = 2,
             relentlessEnergy = 25,
             relentlessChancePerComboPct = 20,
-            hemorrhageCritMultiplier = 2.3,
+            builderCritMultiplier = 2.30,
             cheapShotEnergy = 40,
             coldBlood = true,
             hemorrhage = true,
             preparation = true,
+            improvedSprint = false,
+        },
+    },
+
+    rogue_imp_sprint_backstab_17_12_22 = {
+        name = "Improved Sprint Backstab",
+        class = "Rogue",
+        spec = "Subtlety",
+        level = 60,
+        points = "17/12/22",
+        status = "VERIFIED_LOCKED_KERNEL",
+        calculator = "005320124-320302002-05024303030011",
+        loadoutId = "rogue_p6_pvp_daggers_kingsfall_deaths_sting",
+        modifiers = {
+            meleeCritPct = 5,
+            meleeHitPct = 2,
+            ruthlessnessProcPct = 60,
+            murderDamagePct = 2,
+            relentlessEnergy = 25,
+            relentlessChancePerComboPct = 20,
+            improvedExposeArmorPct = 50,
+            builderCritMultiplier = 2.24,
+            gougeDurationBonusMs = 1500,
+            sinisterStrikeEnergy = 40,
+            backstabCritBonusPct = 30,
+            improvedSprint = true,
+            opportunityDamagePct = 20,
+            ambushCritBonusPct = 45,
+            preparation = true,
+            cheapShotEnergy = 50,
+            hemorrhage = false,
+            coldBlood = false,
+        },
+        kernelBlockers = {
+            "Backstab/Ambush positional damage path not calibrated",
+            "Dagger loadout must pass independent stat audit",
+            "Improved Sprint root/snare removal needs dedicated policy parity QA",
         },
     },
 }
@@ -54,8 +91,6 @@ TalentBuilds.Mage = {
     },
 }
 
--- Strict placeholders: these classes have a ClassCombat.lua file but no build is
--- allowed to enter the simulator until its talent ranks and numeric modifiers are verified.
 TalentBuilds.Locked = {
     Warrior = "NO_VERIFIED_BUILD",
     Paladin = "NO_VERIFIED_BUILD",
@@ -72,7 +107,12 @@ function TalentBuilds.get(className, buildId)
     return classBuilds[buildId]
 end
 
-function TalentBuilds.isActive(className, spec, buildId)
+function TalentBuilds.isVerified(className, spec, buildId)
+    local build = TalentBuilds.get(className, buildId)
+    return build ~= nil and build.spec == spec and (build.status == "ACTIVE_CALIBRATED" or build.status == "VERIFIED_LOCKED_KERNEL")
+end
+
+function TalentBuilds.isKernelReady(className, spec, buildId)
     local build = TalentBuilds.get(className, buildId)
     return build ~= nil and build.spec == spec and build.status == "ACTIVE_CALIBRATED"
 end
