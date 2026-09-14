@@ -1,5 +1,5 @@
 (()=>{
-  const D=window.WOW_DATA,T=window.WOW_TALENTS,E=window.WOW_ENGINE;
+  const D=window.WOW_DATA,T=window.WOW_TALENTS,E=window.WOW_ENGINE,F=window.WOW_FOREVER_TALENTS;
   const base=window.WOW_QA||{checks:[]};
   const checks=[...(base.checks||[])];
   const add=(name,pass,details)=>checks.push({name,pass:!!pass,details});
@@ -33,10 +33,19 @@
     add('Blind stays strict-locked on heartbeat uncertainty',String(blind.status||'').includes('LOCKED_HEARTBEAT'),blind.blocker||'missing blocker');
     const insignia=D?.v027?.mageInsignia18859||{};
     add('Mage Insignia 18859 action registered',insignia.itemId===18859&&insignia.cooldownMs===300000&&insignia.removes?.includes('Slowing'),`${insignia.status||'missing'} · ${insignia.relevantCurrentMatchup||''}`);
-  }catch(err){add('v0.27 QA runtime',false,String(err?.stack||err));}
+
+    add('Forever snapshot node total',F?.totalNodes?.()===470,`expected 470 · actual ${F?.totalNodes?.()}`);
+    add('Forever Rogue tree structure',F?.classTotal?.('Rogue')===53&&F?.classInfo?.('Rogue')?.trees?.Assassination===17&&F?.classInfo?.('Rogue')?.trees?.Combat===17&&F?.classInfo?.('Rogue')?.trees?.Subtlety===19,'17 / 17 / 19 = 53');
+    add('Forever Mage tree structure',F?.classTotal?.('Mage')===54&&F?.classInfo?.('Mage')?.trees?.Arcane===18&&F?.classInfo?.('Mage')?.trees?.Fire===17&&F?.classInfo?.('Mage')?.trees?.Frost===19,'18 / 17 / 19 = 54');
+    add('Forever Rogue names imported',F?.tree?.('Rogue','Assassination')?.length===17&&F?.tree?.('Rogue','Combat')?.length===17&&F?.tree?.('Rogue','Subtlety')?.length===19,'53/53 Rogue nodes named in local pre-beta snapshot');
+    add('Forever Mage transcript coverage explicit',F?.tree?.('Mage','Arcane')?.length===18&&F?.tree?.('Mage','Fire')?.length===17&&F?.tree?.('Mage','Frost')?.length===19&&F?.coverage?.mageIncompleteTalentNames===2,'54 Mage nodes structurally mapped; 2 Fire names intentionally incomplete');
+    add('Classic builds never relabeled Forever',Object.values(T?.library||{}).every(b=>b?.dataset!=='Forever'), 'all runnable/known builds remain explicitly ClassicEra');
+    const foreverGate=window.WOW_DUEL?.canRun?.({ruleset:'forever',a:{class:'Rogue',spec:'Subtlety',race:'Undead',gear:'Level 60 PvP BiS',build:'rogue_cb_hemo_21_3_27'},b:{class:'Mage',spec:'Frost',race:'Gnome',gear:'Level 60 PvP BiS',build:'mage_deep_frost_17_0_34'}});
+    add('Forever strict fight gate',foreverGate?.ready===false&&foreverGate?.missing?.some(x=>String(x).includes('Forever strict gate')),foreverGate?.missing?.join(' · ')||'missing gate');
+  }catch(err){add('v0.28 QA runtime',false,String(err?.stack||err));}
 
   const passed=checks.filter(x=>x.pass).length,failed=checks.length-passed;
   const root=document.getElementById('qaReport');
-  if(root)root.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">QA ${failed?'FAIL':'PASS'} · ${passed}/${checks.length}</div><div class="result-meta">Talent runtime + Rogue policy evidence + dagger formulas + rear arc + strict action-inventory gates.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;
-  window.WOW_QA={version:'0.27-qa',checks,passed,failed,pass:failed===0};
+  if(root)root.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">QA ${failed?'FAIL':'PASS'} · ${passed}/${checks.length}</div><div class="result-meta">Classic combat parity + Rogue policy evidence + current Forever pre-beta talent structure + strict ruleset separation.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;
+  window.WOW_QA={version:'0.28-qa',checks,passed,failed,pass:failed===0};
 })();
