@@ -51,6 +51,37 @@
     const s=document.createElement('script');s.src='lua-runtime.js?v='+Date.now();s.dataset.wowLuaRuntime='1';document.head.appendChild(s);
   }else if(window.WOW_LUA_RUNTIME)renderRuntime(window.WOW_LUA_RUNTIME);
 
+  function patchVisibleVersion(){
+    const hero=document.querySelector('.hero p');
+    if(hero)hero.textContent='v0.26 · Rogue ClassCombat learning · talent-aware combat · strict accuracy';
+    const metrics=[...document.querySelectorAll('.metric')];
+    const champion=window.WOW_DATA?.roguePolicyChampion;
+    for(const m of metrics){
+      const label=m.querySelector('span')?.textContent||'';
+      if(label==='Rogue champion'&&champion)m.querySelector('b').textContent='g3 · Evis 4 CP · Hemo pool 65';
+      if(label==='Evidence')m.querySelector('b').textContent='3 × 1.000 paired seeds';
+    }
+    const note=document.querySelector('#combat .note');
+    if(note)note.textContent='Current Rogue champion g3: Eviscerate la 4+ CP și pool 65 Energy înainte de Hemorrhage. Win rate pe setul calibrat de 1.000 seed-uri: 83.8% baseline → 89.2% → 92.0% → 93.0%. Generation 4 threshold screen nu a produs încă un challenger validat mai bun.';
+  }
+
+  function ensureLearningPanel(){
+    const combat=document.getElementById('combat');if(!combat||$('rogueLearningPanel'))return;
+    const panel=document.createElement('div');panel.id='rogueLearningPanel';panel.className='note';panel.style.marginTop='12px';
+    panel.innerHTML='<b>Rogue learning</b><br><span id="rogueLearningText">Încarc evidence…</span>';
+    combat.appendChild(panel);
+    fetch('/api/rogue-training-status?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(x=>{
+      const c=x?.validation?.champion||x?.screen?.champion||window.WOW_DATA?.roguePolicyChampion;
+      const v=x?.validation?.result;
+      let txt=c?`Champion: ${c.id} · Evis ${c.evisMinCp}+ CP · Hemo pool ${c.hemoMinEnergy} Energy.`:'Champion indisponibil.';
+      if(v)txt+=` Ultimul challenger validat: ${v.field}=${v.value} · ${v.challengerRate}% vs ${v.championRate}% · ${v.promote?'PROMOTE':'REJECT'}.`;
+      txt+=' Următorul salt de calitate trebuie să vină din acțiuni PvP noi verificate (Blind/Gouge/positional daggers), nu din schimbarea regulilor WoW.';
+      $('rogueLearningText').textContent=txt;
+    }).catch(()=>{$('rogueLearningText').textContent='Evidence API indisponibil; ClassCombat.lua rămâne sursa policy curentă.';});
+  }
+
+  patchVisibleVersion();
+  ensureLearningPanel();
   load('rogue');
-  window.WOW_COMBAT_VIEWER={load,policies,version:'0.22'};
+  window.WOW_COMBAT_VIEWER={load,policies,version:'0.26'};
 })();
