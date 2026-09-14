@@ -18,8 +18,6 @@ function boot(){
 
 function config(){return {a:{class:'Rogue',spec:'Subtlety',race:'Undead',gear:'Level 60 PvP BiS',build:'rogue_cb_hemo_21_3_27'},b:{class:'Mage',spec:'Frost',race:'Gnome',gear:'Level 60 PvP BiS',build:'mage_deep_frost_17_0_34'}};}
 
-// Generation 3 candidates start from the promoted g2 champion:
-// 4+ CP Eviscerate + pool 55 Energy before Hemorrhage.
 const VARIANTS=[
   ['kidneyMinCp',4],
   ['kidneyEnergyReserve',20],
@@ -28,13 +26,13 @@ const VARIANTS=[
   ['coldBloodMinCp',4],
   ['sprintMinRange',8],
   ['kickMinRemainingMs',300],
-  ['hemoMinEnergy',65]
+  ['hemoMinEnergy',75]
 ];
 
 function championFor(w,duel){return duel.normalizeRoguePolicy(w.WOW_DATA?.roguePolicyChampion||duel.defaultRoguePolicy);}
 function compareOne(duel,cfg,champion,index,count,seed){
   const i=Math.max(0,Math.min(VARIANTS.length-1,Math.trunc(Number(index)||0))),[field,value]=VARIANTS[i];
-  const challenger=duel.normalizeRoguePolicy({...champion,[field]:value,id:`headless_g3_${field}_${value}`});
+  const challenger=duel.normalizeRoguePolicy({...champion,[field]:value,id:`headless_g4_${field}_${value}`});
   const cmp=duel.comparePolicies(seed,count,cfg,champion,challenger);
   return {index:i,field,value,deltaWinRate:cmp.deltaWinRate,deltaScore:cmp.deltaScore,promote:cmp.promote,championWins:cmp.champion?.wins?.Rogue,challengerWins:cmp.challenger?.wins?.Rogue,championRate:cmp.champion?.rates?.Rogue,challengerRate:cmp.challenger?.rates?.Rogue,championAvgHp:cmp.champion?.avgRogueHpPct,challengerAvgHp:cmp.challenger?.avgRogueHpPct,championScore:cmp.champion?.score,challengerScore:cmp.challenger?.score};
 }
