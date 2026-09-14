@@ -2,7 +2,7 @@ local Combat = {}
 
 Combat.id = "Rogue_ClassCombat"
 Combat.class = "Rogue"
-Combat.version = "0.26"
+Combat.version = "0.27"
 Combat.activeSpec = "Subtlety"
 
 Combat.specStatus = {
@@ -13,12 +13,12 @@ Combat.specStatus = {
 
 Combat.buildStatus = {
     rogue_cb_hemo_21_3_27 = "ACTIVE_CALIBRATED",
-    rogue_imp_sprint_backstab_17_12_22 = "VERIFIED_LOCKED_KERNEL",
-    rogue_imp_sprint_backstab_16_12_23 = "VERIFIED_LOCKED_KERNEL",
+    rogue_imp_sprint_backstab_17_12_22 = "VERIFIED_POLICY_KERNEL_LOCKED",
+    rogue_imp_sprint_backstab_16_12_23 = "VERIFIED_POLICY_KERNEL_LOCKED",
 }
 
--- This block is the ONLY learner-tunable part of Rogue combat.
--- WoW formulas, talent effects, hit/crit/resist/proc rules stay in CombatEngine/data.
+-- Learner-tunable policy for the active CB/Hemo build only.
+-- WoW mechanics and talent effects are immutable outside this policy layer.
 Combat.policy = {
     id = "rogue_cb_hemo_champion_g3_evis4_pool65",
     vanishOnRoot = true,
@@ -70,6 +70,10 @@ local function activePolicy(ctx)
     return ctx.policy or Combat.policy
 end
 
+local function canPrep(ctx)
+    return hasTalent(ctx, "Preparation") and ctx:ready("Preparation")
+end
+
 local function chooseCbHemo(ctx)
     local me = ctx.self
     local enemy = ctx.enemy
@@ -84,7 +88,7 @@ local function chooseCbHemo(ctx)
         if p.vanishOnRoot and ctx:ready("Vanish") then
             return { action = "Vanish", reason = "policy: break root and reopen" }
         end
-        if p.prepWhenRootedAndVanishDown and hasTalent(ctx, "Preparation") and ctx:ready("Preparation") then
+        if p.prepWhenRootedAndVanishDown and canPrep(ctx) then
             return { action = "Preparation", reason = "policy: Vanish unavailable while rooted" }
         end
         return { action = "WAIT", reason = "rooted; no verified reset available" }
@@ -92,7 +96,7 @@ local function chooseCbHemo(ctx)
 
     if me.stealthed then
         if ctx.range <= 5 and me.energy >= cheapShotEnergy then
-            return { action = "Cheap Shot", reason = "verified opener" }
+            return { action = "Cheap Shot", reason = "verified CB/Hemo opener" }
         end
         return { action = "MOVE_TO", range = 5, reason = "enter opener range" }
     end
@@ -135,6 +139,91 @@ local function chooseCbHemo(ctx)
     return { action = "WAIT", reason = "policy: pool Energy" }
 end
 
+-- Dagger policy is executable in the Lua policy runtime, but the web duel kernel
+-- remains strict-locked until MOVE_BEHIND / positional attacks / Gouge / Initiative
+-- have exact web execution and parity QA.
+local function chooseImprovedSprintBackstab(ctx)
+    local me = ctx.self
+    local enemy = ctx.enemy
+    local behind = ctx.behindTarget == true
+    local cheapShotEnergy = modifier(ctx, "cheapShotEnergy", 40)
+    local sinisterStrikeEnergy = modifier(ctx, "sinisterStrikeEnergy", 40)
+
+    if me.stunned then
+        return { action = "WAIT", reason = "stunned" }
+    end
+
+    if me.rooted or me.slowed then
+        if ctx:ready("Sprint") and hasTalent(ctx, "Improved Sprint") then
+            return { action = "Sprint", reason = "Improved Sprint removes movement impairing effects" }
+        end
+        if ctx:ready("Vanish") then
+            return { action = "Vanish", reason = "fallback movement break and stealth reset" }
+        end
+        if canPrep(ctx) then
+            return { action = "Preparation", reason = "reset Sprint/Vanish for anti-kite" }
+        end
+        return { action = "WAIT", reason = "movement impaired; no reset ready" }
+    end
+
+    if me.stealthed then
+        if ctx.range > 5 then
+            return { action = "MOVE_TO", range = 5, reason = "enter dagger opener range" }
+        end
+        if not behind and (hasTalent(ctx, "Improved Ambush") or hasTalent(ctx, "Improved Backstab")) then
+            return { action = "MOVE_BEHIND", range = 2, reason = "dagger opener requires rear arc" }
+        end
+        if behind and me.energy >= 60 and hasTalent(ctx, "Improved Ambush") then
+            return { action = "Ambush", reason = "Opportunity + Improved Ambush opener" }
+        end
+        if me.energy >= cheapShotEnergy then
+            return { action = "Cheap Shot", reason = "Dirty Deeds opener fallback" }
+        end
+        return { action = "WAIT", reason = "pool for opener" }
+    end
+
+    if enemy.iceBlock then
+        return { action = "WAIT", reason = "target immune" }
+    end
+
+    if enemy.casting and me.energy >= 25 and ctx:ready("Kick") then
+        return { action = "Kick", reason = "interrupt before positional burst" }
+    end
+
+    if ctx.range > 5 then
+        if ctx:ready("Sprint") and not me.sprintActive then
+            return { action = "Sprint", reason = "recover dagger melee range" }
+        end
+        return { action = "MOVE_TO", range = 5, reason = "recover melee range" }
+    end
+
+    if not behind and (enemy.stunned or enemy.incapacitated) and me.energy >= 60 then
+        return { action = "MOVE_BEHIND", range = 2, reason = "convert control into legal Backstab position" }
+    end
+
+    if me.comboPoints >= 5 and not enemy.stunned and me.energy >= 25 and ctx:ready("Kidney Shot") then
+        return { action = "Kidney Shot", reason = "lock target for positional follow-up" }
+    end
+
+    if me.comboPoints >= 5 and me.energy >= 35 then
+        return { action = "Eviscerate", reason = "dagger finisher; no Cold Blood" }
+    end
+
+    if behind and me.energy >= 60 and hasTalent(ctx, "Improved Backstab") then
+        return { action = "Backstab", reason = "primary dagger builder" }
+    end
+
+    if not behind and me.energy >= 45 and ctx:ready("Gouge") then
+        return { action = "Gouge", reason = "Improved Gouge creates reposition window" }
+    end
+
+    if me.energy >= sinisterStrikeEnergy then
+        return { action = "Sinister Strike", reason = "front-facing fallback" }
+    end
+
+    return { action = "WAIT", reason = "pool for positional attack" }
+end
+
 function Combat.choose(ctx)
     local spec = ctx.spec or Combat.activeSpec
     if spec ~= "Subtlety" then
@@ -145,11 +234,14 @@ function Combat.choose(ctx)
     if id == "rogue_cb_hemo_21_3_27" then
         return chooseCbHemo(ctx)
     end
+    if id == "rogue_imp_sprint_backstab_17_12_22" then
+        return chooseImprovedSprintBackstab(ctx)
+    end
+    if id == "rogue_imp_sprint_backstab_16_12_23" then
+        return chooseImprovedSprintBackstab(ctx)
+    end
 
-    return {
-        action = "LOCKED",
-        reason = "Rogue build is verified/documented but not active in the exact kernel: " .. tostring(id),
-    }
+    return { action = "LOCKED", reason = "unknown or unverified Rogue talent build: " .. tostring(id) }
 end
 
 return Combat
