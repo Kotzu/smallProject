@@ -38,22 +38,34 @@ const VARIANTS=[
   ['hemoMinEnergy',55]
 ];
 
-function runTraining(count=1000,seed=1337){
+function compareOne(duel,cfg,champion,index,count,seed){
+  const i=Math.max(0,Math.min(VARIANTS.length-1,Math.trunc(Number(index)||0)));
+  const [field,value]=VARIANTS[i];
+  const challenger=duel.normalizeRoguePolicy({...champion,[field]:value,id:`headless_${field}_${value}`});
+  const cmp=duel.comparePolicies(seed,count,cfg,champion,challenger);
+  return {
+    index:i,field,value,deltaWinRate:cmp.deltaWinRate,deltaScore:cmp.deltaScore,promote:cmp.promote,
+    championWins:cmp.champion?.wins?.Rogue,challengerWins:cmp.challenger?.wins?.Rogue,
+    championRate:cmp.champion?.rates?.Rogue,challengerRate:cmp.challenger?.rates?.Rogue,
+    championAvgHp:cmp.champion?.avgRogueHpPct,challengerAvgHp:cmp.challenger?.avgRogueHpPct,
+    championScore:cmp.champion?.score,challengerScore:cmp.challenger?.score
+  };
+}
+
+function runTraining(count=100,seed=1337){
   const w=boot(),duel=w.WOW_DUEL,cfg=config(),champion=duel.defaultRoguePolicy;
-  const self=duel.selfTest(cfg);
-  const results=[];
-  for(const [field,value] of VARIANTS){
-    const challenger=duel.normalizeRoguePolicy({...champion,[field]:value,id:`headless_${field}_${value}`});
-    const cmp=duel.comparePolicies(seed,count,cfg,champion,challenger);
-    results.push({field,value,deltaWinRate:cmp.deltaWinRate,deltaScore:cmp.deltaScore,promote:cmp.promote,championWins:cmp.champion?.wins?.Rogue,challengerWins:cmp.challenger?.wins?.Rogue,championAvgHp:cmp.champion?.avgRogueHpPct,challengerAvgHp:cmp.challenger?.avgRogueHpPct});
-  }
+  const self=duel.selfTest(cfg),results=[];
+  for(let i=0;i<VARIANTS.length;i++)results.push(compareOne(duel,cfg,champion,i,count,seed));
   results.sort((a,b)=>b.deltaScore-a.deltaScore);
   return {engine:duel.version,deterministic:self.deterministic,count,seed,champion,results,best:results[0]};
 }
 
-function runDuel(seed=1337){
-  const w=boot();
-  return w.WOW_DUEL.run(seed,config());
+function runVariant(index=0,count=1000,seed=1337){
+  const w=boot(),duel=w.WOW_DUEL,cfg=config(),champion=duel.defaultRoguePolicy;
+  const self=duel.selfTest(cfg),result=compareOne(duel,cfg,champion,index,count,seed);
+  return {engine:duel.version,deterministic:self.deterministic,count,seed,champion,result};
 }
 
-module.exports={runTraining,runDuel};
+function runDuel(seed=1337){const w=boot();return w.WOW_DUEL.run(seed,config());}
+
+module.exports={runTraining,runVariant,runDuel,VARIANTS};
