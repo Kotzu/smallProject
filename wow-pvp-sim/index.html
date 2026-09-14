@@ -11,7 +11,7 @@
 <body>
 <main class="app">
   <header class="hero">
-    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.14 · Fight-first UI · ClassCombat.lua visible · first matchup calibrated</p></div>
+    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.15 · one ClassCombat.lua per class · post-fight analysis · calibrated first matchup</p></div>
     <div class="badge ok">STRICT DATA</div>
   </header>
 
@@ -32,7 +32,7 @@
   </nav>
 
   <section id="fight" class="tab active card">
-    <div class="combat-head"><div><h2>Fight</h2><div class="muted">Playback al duelului calculat de engine, nu animație aleatorie.</div></div><button id="fightRunBtn" class="fight-primary">▶ Start Fight</button></div>
+    <div class="combat-head"><div><h2>Fight</h2><div class="muted">Playback al duelului calculat de engine. La final apare analiza: de ce a câștigat/pierdut și ce trebuie schimbat în ClassCombat.lua.</div></div><button id="fightRunBtn" class="fight-primary">▶ Start Fight</button></div>
     <div id="fightError" class="red" style="margin:8px 0"></div>
     <div class="fight-layout">
       <article class="fighter"><div><h3>Undead Rogue</h3><div class="sub">Subtlety · 21/3/27</div></div><div class="bar-label"><span>HP</span><b id="fightRogueHp">—</b></div><div class="bar"><i id="fightRogueHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightRogueRes">100 Energy</b></div><div class="bar resource"><i style="width:100%"></i></div></article>
@@ -45,7 +45,7 @@
 
   <section id="armory" class="tab card"><h2>Mini Armory</h2><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Gear, enchants și stat breakdown sunt separate de combat logic pentru audit.</div></section>
 
-  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua</h2><div class="muted">Aici vezi deciziile efective ale clasei/spec-ului.</div></div><div class="combat-selector"><button class="active" data-policy="rogue">Rogue Sub</button><button data-policy="mage">Frost Mage</button></div></div><div class="arch-note"><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">alege acțiunea</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>Combat Engine</b><br><span class="muted">calculează hit / crit / damage / proc / resist</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Web-ul rulează momentan implementarea JS echivalentă din kernelul calibrat. ClassCombat.lua este acum prezent în repo și este politica lizibilă pe care o păstrăm în paralel cu engine-ul; următorul pas este parity QA între Lua și adapterul web.</div></section>
+  <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua — câte unul pentru fiecare clasă</h2><div class="muted">Rogue și Mage au logică activă. Celelalte 7 clase există deja ca fișiere stricte și rămân LOCKED până le verificăm spells/talents/gear.</div></div><div class="combat-selector"><button class="active" data-policy="rogue">Rogue</button><button data-policy="mage">Mage</button></div></div><div class="arch-note"><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">alege acțiunea</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>Combat Engine</b><br><span class="muted">calculează hit / crit / damage / proc / resist</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Ținta arhitecturală: comportamentul clasei se schimbă numai în ClassCombat.lua. CombatEngine.lua rămâne neutru și rezolvă regulile WoW.</div></section>
 
   <section id="duel" class="tab card"><h2>Duel log</h2><div id="duelSummary" class="duel-summary"><span class="muted">Rulează Fight.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline complet</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel rulat.</div></div><div class="note">Același Cod al duelului = aceleași roll-uri și același rezultat.</div></section>
 
@@ -57,8 +57,8 @@
     <section class="tech-section"><h2>Rule lab</h2><div class="lab-grid"><div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div><div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div><div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div></div></section>
   </div></section>
 
-  <div class="metrics"><div class="metric"><span>Kernel</span><b class="green">1 calibrated</b></div><div class="metric"><span>Lua policies live</span><b class="green">2</b></div><div class="metric"><span>Reguli verificate</span><b id="ruleCount">—</b></div><div class="metric"><span>Stat audit</span><b class="green">PASS</b></div><div class="metric"><span>QA</span><b class="green">active</b></div></div>
+  <div class="metrics"><div class="metric"><span>Kernel</span><b class="green">1 calibrated</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files · 2 active</b></div><div class="metric"><span>Reguli verificate</span><b id="ruleCount">—</b></div><div class="metric"><span>Stat audit</span><b class="green">PASS</b></div><div class="metric"><span>Post-fight analysis</span><b class="green">active</b></div></div>
 </main>
-<script src="data.js"></script><script src="character-data.js"></script><script src="pvp-data.js"></script><script src="pvp-data-v010.js"></script><script src="pvp-data-v011.js"></script><script src="pvp-data-v012.js"></script><script src="classic-stat-system.js"></script><script src="armory-data.js"></script><script src="engine.js"></script><script src="character-engine.js"></script><script src="duel-engine-v011.js"></script><script src="duel-patch-v012.js"></script><script src="app.js"></script><script src="armory.js"></script><script src="qa.js"></script><script src="fight-ui.js"></script><script src="combat-viewer.js"></script>
+<script src="data.js"></script><script src="character-data.js"></script><script src="pvp-data.js"></script><script src="pvp-data-v010.js"></script><script src="pvp-data-v011.js"></script><script src="pvp-data-v012.js"></script><script src="classic-stat-system.js"></script><script src="armory-data.js"></script><script src="engine.js"></script><script src="character-engine.js"></script><script src="duel-engine-v011.js"></script><script src="duel-patch-v012.js"></script><script src="app.js"></script><script src="armory.js"></script><script src="qa.js"></script><script src="fight-analyzer.js"></script><script src="fight-ui.js"></script><script src="combat-viewer.js"></script>
 </body>
 </html>
