@@ -3,6 +3,7 @@
   const $=id=>document.getElementById(id);
   const read=p=>({class:$(p+'c')?.value,spec:$(p+'s')?.value,race:$(p+'r')?.value,gear:$(p+'g')?.value,build:$(p+'build')?.value||T?.defaultBuild($(p+'c')?.value,$(p+'s')?.value)});
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const pct=v=>typeof v==='number'?`${v.toFixed(2)}%`:v;
 
   function canonicalStats(s){
     const build=T?.get(s.build),tm=build?.modifiers||{};
@@ -11,30 +12,132 @@
       const gearCrit=P.combinedStaticTotals.crit||0;
       const meleeCrit=gearCrit+r.stats.agi/29+(tm.meleeCritPct||0);
       const hit=r.hitPct+(tm.meleeHitPct||0);
-      const rows=[['STR',r.stats.str],['AGI',r.stats.agi],['STA',r.stats.sta],['INT',r.stats.int],['SPI',r.stats.spi],['HP',r.health],['Energy',100],['Melee AP',r.attackPower],['Armor',r.armor],['Hit',hit.toFixed(1)+'%'],['Melee Crit',meleeCrit.toFixed(2)+'%'],['Shadow Resist',r.shadowResistance],['MH damage',r.mainHand.min.toFixed(1)+'–'+r.mainHand.max.toFixed(1)]];
-      if(r.weaponSkill?.Dagger)rows.push(['Dagger skill','+'+r.weaponSkill.Dagger]);
+      const rows=[
+        ['Strength',r.stats.str,'primary'],['Agility',r.stats.agi,'primary'],['Stamina',r.stats.sta,'primary'],['Intellect',r.stats.int,'primary'],['Spirit',r.stats.spi,'primary'],
+        ['Health',r.health,'resource'],['Energy',100,'resource'],['Attack Power',r.attackPower,'offense'],['Armor',r.armor,'defense'],['Hit',hit.toFixed(1)+'%','offense'],['Melee Crit',meleeCrit.toFixed(2)+'%','offense'],['Shadow Resist',r.shadowResistance,'resist'],['MH Damage',r.mainHand.min.toFixed(1)+'–'+r.mainHand.max.toFixed(1),'offense']
+      ];
+      if(r.weaponSkill?.Dagger)rows.push(['Dagger Skill','+'+r.weaponSkill.Dagger,'offense']);
       return rows;
     }
     if(A.isMage(s)){
       const p=D.pvpProfiles.mage_frost_gnome_p6_core;
-      return [['STR',p.stats.strength],['AGI',p.stats.agility],['STA',p.stats.stamina],['INT',p.stats.intellect],['SPI',p.stats.spirit],['HP',p.stats.health],['Mana',p.stats.mana],['Spell Power',p.stats.spellDamage],['Spell Crit',p.stats.spellCritPct+'%'],['Frost/Fire Hit',(p.stats.spellHitPct+(tm.frostFireHitPct||0))+'%'],['Shatter','+'+(tm.frozenCritBonusPct||0)+'% frozen'],['Frost crit dmg',(tm.frostCritMultiplier||1.5).toFixed(1)+'×'],['Spell Pen',p.stats.spellPen],['Armor',Math.trunc(p.stats.armorBeforeTalents+p.stats.intellect*((tm.armorFromIntellectPct||0)/100))],['Dodge',p.stats.dodgePct+'%'],['Arcane Resist',p.stats.resist.arcane],['Fire Resist',p.stats.resist.fire],['Frost Resist',p.stats.resist.frost],['Nature Resist',p.stats.resist.nature],['Shadow Resist',p.stats.resist.shadow]];
+      return [
+        ['Strength',p.stats.strength,'primary'],['Agility',p.stats.agility,'primary'],['Stamina',p.stats.stamina,'primary'],['Intellect',p.stats.intellect,'primary'],['Spirit',p.stats.spirit,'primary'],
+        ['Health',p.stats.health,'resource'],['Mana',p.stats.mana,'resource'],['Spell Power',p.stats.spellDamage,'offense'],['Spell Crit',pct(p.stats.spellCritPct),'offense'],['Frost / Fire Hit',(p.stats.spellHitPct+(tm.frostFireHitPct||0))+'%','offense'],['Spell Penetration',p.stats.spellPen,'offense'],
+        ['Armor',Math.trunc(p.stats.armorBeforeTalents+p.stats.intellect*((tm.armorFromIntellectPct||0)/100)),'defense'],['Dodge',p.stats.dodgePct+'%','defense'],
+        ['Arcane Resist',p.stats.resist.arcane,'resist'],['Fire Resist',p.stats.resist.fire,'resist'],['Frost Resist',p.stats.resist.frost,'resist'],['Nature Resist',p.stats.resist.nature,'resist'],['Shadow Resist',p.stats.resist.shadow,'resist'],
+        ['Shatter','+'+(tm.frozenCritBonusPct||0)+'% frozen','talent'],['Frost Crit Damage',(tm.frostCritMultiplier||1.5).toFixed(1)+'×','talent']
+      ];
     }
     return [];
   }
-  function itemRow(x){
-    const empty=!x.id,enchant=x.enchant?`<div class="armory-enchant ${x.enchantVerified?'':'pending'}">Enchant: ${esc(x.enchant)}</div>`:'<div class="armory-enchant muted">Enchant: —</div>',gem='<div class="armory-gem muted">Gem: — · Classic Era fără socket</div>',skill=x.weaponSkill?`<div class="item-id">${esc(x.weaponSkill)}</div>`:'';
-    return `<div class="armory-slot ${empty?'empty':''}"><div class="slot-icon">${empty?'—':esc(x.slot.slice(0,2).toUpperCase())}</div><div class="slot-copy"><div class="slot-label">${esc(x.slot)}</div><div class="item-name">${esc(x.name)}</div><div class="item-id">${x.id?'Item #'+x.id:'slot liber'}</div>${skill}${enchant}${gem}</div><div class="verify-dot ${x.verified?'ok':'warn'}"></div></div>`;
+
+  function itemFacts(x){
+    const i=x.item||{},bits=[];
+    if(i.armor)bits.push(`${i.armor} Armor`);
+    if(i.str)bits.push(`+${i.str} Strength`);if(i.agi)bits.push(`+${i.agi} Agility`);if(i.sta)bits.push(`+${i.sta} Stamina`);if(i.int)bits.push(`+${i.int} Intellect`);if(i.spi)bits.push(`+${i.spi} Spirit`);
+    if(i.ap)bits.push(`+${i.ap} Attack Power`);if(i.hit)bits.push(`+${i.hit}% Hit`);if(i.crit)bits.push(`+${i.crit}% Crit`);if(i.shadowRes)bits.push(`+${i.shadowRes} Shadow Resistance`);
+    if(i.weapon)bits.push(`${i.weapon.minDamage}–${i.weapon.maxDamage} Damage · ${i.weapon.speed.toFixed(2)} Speed · ${i.weapon.dps.toFixed(2)} DPS`);
+    if(x.weaponSkill)bits.push(x.weaponSkill);
+    return bits;
   }
+
+  function wowheadLink(x,icon=false){
+    if(!x.id)return `<span class="armory-empty-icon">—</span>`;
+    const attrs=`href="${esc(x.wowhead||`https://www.wowhead.com/classic/item=${x.id}`)}" data-wowhead="item=${x.id}&domain=classic" target="_blank" rel="noopener"`;
+    if(icon)return `<a class="armory-item-icon" ${attrs} data-wh-icon-size="large"><span class="slot-fallback">${esc(x.slot.slice(0,2).toUpperCase())}</span></a>`;
+    return `<a class="armory-item-name" ${attrs}>${esc(x.name)}</a>`;
+  }
+
+  function slotCard(x,side='left'){
+    const facts=itemFacts(x),empty=!x.id;
+    const nativeTooltip=empty?'':`<div class="armory-native-tooltip"><div class="tt-name">${esc(x.name)}</div>${x.itemLevel?`<div class="tt-ilvl">Item Level ${esc(x.itemLevel)}</div>`:''}<div class="tt-slot">${esc(x.slot)}</div>${facts.map(v=>`<div>${esc(v)}</div>`).join('')}${x.enchant?`<div class="tt-enchant">${esc(x.enchant)}${x.enchantEffect?` · ${esc(x.enchantEffect)}`:''}</div>`:''}<div class="tt-id">Item #${x.id}</div><div class="tt-verified">${x.verified?'✓ Verified item record':'⚠ Unverified item record'}</div></div>`;
+    return `<div class="paperdoll-slot ${side} ${empty?'empty':''}" data-slot="${esc(x.slot)}">
+      ${side==='right'?'<div class="paperdoll-slot-copy">'+slotCopy(x)+'</div>':''}
+      <div class="paperdoll-icon-wrap">${wowheadLink(x,true)}${nativeTooltip}</div>
+      ${side!=='right'?'<div class="paperdoll-slot-copy">'+slotCopy(x)+'</div>':''}
+    </div>`;
+  }
+
+  function slotCopy(x){
+    return `<div class="paperdoll-slot-label">${esc(x.slot)}</div>${x.id?wowheadLink(x,false):'<div class="armory-item-name empty-name">Empty</div>'}${x.itemLevel?`<div class="paperdoll-ilvl">Item Level ${esc(x.itemLevel)}</div>`:''}${x.enchant?`<div class="paperdoll-enchant">${esc(x.enchant)}</div>`:'<div class="paperdoll-enchant muted">No enchant</div>'}${x.enchantEffect?`<div class="paperdoll-enchant-effect">${esc(x.enchantEffect)}</div>`:''}`;
+  }
+
+  function modelMarkup(s,meta,audit){
+    const classKey=String(s.class||'unknown').toLowerCase();
+    const icon=`https://wow.zamimg.com/images/wow/icons/large/classicon_${classKey}.jpg`;
+    return `<div class="paperdoll-model ${classKey}">
+      <div class="paperdoll-glow"></div>
+      <div class="paperdoll-character">
+        <div class="silhouette-head"></div><div class="silhouette-body"></div><div class="silhouette-arm left"></div><div class="silhouette-arm right"></div><div class="silhouette-leg left"></div><div class="silhouette-leg right"></div>
+        <img class="paperdoll-class-icon" src="${icon}" alt="${esc(s.class)} class icon" loading="lazy">
+      </div>
+      <div class="paperdoll-model-copy"><div class="paperdoll-level">Level ${meta.level}</div><strong>${esc(meta.race)} ${esc(meta.class)}</strong><span>${esc(meta.spec)} · ${esc(meta.buildName)}</span><span>${esc(meta.buildPoints)} talents</span></div>
+      <div class="armory-audit-pill ${audit.pass?'pass':'fail'}">${audit.pass?'VERIFIED':'AUDIT FAIL'}</div>
+    </div>`;
+  }
+
+  function groupedStats(rows){
+    const order=[['resource','Resources'],['primary','Attributes'],['offense','Offense'],['defense','Defense'],['resist','Resistances'],['talent','Talent Effects']];
+    return order.map(([key,title])=>{
+      const group=rows.filter(x=>x[2]===key);if(!group.length)return '';
+      return `<section class="armory-stat-section"><h4>${title}</h4><div class="armory-stat-list">${group.map(([k,v])=>`<div><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div></section>`;
+    }).join('');
+  }
+
+  function quickStats(rows,s){
+    const find=name=>rows.find(x=>x[0]===name)?.[1]??'—';
+    const second=A.isMage(s)?['Spell Power','Spell Crit','Frost / Fire Hit']:['Attack Power','Melee Crit','Hit'];
+    const resource=A.isMage(s)?['Mana','Mana']:['Energy','Energy'];
+    const stats=[['Health',find('Health')],[resource[0],find(resource[1])],...second.map(k=>[k,find(k)]),['Armor',find('Armor')]];
+    return stats.map(([k,v])=>`<div class="armory-quick-stat"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('');
+  }
+
+  function auditMarkup(audit){
+    const checks=(audit.checks||[]).map(c=>`<div class="audit-check ${c.pass?'ok':'bad'}"><span>${c.pass?'✓':'✕'} ${esc(c.name)}</span><b>${esc(c.value)}</b></div>`).join('');
+    return `<details class="armory-integrity" ${audit.pass?'':'open'}><summary><span>Data integrity</span><b class="${audit.pass?'green':'red'}">STAT AUDIT: ${esc(audit.status)}</b></summary><div class="armory-integrity-copy">${esc(audit.reason||'')}</div><div class="audit-checks">${checks}</div></details>`;
+  }
+
   function renderOne(p){
     const s=read(p),root=$(p+'Armory');if(!root)return;
-    const slots=A.armoryFor(s),audit=A.audit(s),model=A.statModel(s),talent=T?.auditSelection(s);
-    if(!slots){root.innerHTML=`<div class="armory-empty"><b>Mini Armory blocat</b><span>Profilul exact pentru ${esc(s.class)} ${esc(s.spec)} / ${esc(s.race)} nu este încă încărcat.</span></div>`;return;}
-    const stats=canonicalStats(s),badge=audit.pass?'pass':'fail',checks=(audit.checks||[]).map(c=>`<div class="audit-check ${c.pass?'ok':'bad'}"><span>${c.pass?'✓':'✕'} ${esc(c.name)}</span><b>${esc(c.value)}</b></div>`).join('');
-    const buildStatus=talent?.pass?`${talent.build?.name} · ${talent.build?.points} · ${talent.kernelReady?'kernel active':'kernel locked'}`:'talent build unavailable';
-    root.innerHTML=`<div class="armory-head"><div><h3>${esc(s.race)} ${esc(s.class)} · ${esc(s.spec)}</h3><span>${esc(s.gear)}</span></div><div class="audit-badge ${badge}">STAT AUDIT: ${audit.status}</div></div><div class="armory-meta"><b>Talent build:</b> ${esc(buildStatus)}<br><b>Main scaling:</b> ${esc(model?.primary||'—')}<br><span>${esc(audit.reason)}</span>${audit.warning?`<br><span class="amber">${esc(audit.warning)}</span>`:''}</div><div class="audit-checks">${checks}</div><div class="armory-slots">${slots.map(itemRow).join('')}</div><h4>Character Stats · după talent build</h4><div class="armory-stats">${stats.map(([k,v])=>`<div><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div><h4>Stat breakdown pe clasă</h4><div class="stat-breakdown">${(model?.lines||[]).map(x=>`<div><b>${esc(x.stat)}</b><span>${esc(x.effect)}</span></div>`).join('')}${model?.note?`<div class="amber">${esc(model.note)}</div>`:''}</div>`;
+    const slots=A.armoryFor(s),audit=A.audit(s),model=A.statModel(s),meta=A.profileMeta(s),talent=T?.auditSelection(s);
+    if(!slots){
+      root.innerHTML=`<div class="armory-empty"><b>Armory locked</b><span>Exact profile for ${esc(s.class)} ${esc(s.spec)} / ${esc(s.race)} is not loaded yet.</span></div>`;return;
+    }
+    const bySlot=Object.fromEntries(slots.map(x=>[x.slot,x])),stats=canonicalStats(s),talentState=talent?.pass?'BUILD VERIFIED':'BUILD LOCKED';
+    root.innerHTML=`
+      <div class="blizzard-armory">
+        <header class="blizzard-armory-header">
+          <div class="armory-identity"><div class="armory-level-badge">60</div><div><h3>${esc(s.race)} ${esc(s.class)}</h3><p>${esc(s.spec)} · ${esc(s.gear)}</p></div></div>
+          <div class="armory-header-badges"><span class="build-pill ${talent?.pass?'ok':'warn'}">${talentState}</span><span class="audit-badge ${audit.pass?'pass':'fail'}">STAT AUDIT: ${esc(audit.status)}</span></div>
+        </header>
+        <div class="armory-subnav"><span class="active">CHARACTER</span><span>TALENTS · ${esc(meta.buildPoints)}</span><span>PVP LOADOUT</span></div>
+        <div class="paperdoll-stage">
+          <div class="paperdoll-column left">${A.LEFT_SLOTS.map(slot=>slotCard(bySlot[slot],'left')).join('')}</div>
+          ${modelMarkup(s,meta,audit)}
+          <div class="paperdoll-column right">${A.RIGHT_SLOTS.map(slot=>slotCard(bySlot[slot],'right')).join('')}</div>
+          <div class="paperdoll-weapons">${A.WEAPON_SLOTS.map(slot=>slotCard(bySlot[slot],'weapon')).join('')}</div>
+        </div>
+        <div class="armory-quick-stats">${quickStats(stats,s)}</div>
+        <div class="armory-details-grid">
+          <div class="armory-stats-pane"><h3>Character Stats</h3>${groupedStats(stats)}</div>
+          <div class="armory-build-pane"><h3>Specialization</h3><div class="armory-build-card"><span>${esc(s.spec)}</span><strong>${esc(meta.buildName)}</strong><small>${esc(meta.buildPoints)} · ${talent?.kernelReady?'kernel active':'kernel locked'}</small></div><h3>Class Scaling</h3><div class="armory-scaling">${(model?.lines||[]).map(x=>`<div><b>${esc(x.stat)}</b><span>${esc(x.effect)}</span></div>`).join('')}${model?.note?`<p>${esc(model.note)}</p>`:''}</div></div>
+        </div>
+        ${auditMarkup(audit)}
+        <div class="armory-footnote">Hover or tap an item for its exact Classic tooltip. Item links use Wowhead Classic data; local combat numbers still pass through the simulator's strict audit.</div>
+      </div>`;
+    refreshExternalTooltips();
   }
+
+  function refreshExternalTooltips(){
+    setTimeout(()=>{
+      try{window.$WowheadPower?.refreshLinks?.();}catch(_e){}
+      try{window.WH?.Tooltips?.refreshLinks?.();}catch(_e){}
+    },40);
+  }
+
   function render(){renderOne('a');renderOne('b');}
   ['ac','as','ar','ag','abuild','bc','bs','br','bg','bbuild'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(render,0)));
   render();
-  window.WOW_ARMORY_UI={render,version:'0.17'};
+  window.WOW_ARMORY_UI={render,version:'0.28-blizzard-paperdoll'};
 })();
