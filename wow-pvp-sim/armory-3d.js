@@ -16,7 +16,7 @@
     .paperdoll-model.model3d-ready .armory-model-3d{opacity:1}
     .paperdoll-model.model3d-ready .paperdoll-character{opacity:0;pointer-events:none}
     .armory-model-3d canvas{display:block;width:100%!important;height:100%!important;outline:none}
-    .armory-3d-state{position:absolute;z-index:7;left:50%;top:10px;transform:translateX(-50%);max-width:90%;padding:4px 7px;border:1px solid rgba(175,137,78,.36);border-radius:999px;background:rgba(4,7,10,.72);color:#a99e91;font-size:7.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;pointer-events:none}
+    .armory-3d-state{position:absolute;z-index:7;left:50%;top:10px;transform:translateX(-50%);max-width:90%;padding:4px 7px;border:1px solid rgba(175,137,78,.36);border-radius:999px;background:rgba(4,7,10,.72);color:#a99e91;font-size:7.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;pointer-events:none;overflow:hidden;text-overflow:ellipsis}
     .paperdoll-model.model3d-ready .armory-3d-state{color:#7fd5a1;border-color:rgba(77,166,111,.38)}
     .armory-3d-gender{position:absolute;z-index:8;right:8px;top:8px;display:flex;gap:3px}
     .armory-3d-gender button{appearance:none;border:1px solid #51432f;border-radius:4px;background:#0b1015;color:#857b70;font:800 8px system-ui;padding:4px 6px;cursor:pointer}
@@ -105,7 +105,9 @@
       try{viewer.playAnimationByName('Stand');}catch(_e){}
       ui.model.classList.add('model3d-ready');ui.state.textContent=`3D Classic · ${ok}/${total} visual slots`;
     }catch(err){
-      console.warn('[Armory3D] fallback active',err);ui.state.textContent='3D unavailable · fallback';ui.model.classList.remove('model3d-ready');
+      console.warn('[Armory3D] fallback active',err);
+      const reason=String(err?.message||err||'unknown').replace(/\s+/g,' ').slice(0,72);
+      ui.state.textContent=`3D fallback · ${reason}`;ui.state.title=String(err?.stack||err||'');ui.model.classList.remove('model3d-ready');
     }
   }
   function mountAll(){mountPanel('a');mountPanel('b');}
@@ -113,5 +115,5 @@
   const observer=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(mountAll,80);});
   const start=()=>{const app=document.querySelector('.app')||document.body;observer.observe(app,{childList:true,subtree:true});mountAll();};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  window.WOW_ARMORY_3D={mountAll,mountPanel,version:'0.1-classic-renderer'};
+  window.WOW_ARMORY_3D={mountAll,mountPanel,version:'0.2-classic-renderer-debug'};
 })();
