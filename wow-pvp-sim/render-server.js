@@ -59,6 +59,15 @@ const server=http.createServer((req,res)=>{
     fetchRemote('https://cdn.jsdelivr.net/npm/fengari-web@0.1.4/dist/fengari-web.js',3,(err,body)=>{if(err){res.writeHead(502,{'content-type':'text/plain; charset=utf-8'}).end('Vendor fetch failed: '+err.message);return;}vendorCache.set(key,body);res.writeHead(200,{'content-type':'application/javascript; charset=utf-8','cache-control':'public, max-age=86400'});res.end(body);});return;
   }
   if(pathname==='/')pathname='/index.html';
+  if(pathname==='/index.html'){
+    const indexPath=path.join(root,'index.html');
+    fs.readFile(indexPath,'utf8',(err,html)=>{
+      if(err){res.writeHead(404,{'content-type':'text/plain; charset=utf-8'}).end('Not found');return;}
+      const body=html.includes('armory-3d.js')?html:html.replace('</body>','<script src="armory-3d.js"></script>\n</body>');
+      res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store','content-length':Buffer.byteLength(body)});res.end(body);
+    });
+    return;
+  }
   const filePath=path.resolve(root,'.'+pathname);if(!filePath.startsWith(root+path.sep)&&filePath!==path.join(root,'index.html')){res.writeHead(403).end('Forbidden');return;}
   fs.stat(filePath,(err,stat)=>{if(err||!stat.isFile()){res.writeHead(404,{'content-type':'text/plain; charset=utf-8'}).end('Not found');return;}const ext=path.extname(filePath).toLowerCase();res.writeHead(200,{'content-type':mime[ext]||'application/octet-stream','cache-control':ext==='.html'?'no-store':'public, max-age=30'});fs.createReadStream(filePath).pipe(res);});
 });
