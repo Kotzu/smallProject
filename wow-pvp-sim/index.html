@@ -8,11 +8,13 @@
 <link rel="stylesheet" href="armory.css">
 <link rel="stylesheet" href="fight.css">
 <link rel="stylesheet" href="talents.css">
+<script>const whTooltips={colorLinks:false,iconizeLinks:false,renameLinks:false,iconSize:true};</script>
+<script src="https://wow.zamimg.com/js/tooltips.js"></script>
 </head>
 <body>
 <main class="app">
   <header class="hero">
-    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.27 · Rogue ClassCombat learning · talent-aware combat · strict accuracy</p></div>
+    <div><h1>WoW PvP Classic / Forever Simulator</h1><p>v0.28-dev · Blizzard-style Armory · Rogue ClassCombat learning · talent-aware combat · strict accuracy</p></div>
     <div class="badge ok">STRICT DATA</div>
   </header>
 
@@ -38,7 +40,7 @@
     <div id="fightLiveLog" class="fight-log"></div>
   </section>
 
-  <section id="armory" class="tab card"><h2>Mini Armory</h2><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Gear, enchants și stats intră prin audit; learner-ul nu are voie să le modifice.</div></section>
+  <section id="armory" class="tab card"><div class="combat-head"><div><h2>Armory</h2><div class="muted">Paperdoll, gear slots, enchants, exact Classic item tooltips, stats și talent build — inspirat de structura Blizzard Armory.</div></div><div class="badge ok">ARMORY STRICT MODE</div></div><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Gear, enchants, talents și stats sunt read-only pentru learner; ClassCombat.lua nu le poate modifica.</div></section>
 
   <section id="talents" class="tab card"><div class="combat-head"><div><h2>Talent Builds</h2><div class="muted">Talent effects sunt input de combat. Build-urile neverificate sau cu mecanici lipsă rămân blocate.</div></div><div class="badge ok">BUILD STRICT MODE</div></div><div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div></section>
 
@@ -54,7 +56,7 @@
     <section class="tech-section"><h2>Rule lab</h2><div class="lab-grid"><div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div><div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div><div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div></div></section>
   </div></section>
 
-  <div class="metrics"><div class="metric"><span>Fight core</span><b class="green">policy-driven</b></div><div class="metric"><span>Rogue champion</span><b class="green">g3 · Evis 4 CP · Hemo 65</b></div><div class="metric"><span>Evidence</span><b class="green">3 × 1.000 paired seeds</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files</b></div><div class="metric"><span>Talent builds</span><b class="green">strict</b></div></div>
+  <div class="metrics"><div class="metric"><span>Fight core</span><b class="green">policy-driven</b></div><div class="metric"><span>Rogue champion</span><b class="green">g3 · Evis 4 CP · Hemo 65</b></div><div class="metric"><span>Armory</span><b class="green">paperdoll + exact tooltips</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 files</b></div><div class="metric"><span>Talent builds</span><b class="green">strict</b></div></div>
 </main>
 
 <script src="data.js"></script>
