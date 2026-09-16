@@ -20,10 +20,10 @@
       return rows;
     }
     if(A.isMage(s)){
-      const p=D.pvpProfiles.mage_frost_gnome_p6_core;
+      const p=D.pvpProfiles.mage_frost_gnome_p6_core,dec=A.mageDecomposition?.();
       return [
         ['Strength',p.stats.strength,'primary'],['Agility',p.stats.agility,'primary'],['Stamina',p.stats.stamina,'primary'],['Intellect',p.stats.intellect,'primary'],['Spirit',p.stats.spirit,'primary'],
-        ['Health',p.stats.health,'resource'],['Mana',p.stats.mana,'resource'],['Spell Power',p.stats.spellDamage,'offense'],['Spell Crit',pct(p.stats.spellCritPct),'offense'],['Frost / Fire Hit',(p.stats.spellHitPct+(tm.frostFireHitPct||0))+'%','offense'],['Spell Penetration',p.stats.spellPen,'offense'],
+        ['Health',p.stats.health,'resource'],['Mana',p.stats.mana,'resource'],['Spell Power',p.stats.spellDamage,'offense'],['Frost Spell Power',dec?.frostSpellPower??p.stats.spellDamage,'offense'],['Spell Crit',pct(p.stats.spellCritPct),'offense'],['Frost / Fire Hit',(p.stats.spellHitPct+(tm.frostFireHitPct||0))+'%','offense'],['Spell Penetration',p.stats.spellPen,'offense'],
         ['Armor',Math.trunc(p.stats.armorBeforeTalents+p.stats.intellect*((tm.armorFromIntellectPct||0)/100)),'defense'],['Dodge',p.stats.dodgePct+'%','defense'],
         ['Arcane Resist',p.stats.resist.arcane,'resist'],['Fire Resist',p.stats.resist.fire,'resist'],['Frost Resist',p.stats.resist.frost,'resist'],['Nature Resist',p.stats.resist.nature,'resist'],['Shadow Resist',p.stats.resist.shadow,'resist'],
         ['Shatter','+'+(tm.frozenCritBonusPct||0)+'% frozen','talent'],['Frost Crit Damage',(tm.frostCritMultiplier||1.5).toFixed(1)+'×','talent']
@@ -37,21 +37,26 @@
     if(i.armor)bits.push(`${i.armor} Armor`);
     if(i.str)bits.push(`+${i.str} Strength`);if(i.agi)bits.push(`+${i.agi} Agility`);if(i.sta)bits.push(`+${i.sta} Stamina`);if(i.int)bits.push(`+${i.int} Intellect`);if(i.spi)bits.push(`+${i.spi} Spirit`);
     if(i.ap)bits.push(`+${i.ap} Attack Power`);if(i.hit)bits.push(`+${i.hit}% Hit`);if(i.crit)bits.push(`+${i.crit}% Crit`);if(i.shadowRes)bits.push(`+${i.shadowRes} Shadow Resistance`);
-    if(i.weapon)bits.push(`${i.weapon.minDamage}–${i.weapon.maxDamage} Damage · ${i.weapon.speed.toFixed(2)} Speed · ${i.weapon.dps.toFixed(2)} DPS`);
+    if(i.spellPower)bits.push(`+${i.spellPower} Spell Damage`);if(i.spellHit)bits.push(`+${i.spellHit}% Spell Hit`);if(i.spellCrit)bits.push(`+${i.spellCrit}% Spell Crit`);if(i.spellPen)bits.push(`+${i.spellPen} Spell Penetration`);if(i.dodge)bits.push(`+${i.dodge}% Dodge`);
+    if(i.manaShieldBonusAbsorb)bits.push(`Mana Shield absorbs +${i.manaShieldBonusAbsorb}`);
+    if(i.weapon)bits.push(`${i.weapon.minDamage}–${i.weapon.maxDamage}${i.weapon.school?` ${i.weapon.school}`:''} Damage · ${i.weapon.speed.toFixed(2)} Speed · ${i.weapon.dps.toFixed(2)} DPS`);
+    if(i.useEffect)bits.push(`Use: ${i.useEffect}${i.cooldownSec?` · ${i.cooldownSec/60} min cooldown`:''}`);
+    if(i.set)bits.push(`Set: ${i.set}`);
     if(x.weaponSkill)bits.push(x.weaponSkill);
     return bits;
   }
 
+  function qualityClass(x){return x?.quality?` quality-${esc(x.quality)}`:'';}
   function wowheadLink(x,icon=false){
     if(!x.id)return `<span class="armory-empty-icon">—</span>`;
     const attrs=`href="${esc(x.wowhead||`https://www.wowhead.com/classic/item=${x.id}`)}" data-wowhead="item=${x.id}&domain=classic" target="_blank" rel="noopener"`;
-    if(icon)return `<a class="armory-item-icon" ${attrs} data-wh-icon-size="large"><span class="slot-fallback">${esc(x.slot.slice(0,2).toUpperCase())}</span></a>`;
-    return `<a class="armory-item-name" ${attrs}>${esc(x.name)}</a>`;
+    if(icon)return `<a class="armory-item-icon${qualityClass(x)}" ${attrs} data-wh-icon-size="large"><span class="slot-fallback">${esc(x.slot.slice(0,2).toUpperCase())}</span></a>`;
+    return `<a class="armory-item-name${qualityClass(x)}" ${attrs}>${esc(x.name)}</a>`;
   }
 
   function slotCard(x,side='left'){
     const facts=itemFacts(x),empty=!x.id;
-    const nativeTooltip=empty?'':`<div class="armory-native-tooltip"><div class="tt-name">${esc(x.name)}</div>${x.itemLevel?`<div class="tt-ilvl">Item Level ${esc(x.itemLevel)}</div>`:''}<div class="tt-slot">${esc(x.slot)}</div>${facts.map(v=>`<div>${esc(v)}</div>`).join('')}${x.enchant?`<div class="tt-enchant">${esc(x.enchant)}${x.enchantEffect?` · ${esc(x.enchantEffect)}`:''}</div>`:''}<div class="tt-id">Item #${x.id}</div><div class="tt-verified">${x.verified?'✓ Verified item record':'⚠ Unverified item record'}</div></div>`;
+    const nativeTooltip=empty?'':`<div class="armory-native-tooltip"><div class="tt-name${qualityClass(x)}">${esc(x.name)}</div>${x.itemLevel?`<div class="tt-ilvl">Item Level ${esc(x.itemLevel)}</div>`:''}<div class="tt-slot">${esc(x.slot)}</div>${facts.map(v=>`<div>${esc(v)}</div>`).join('')}${x.enchant?`<div class="tt-enchant">${esc(x.enchant)}${x.enchantEffect?` · ${esc(x.enchantEffect)}`:''}</div>`:''}<div class="tt-id">Item #${x.id}</div><div class="tt-verified">${x.verified?'✓ Verified local Classic record':'⚠ Unverified item record'}</div></div>`;
     return `<div class="paperdoll-slot ${side} ${empty?'empty':''}" data-slot="${esc(x.slot)}">
       ${side==='right'?'<div class="paperdoll-slot-copy">'+slotCopy(x)+'</div>':''}
       <div class="paperdoll-icon-wrap">${wowheadLink(x,true)}${nativeTooltip}</div>
@@ -87,7 +92,7 @@
 
   function quickStats(rows,s){
     const find=name=>rows.find(x=>x[0]===name)?.[1]??'—';
-    const second=A.isMage(s)?['Spell Power','Spell Crit','Frost / Fire Hit']:['Attack Power','Melee Crit','Hit'];
+    const second=A.isMage(s)?['Frost Spell Power','Spell Crit','Frost / Fire Hit']:['Attack Power','Melee Crit','Hit'];
     const resource=A.isMage(s)?['Mana','Mana']:['Energy','Energy'];
     const stats=[['Health',find('Health')],[resource[0],find(resource[1])],...second.map(k=>[k,find(k)]),['Armor',find('Armor')]];
     return stats.map(([k,v])=>`<div class="armory-quick-stat"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('');
@@ -124,7 +129,7 @@
           <div class="armory-build-pane"><h3>Specialization</h3><div class="armory-build-card"><span>${esc(s.spec)}</span><strong>${esc(meta.buildName)}</strong><small>${esc(meta.buildPoints)} · ${talent?.kernelReady?'kernel active':'kernel locked'}</small></div><h3>Class Scaling</h3><div class="armory-scaling">${(model?.lines||[]).map(x=>`<div><b>${esc(x.stat)}</b><span>${esc(x.effect)}</span></div>`).join('')}${model?.note?`<p>${esc(model.note)}</p>`:''}</div></div>
         </div>
         ${auditMarkup(audit)}
-        <div class="armory-footnote">Hover or tap an item for its exact Classic tooltip. Item links use Wowhead Classic data; local combat numbers still pass through the simulator's strict audit.</div>
+        <div class="armory-footnote">Hover or tap an item for its exact Classic tooltip. Every Mage slot now also has a complete local Classic stat record, so the paperdoll can be audited without depending on the tooltip service.</div>
       </div>`;
     refreshExternalTooltips();
   }
@@ -139,5 +144,5 @@
   function render(){renderOne('a');renderOne('b');}
   ['ac','as','ar','ag','abuild','bc','bs','br','bg','bbuild'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(render,0)));
   render();
-  window.WOW_ARMORY_UI={render,version:'0.28-blizzard-paperdoll'};
+  window.WOW_ARMORY_UI={render,version:'0.29-blizzard-paperdoll-local-audit'};
 })();
