@@ -26,12 +26,13 @@
     add('Armory talent renderer available',!!window.WOW_ARMORY_TALENTS,'Player A + Player B talent-tree renderer');
     add('Forever build allocator available',!!B&&B.MAX_POINTS===51,`allocator ${B?.version||'missing'} · cap ${B?.MAX_POINTS||'—'}`);
     if(B){
-      B.clear('a','Rogue');
+      const qp='__qa__';
+      B.clear(qp,'Rogue');
       const first=F.tree('Rogue','Subtlety')?.find(x=>x.requiredPoints===0);
-      const added=first?B.add('a','Rogue',first.id):{ok:false};
-      const aud=B.audit('a','Rogue');
-      add('Forever allocation smoke test',added.ok&&aud.pass&&aud.points===1,first?`${first.name} -> ${B.rank('a','Rogue',first.id)}/${first.maxRank}`:'no tier-1 node');
-      B.clear('a','Rogue');
+      const added=first?B.add(qp,'Rogue',first.id):{ok:false};
+      const aud=B.audit(qp,'Rogue');
+      add('Forever allocation smoke test',added.ok&&aud.pass&&aud.points===1,first?`${first.name} -> ${B.rank(qp,'Rogue',first.id)}/${first.maxRank}`:'no tier-1 node');
+      B.clear(qp,'Rogue');
     }
     const failed=checks.filter(x=>!x.pass).length;
     window.WOW_FOREVER_QA={checks,passed:checks.length-failed,failed,pass:failed===0,db:F.db,totalNodes:cov.totalNodes,totalTrees:cov.totalTrees};
@@ -39,7 +40,7 @@
     return window.WOW_FOREVER_QA;
   }
   document.addEventListener('wow-forever-talents-ready',()=>setTimeout(run,0));
-  document.addEventListener('wow-forever-build-changed',()=>setTimeout(run,0));
+  document.addEventListener('wow-forever-build-changed',e=>{const p=e.detail?.player;if(p==='a'||p==='b')setTimeout(run,0);});
   if(window.WOW_FOREVER_TALENTS?.status==='ready')run();
   window.WOW_FOREVER_QA_RUN=run;
 })();
