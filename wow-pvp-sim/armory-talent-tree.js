@@ -1,6 +1,6 @@
 (function(){
   const $=id=>document.getElementById(id);
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
   const mode=()=>$('rulesetMode')?.value||'classic';
   function cfg(p){return{class:$(p+'c')?.value,spec:$(p+'s')?.value,build:$(p+'build')?.value||null};}
   function iconUrl(icon){return icon?`https://wow.zamimg.com/images/wow/icons/medium/${encodeURIComponent(icon)}.jpg`:'';}
@@ -41,7 +41,17 @@
     let box=root.querySelector('.armory-talent-tree');if(!box){box=document.createElement('section');box.className='armory-talent-tree';const integrity=root.querySelector('.armory-integrity');(integrity||root.querySelector('.armory-footnote'))?.insertAdjacentElement('beforebegin',box);}
     const s=cfg(p);box.innerHTML=`<div class="att-title"><span>TALENT TREE</span><b>${p==='a'?'PLAYER A':'PLAYER B'} · ${esc(mode()==='forever'?'Forever':'Classic')}</b></div>${mode()==='forever'?foreverTreeHtml(p,s.class,s.spec):classicTreeHtml(p)}`;
   }
-  function render(){injectOne('a');injectOne('b');}
+  let obs=null,observedRoot=null,renderTimer=null;
+  function reconnectObserver(){
+    if(!obs||!observedRoot)return;
+    obs.observe(observedRoot,{childList:true,subtree:true});
+  }
+  function render(){
+    if(obs)obs.disconnect();
+    injectOne('a');injectOne('b');
+    reconnectObserver();
+  }
+  function scheduleRender(delay=20){clearTimeout(renderTimer);renderTimer=setTimeout(render,delay);}
   function handleTalentClick(e){
     if(mode()!=='forever')return;
     const node=e.target.closest('.att-node');if(!node)return;
@@ -50,16 +60,26 @@
     const p=node.dataset.player,className=node.dataset.class,id=node.dataset.node;
     const result=(e.shiftKey||e.button===2)?B.remove(p,className,id):B.add(p,className,id);
     if(!result.ok){node.classList.add('att-denied');setTimeout(()=>node.classList.remove('att-denied'),220);}
-    render();
+    scheduleRender(0);
   }
-  function handleReset(e){const btn=e.target.closest('.att-reset');if(!btn)return;const p=btn.dataset.player,s=cfg(p);window.WOW_FOREVER_BUILDS?.clear(p,s.class);render();}
+  function handleReset(e){const btn=e.target.closest('.att-reset');if(!btn)return;const p=btn.dataset.player,s=cfg(p);window.WOW_FOREVER_BUILDS?.clear(p,s.class);scheduleRender(0);}
   document.addEventListener('click',e=>{handleReset(e);handleTalentClick(e);});
   document.addEventListener('contextmenu',e=>{if(e.target.closest('.att-node'))handleTalentClick(e);});
-  document.addEventListener('wow-forever-talents-ready',render);
-  document.addEventListener('wow-forever-build-changed',render);
-  ['ac','as','abuild','bc','bs','bbuild','rulesetMode'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(render,20)));
-  const obs=new MutationObserver(()=>{clearTimeout(obs._t);obs._t=setTimeout(render,50);});
-  const start=()=>{obs.observe(document.querySelector('.app')||document.body,{childList:true,subtree:true});render();};
+  document.addEventListener('wow-forever-talents-ready',()=>scheduleRender(0));
+  document.addEventListener('wow-forever-build-changed',e=>{if(e.detail?.player==='a'||e.detail?.player==='b')scheduleRender(0);});
+  document.addEventListener('wow-ruleset-changed',()=>scheduleRender(0));
+  ['ac','as','abuild','bc','bs','bbuild','rulesetMode'].forEach(id=>$(id)?.addEventListener('change',()=>scheduleRender(20)));
+  const start=()=>{
+    observedRoot=document.querySelector('.app')||document.body;
+    obs=new MutationObserver(mutations=>{
+      const relevant=mutations.some(m=>{
+        const target=m.target?.nodeType===1?m.target:m.target?.parentElement;
+        return !target?.closest?.('.armory-talent-tree');
+      });
+      if(relevant)scheduleRender(50);
+    });
+    reconnectObserver();render();
+  };
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  window.WOW_ARMORY_TALENTS={render,version:'0.31-forever-interactive-tree'};
+  window.WOW_ARMORY_TALENTS={render:()=>scheduleRender(0),version:'0.32-forever-interactive-tree-stable'};
 })();
