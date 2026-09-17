@@ -1,53 +1,98 @@
-# WoW PvP Classic / Forever Simulator — PROJECT HANDOFF
+# WoW Forever PvP Simulator — PROJECT HANDOFF
+
+## Authoritative scope
+This project is **WoW Forever only**.
+
+Do not implement, expose, or maintain a Classic Era mode. Do not auto-convert Classic builds into Forever builds. Any older Classic-derived code/data still present in the repository is migration scaffolding only and cannot become combat-authoritative until re-verified for Forever.
+
+If another file/chat says “Classic / Forever”, this handoff and `PROJECT_STATE.md` supersede it.
 
 ## Goal
-Finish a highly accurate WoW Classic/Forever PvP simulator whose main purpose is to develop and improve one `ClassCombat.lua` per class, with special focus on making the Rogue policy progressively better from simulated fights.
-
-This file is the authoritative handoff for a new ChatGPT chat. Do not restart the project from scratch. Continue from the repository state and constraints below.
+Finish a highly accurate WoW Forever PvP 1v1 simulator centered on one `ClassCombat.lua` per class, with special focus on making Rogue progressively smarter through deterministic simulated fights.
 
 ## User priorities
-1. Accuracy first. Do not invent stats, talents, coefficients, cooldowns, proc rates, resist rules, DR rules, gear values, enchants, racials, or spell behavior.
-2. Do not waste time on cartoon-like visuals or fancy animation. Fight playback is only a diagnostic UI for reading what the simulator did.
-3. The important artifact is the combat logic, especially `combat/Rogue/ClassCombat.lua`.
-4. Learn from every fight: analyze why Rogue won/lost, propose concrete policy changes, test them over deterministic seed suites/batches, keep only changes that improve results without violating WoW rules.
-5. `CombatEngine.lua` must remain neutral. Tactical improvements belong in `ClassCombat.lua`, not in game-rule formulas.
-6. Strict gate: unsupported/unverified profiles/builds stay locked rather than being guessed.
+1. Accuracy first. Never invent stats, talents, coefficients, cooldowns, proc rates, resistance rules, DR rules, gear values, enchants, racials or spell behavior.
+2. Armory must be Blizzard-style and exist for both Player A and Player B.
+3. Armory owns the combat configuration: class, race, gear/loadout, stats and selected Forever talent build.
+4. The most important combat artifact is `combat/Rogue/ClassCombat.lua`.
+5. `CombatEngine.lua` must remain neutral. Tactical improvements belong in `ClassCombat.lua`.
+6. Unsupported/unverified Forever profiles/builds/mechanics remain locked rather than guessed.
+7. Fight replay is diagnostic. Do not prioritize flashy animation over combat accuracy.
 
-## Repository / preview
+## Repository
 - GitHub: `Kotzu/smallProject`
-- Project folder: `wow-pvp-sim/`
-- Public preview: https://wow-pvp-simulator-preview.onrender.com
-- Render service: `wow-pvp-simulator-preview`
-- Render service ID: `srv-dajta2h42hec73a0al60`
-- Render workspace ID: `tea-dajt3me7bikc73ddj8h0`
-- Render region: Frankfurt
+- active branch: `wow-pvp-dev`
+- project folder: `wow-pvp-sim/`
 
-## Current version state
-- UI / talent-aware wrapper: v0.16
-- First calibrated matchup: Undead Rogue Subtlety/Hemo vs Gnome Frost Mage, Level 60 PvP BiS
-- Deterministic duel code/seed supported
-- Batch simulation: 1k / 10k / 100k
-- Automated QA currently checks stats/formulas/replay/talent build validity/batch accounting
+## Render dev preview
+- service: `wow-pvp-simulator-dev`
+- URL: `https://wow-pvp-simulator-dev.onrender.com`
+- service ID: `srv-dalf8tbl550s73b2t28g`
+- workspace ID: `tea-dajt3me7bikc73ddj8h0`
+- region: Frankfurt
+
+Do not claim a commit is live until Render has actually deployed it and the public URL has been fetched/verified.
 
 ## Core architecture
-Target architecture:
+`Forever Armory` -> `Forever Talent Build` -> `ClassCombat.lua` -> `CombatEngine.lua` -> fight log -> post-fight analyzer -> candidate policy improvement -> deterministic regression tests -> accept/reject policy change.
 
-`ClassCombat.lua` -> chooses action -> `CombatEngine.lua` -> resolves WoW rules -> fight log -> post-fight analyzer -> candidate policy improvement -> regression tests/batch -> accept/reject policy change
+- `ClassCombat.lua` = brain / tactics.
+- `CombatEngine.lua` = verified WoW Forever rules / combat math.
+- Fight UI = diagnostic playback.
+- Post-fight analyzer = explains winner/loser and what each class policy should improve.
 
-Rule:
-- `ClassCombat.lua` = brain / tactics
-- `CombatEngine.lua` = WoW rules / physics / combat math
+## Forever talents
+Runtime source is the current Wowhead Forever talent calculator dataset.
 
-The current browser duel is still driven by the existing JavaScript kernel. Lua files are real and visible in the repo, but are NOT yet the sole runtime authority in the browser. This is an important unfinished architectural task. Do not claim otherwise.
+Current observed dataset:
+- db token: `1789642865`
+- 9 classes
+- 27 talent trees
+- 351 current talent nodes
+- status: `PROVISIONAL_UNTIL_BETA_DATAMINING`
+
+The simulator currently stores/uses tree IDs, node IDs, names, icons, row/column, max ranks, prerequisites, required points, rank descriptions, costs and `requiresText` where supplied.
+
+Known updated examples already present in the current source:
+- Rogue Subtlety: Hemorrhage, Quietus, Cutthroat, Thousand Cuts
+- Rogue Assassination: Mutilate, Venom
+- Mage Frost: Ice Lance, Fingers of Frost
+
+## Forever build allocator
+Player A and Player B have separate build state.
+
+Rules already enforced:
+- maximum 51 points
+- tier gates
+- prerequisite talents
+- rank caps
+- dependency-safe point removal
+- build export includes Wowhead db token/provenance
+
+No Classic build string is authoritative for Forever.
+
+## Armory
+Armory target is Blizzard-style 1:1 for both players, with:
+- identity / class / race / spec
+- gear slots
+- exact item IDs
+- enchants
+- weapon data
+- primary stats
+- combat stats
+- resistances
+- talent tree
+- selected build X/51
+- source/provenance and audit state
+
+The Forever talent tree is already wired to the live Forever runtime dataset.
+
+Important: some current gear/stat code is still inherited from the earlier Classic calibration. It is migration-only. It must be replaced or re-verified for Forever before it can unlock Fight.
 
 ## ClassCombat.lua files
-There is now one class-level combat file per Classic class under `wow-pvp-sim/combat/<Class>/ClassCombat.lua`.
-
-Active:
-- `combat/Rogue/ClassCombat.lua`
-- `combat/Mage/ClassCombat.lua`
-
-Created but intentionally LOCKED until exact spells/talents/gear are verified:
+One top-level file per class under `wow-pvp-sim/combat/<Class>/ClassCombat.lua`:
+- Rogue
+- Mage
 - Warrior
 - Paladin
 - Hunter
@@ -56,185 +101,59 @@ Created but intentionally LOCKED until exact spells/talents/gear are verified:
 - Warlock
 - Druid
 
-### Rogue status
-`combat/Rogue/ClassCombat.lua`
-- Main focus of project
-- Active spec: Subtlety
-- Current active build: Cold Blood Hemorrhage 21/3/27
-- Current policy includes: Cheap Shot opener, Vanish root break/reopen, Sprint for gap close, Kick casts, Kidney control window, Cold Blood + Eviscerate, Hemorrhage builder, energy pooling
-- Assassination and Combat policies remain locked until verified.
+Rogue is the priority.
 
-### Mage status
-`combat/Mage/ClassCombat.lua`
-- Active spec: Frost
-- Active build: Deep Frost PvP 17/0/34
-- Policy includes Blink, Escape Artist, Ice Block, AGM, Ice Barrier, Mana Shield, Frost Nova, Cone of Cold, Fire Blast, Cold Snap, Frostbolt.
+Rogue policy must eventually read the exact selected Forever build and account for energy, combo points, cooldowns, DR, positioning, poisons, target state, reset/reopen logic and matchup-specific decisions.
 
-## Talent builds
-Talent selection is now a real part of duel configuration.
+## Fight gate
+Forever Fight is intentionally locked until matchup-level parity is complete.
 
-Authoritative files:
-- `talent-builds.js`
-- `combat/TalentBuilds.lua`
-- `duel-build-guard-v016.js`
+A fight may unlock only when both players have:
+1. verified Forever loadout/stats
+2. valid selected Forever build
+3. all combat-relevant selected talent effects implemented
+4. verified Forever spell/ability definitions
+5. verified Forever CombatEngine mechanics
+6. valid class policy
+7. passing QA
 
-Active calibrated builds:
-
-### Rogue
-- ID: `rogue_cb_hemo_21_3_27`
-- Name: Cold Blood Hemorrhage
-- Points: 21/3/27 = 51
-- Calculator string: `305320115001-3-500253000332121`
-- Important verified effects currently represented:
-  - Improved Eviscerate 3/3 -> +15% Eviscerate damage
-  - Malice 5/5 -> +5% melee crit
-  - Murder 2/2 -> +2% damage against applicable target type in current kernel
-  - Relentless Strikes -> 20% per CP, restores 25 Energy
-  - Lethality -> builder crit bonus; Hemo crit currently 2.3x
-  - Cold Blood -> guaranteed eligible crit
-  - Dirty Deeds 2/2 -> Cheap Shot 40 Energy
-  - Hemorrhage 1/1
-  - Preparation 1/1
-
-### Mage
-- ID: `mage_deep_frost_17_0_34`
-- Name: Deep Frost PvP
-- Points: 17/0/34 = 51
-- Calculator string: `23001503102--05350233102351001`
-- Important verified effects represented:
-  - Improved Frostbolt 5/5 -> 2.5s cast
-  - Elemental Precision 3/3 -> +6% Frost/Fire hit and mana-cost reduction used by kernel
-  - Ice Shards 5/5 -> Frost crit total 2.0x
-  - Improved Frost Nova 2/2 -> 21s CD
-  - Permafrost 3/3
-  - Piercing Ice 3/3 -> +6% Frost damage
-  - Shatter 5/5 -> +50% crit vs frozen
-  - Improved Cone of Cold 3/3 -> +35% damage
-  - Arcane Resilience 1/1 -> armor = +50% Intellect
-  - Cold Snap / Ice Block / Ice Barrier
-  - Improved Counterspell 2/2 -> 4s silence
-
-Strict rule: a selected talent build must match class/spec and pass audit. Unknown or uncalibrated builds must block duel execution.
-
-## Mini Armory / stat audit
-Current UI includes mini Armory for Player A/B.
-- Gear slots
-- Item IDs
-- Enchants
-- Gems/sockets (Classic Era generally none for current profiles)
-- Primary stats
-- Combat stats
-- Class-specific stat conversion breakdown
-- STAT AUDIT PASS/FAIL
-
-Current Rogue baseline is independently recalculated from base stats + verified gear/enchants. Current Mage core profile includes independent mana and armor audits.
-
-Important: each class scales stats differently. Never apply Rogue AGI rules to Mage, etc.
-
-## Current first matchup data
-### Rogue
-- Undead Rogue 60, Subtlety/Hemo, PvP BiS P6 baseline
-- 17 slots verified
-- Main hand: Gressil, Dawn of Ruin, 2.7
-- Off hand: Harbinger of Doom, 1.6
-- Ranged: Nerubian Slavemaker
-- Dual-wield same-level white miss: 5% base + 19% DW penalty - hit
-- Offhand penalty: 50% without Dual Wield Specialization
-- Crippling Poison II raw 30%
-- Mind-numbing Poison III raw 20%
-- Current Mage Nature Resistance state yields 9% total binary full-resist/miss for poison application in this kernel, so effective application probabilities are 27.3% and 18.2%
-- Hand of Justice: 2% extra attack, 2s ICD
-- Crusader: 1 PPM, +100 STR 15s, heal 75-125
-- Bonescythe 2p: 1 PPM heal 90-110
-- Bonescythe 4p: builder crit +5 Energy
-
-### Mage
-- Gnome Mage 60 Frost, PvP P6 core
-- HP ~4280
-- Mana audited to 6258
-- INT 355
-- Spell Power 596
-- Spell Crit 14.16%
-- Spell Hit 5% gear + 6% Elemental Precision in Frost/Fire calculations
-- Spell Pen 101
-- Arcane Resilience armor ~1197
-- PvP set 3p -> Blink 13.5s
-- PvP gloves -> Mana Shield +285 absorb, total base current shield 855 before other interpretation
-- Frostfire 6p is present in loadout; exact Elemental Vulnerability modeling must remain source-verified
-
-## Combat formulas already verified / used
-- Physical armor reduction Classic formula from CMaNGOS
-- Same-level spell miss logic used in current kernel
-- Same-level melee special miss 5%
-- Physical crit 200%, spell crit 150% before modifiers
-- Dual wield white miss +19%
-- Base run speed 7 yd/s
-- Several spell coefficients from CMaNGOS Classic data/fixes
-
-Do not expand formulas by assumption. Source-check before enabling new mechanics.
-
-## Fight UI
-Fight tab is intentionally diagnostic, not the product focus.
-- Start Fight
-- HP bars
-- resource display
-- current action
-- play/pause/step/reset
-- live log
-
-Do NOT spend development time on making it look like an animation/game. Accuracy and policy evolution are the priorities.
+No legacy Classic calibration can bypass this gate.
 
 ## Post-fight analysis
-Current `fight-analyzer.js` creates a final dialog with:
-- why winner won
-- what winner could improve
-- why loser lost
-- what loser could improve
-- fight facts
-- target `ClassCombat.lua` path to edit
+At the end of every valid fight, show a dialog that explains:
+- why the winner won
+- what the winner can still improve
+- why the loser lost
+- what the loser should improve
+- evidence from the fight timeline
+- which `ClassCombat.lua` behavior should change
 
-This analysis must become increasingly quantitative and talent-aware. It must never recommend an ability/talent the selected build does not have.
+The analyzer must be talent-aware and may not recommend an ability/talent absent from the selected Forever build.
 
-## Learning / Rogue improvement loop — REQUIRED NEXT DIRECTION
-The simulator should learn from fights in a controlled, reproducible way. Do NOT let it blindly rewrite Rogue logic after one lucky/unlucky duel.
+## Rogue learning loop
+Use fixed deterministic seed suites.
 
-Recommended acceptance loop:
-1. Run a fixed evaluation suite (for example 1,000 deterministic seeds) with current Rogue policy.
-2. Extract fight metrics: win/loss, duration, HP left, energy wasted/capped, melee uptime, missed Kick windows, delayed Kidney, unused cooldowns, bad Vanish timing, control overlap, finisher efficiency, range downtime, proc dependence.
-3. Generate one small candidate policy change in `combat/Rogue/ClassCombat.lua`.
-4. Re-run the SAME seed suite A/B: baseline policy vs candidate.
-5. Accept only if candidate meaningfully improves objective score and does not create rule violations/regressions.
-6. Record policy version, change, before/after metrics and seed suite.
-7. Repeat.
+1. Run baseline Rogue policy.
+2. Collect metrics: win/loss, duration, HP left, energy waste/cap, melee uptime, Kick windows, Kidney timing, cooldown usage, Vanish/reset timing, control overlap, finisher efficiency, range downtime and proc dependence.
+3. Generate one small candidate policy change.
+4. Re-run the exact same seeds baseline vs candidate.
+5. Accept only if it improves objective metrics without illegal actions or regressions.
+6. Record version/change/results.
+7. Repeat against multiple opponents/builds to avoid overfitting.
 
-Suggested Rogue objective is multi-metric, not win rate only:
-- primary: win rate
-- secondary: remaining HP, shorter winning fights, fewer avoidable control gaps, lower dependence on favorable procs
-- penalty: illegal action, unavailable talent, impossible resource spend, cooldown misuse, excessive regression in previously strong seed clusters
+## Strict data rule
+Unknown data is `—`, `neverificat`, `provisional`, or gated.
 
-Eventually run counter-training against multiple opponent policies/builds so Rogue does not overfit Frost Mage only.
+Never call anything exact/verified without source provenance and an audit.
 
-## Important architecture debt
-1. Browser still uses JS duel decision functions; Lua `ClassCombat.lua` is not yet the single runtime authority.
-2. Intended final engine is event-driven; current kernel still uses a 100ms stepping loop.
-3. Only one matchup is calibrated.
-4. Only Rogue Subtlety and Mage Frost are active policies.
-5. Other classes/specs/gear levels remain locked.
-6. Some set/proc edge cases need deeper source verification before declaring 1:1.
+## Immediate priority
+1. Finish Forever Armory for Player A and Player B.
+2. Replace/re-verify all legacy gear/stat fixtures for Forever.
+3. Keep Forever talent tree + X/51 build allocator authoritative.
+4. Make Rogue `ClassCombat.lua` consume the selected Forever build.
+5. Implement Rogue Forever talent effects first.
+6. Implement Mage next, then the other seven classes.
+7. Unlock Fight only after full Forever parity for the selected matchup.
 
-## Next concrete tasks
-Priority order:
-1. Make Rogue `ClassCombat.lua` the authoritative policy source for the simulator (or create a deterministic parity layer that proves JS runtime and Lua policy are identical on every decision).
-2. Add a structured fight-metrics collector.
-3. Add baseline-vs-candidate A/B evaluation over fixed seeds.
-4. Add policy versioning and a machine-readable Rogue learning history.
-5. Improve Rogue Subtlety policy based on data, not anecdotal single fights.
-6. Only after that expand to additional Rogue PvP talent builds and additional opponents.
-7. Then expand other classes/specs with the same strict data process.
-
-## User communication style
-- Romanian preferred.
-- Concise and concrete.
-- Explain simply.
-- Do not give long status stories.
-- Do not call the simulator finished until all required classes/specs/matchups/data are genuinely complete.
+## Communication
+Romanian preferred. Be concise and concrete. Do not report a feature as live unless actually verified.
