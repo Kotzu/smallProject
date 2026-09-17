@@ -1,5 +1,5 @@
 (()=>{
-  const T=window.WOW_TALENTS,F=window.WOW_FOREVER_TALENTS;
+  const T=window.WOW_TALENTS,F=new Proxy({}, {get:(_t,k)=>window.WOW_FOREVER_TALENTS?.[k]});
   const $=id=>document.getElementById(id);
   if(!T)return;
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -25,7 +25,7 @@
       const classicGrid=tab.querySelector('.talent-grid');classicGrid?.insertAdjacentElement('afterend',grid);
     }
     const hero=document.querySelector('.hero p');
-    if(hero)hero.textContent='v0.28 · Forever talent snapshot updated · Classic calibrated fight kept separate · strict accuracy';
+    if(hero)hero.textContent='v0.30 · live WoW Forever talent memory · Blizzard-style Armory talent trees · Classic calibrated fight kept separate';
   }
 
   function refreshSelect(p){
@@ -67,12 +67,14 @@
 
   function namedTreeHtml(className,treeName,count){
     const nodes=F?.tree?.(className,treeName);
-    if(!nodes)return `<details class="forever-tree"><summary>${esc(treeName)} · ${count} talents</summary><div class="forever-structure-only">Structura este confirmată pe Wowhead. Numele/tooltips pentru această clasă nu sunt încă importate în snapshot-ul local.</div></details>`;
-    return `<details class="forever-tree" ${treeName==='Subtlety'||treeName==='Frost'?'open':''}><summary>${esc(treeName)} · ${count} talents</summary><div class="forever-node-list">${nodes.map(n=>`<div><span>${n.index+1}. ${esc(n.name)}</span><b>${n.maxRank==null?'?':n.maxRank} rank${n.maxRank===1?'':'s'}</b></div>`).join('')}</div></details>`;
+    if(!nodes)return `<details class="forever-tree"><summary>${esc(treeName)} · ${count} talents</summary><div class="forever-structure-only">Datasetul live Forever se încarcă…</div></details>`;
+    return `<details class="forever-tree" ${treeName==='Subtlety'||treeName==='Frost'?'open':''}><summary>${esc(treeName)} · ${count} talents</summary><div class="forever-node-list">${nodes.map((n,i)=>`<div><span>${i+1}. ${esc(n.name)}</span><b>${n.maxRank==null?'?':n.maxRank} rank${n.maxRank===1?'':'s'}</b></div>`).join('')}</div></details>`;
   }
 
   function renderForeverPlayer(p){
-    const root=$(p+'ForeverTalentPanel');if(!root||!F)return;
+    const root=$(p+'ForeverTalentPanel');if(!root)return;
+    if(F.status==='loading'||!F.classInfo){root.innerHTML='<div class="talent-locked"><b>FOREVER DATA: LOADING</b><span>Se încarcă snapshot-ul curent Wowhead.</span></div>';return;}
+    if(F.status==='error'){root.innerHTML=`<div class="talent-locked"><b>FOREVER DATA ERROR</b><span>${esc(F.error)}</span></div>`;return;}
     const s=playerState(p),info=F.classInfo(s.class);
     if(!info){root.innerHTML='<div class="talent-locked"><b>FOREVER DATA MISSING</b></div>';return;}
     const trees=Object.entries(info.trees);
@@ -83,18 +85,18 @@
 
   function renderDataset(){
     ensureRulesetUi();
-    const mode=ruleset(),status=$('talentDatasetStatus'),classicGrid=$('aTalentPanel')?.parentElement,foreverGrid=$('foreverTalentGrid');
+    const m=ruleset(),status=$('talentDatasetStatus'),classicGrid=$('aTalentPanel')?.parentElement,foreverGrid=$('foreverTalentGrid');
     if(status){
-      if(mode==='forever')status.innerHTML=`<b>FOREVER CURRENT SNAPSHOT · ${F?.snapshotDate||'—'}</b><span>${F?.coverage?.totalNodes||'—'} talent nodes across 9 classes · pre-beta BlizzCon/stream dataset from Wowhead. Wowhead states it will be refreshed from the beta client. Fight is strict-locked; no Classic build is silently translated.</span><a href="${esc(F?.officialSource||'https://www.wowhead.com/forever/talent-calc')}" target="_blank" rel="noreferrer">Wowhead Forever calculator</a>`;
-      else status.innerHTML='<b>CLASSIC ERA CALIBRATED DATASET</b><span>The current playable kernel remains Classic. Switch “Talent dataset” to Forever to inspect the updated 470-node pre-beta trees.</span>';
+      if(m==='forever')status.innerHTML=`<b>FOREVER LIVE DATASET · db ${esc(F.db||'loading')}</b><span>${F.coverage?.totalNodes||'—'} talent nodes across ${F.coverage?.classes||9} classes / ${F.coverage?.totalTrees||'—'} trees. Exact current Wowhead names/ranks/descriptions; still PROVISIONAL until beta datamining. Fight is strict-locked; no Classic build is silently translated.</span><a href="${esc(F.officialSource||'https://www.wowhead.com/forever/talent-calc')}" target="_blank" rel="noreferrer">Wowhead Forever calculator</a>`;
+      else status.innerHTML='<b>CLASSIC ERA CALIBRATED DATASET</b><span>The current playable kernel remains Classic. Switch “Talent dataset” to Forever to inspect the live current talent trees.</span>';
     }
-    classicGrid?.classList.toggle('hidden',mode==='forever');
-    foreverGrid?.classList.toggle('hidden',mode!=='forever');
-    ['a','b'].forEach(p=>{const el=$(p+'build');if(el)el.disabled=mode==='forever'||!T.idsFor($(p+'c')?.value,$(p+'s')?.value).length;});
-    if(mode==='forever'){renderForeverPlayer('a');renderForeverPlayer('b');}else{renderClassicPlayer('a');renderClassicPlayer('b');}
+    classicGrid?.classList.toggle('hidden',m==='forever');
+    foreverGrid?.classList.toggle('hidden',m!=='forever');
+    ['a','b'].forEach(p=>{const el=$(p+'build');if(el)el.disabled=m==='forever'||!T.idsFor($(p+'c')?.value,$(p+'s')?.value).length;});
+    if(m==='forever'){renderForeverPlayer('a');renderForeverPlayer('b');}else{renderClassicPlayer('a');renderClassicPlayer('b');}
   }
 
-  function refreshAll(){refreshSelect('a');refreshSelect('b');renderDataset();window.WOW_ARMORY_UI?.render?.();}
+  function refreshAll(){refreshSelect('a');refreshSelect('b');renderDataset();window.WOW_ARMORY_UI?.render?.();window.WOW_ARMORY_TALENTS?.render?.();}
   function notifyGate(p){$(p+'g')?.dispatchEvent(new Event('change'));}
 
   ensureRulesetUi();
@@ -103,6 +105,7 @@
   $('abuild')?.addEventListener('change',()=>{renderPlayer('a');window.WOW_ARMORY_UI?.render?.();notifyGate('a');});
   $('bbuild')?.addEventListener('change',()=>{renderPlayer('b');window.WOW_ARMORY_UI?.render?.();notifyGate('b');});
   $('rulesetMode')?.addEventListener('change',()=>{refreshAll();notifyGate('a');notifyGate('b');});
+  document.addEventListener('wow-forever-talents-ready',()=>{renderDataset();window.WOW_ARMORY_TALENTS?.render?.();});
   setTimeout(refreshAll,0);
-  window.WOW_TALENT_UI={refreshAll,renderPlayer,renderDataset,version:'0.28'};
+  window.WOW_TALENT_UI={refreshAll,renderPlayer,renderDataset,version:'0.30-live-forever'};
 })();
