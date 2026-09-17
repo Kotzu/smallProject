@@ -29,7 +29,7 @@ function parseForeverTalentJs(text,db){
   if(json.endsWith(';'))json=json.slice(0,-1);if(json.endsWith(')'))json=json.slice(0,-1);
   const data=JSON.parse(json);
   let totalNodes=0;for(const tree of Object.values(data.talents||{}))totalNodes+=Object.keys(tree||{}).length;
-  return {provenance:{source:'Wowhead Forever',calculator:'https://www.wowhead.com/forever/talent-calc',endpoint:`https://nether.wowhead.com/forever/data/talents-classic?dv=20&db=${db}`,db:String(db),fetchedAt:new Date().toISOString(),status:'PROVISIONAL_UNTIL_BETA_DATAMINING',note:'Exact current Wowhead Forever calculator dataset; source itself states values/icons may be refreshed after beta datamining.'},summary:{trees:Object.keys(data.trees||{}).length,totalNodes},data};
+  return {provenance:{source:'Wowhead Forever',calculator:'https://www.wowhead.com/forever/talent-calc',endpoint:`https://nether.wowhead.com/forever/data/talents-classic?dv=20&db=${db}`,db:String(db),fetchedAt:new Date().toISOString(),status:'PROVISIONAL_UNTIL_BETA_DATAMINING',note:'Exact current Wowhead Forever calculator dataset; values may be refreshed after beta datamining.'},summary:{trees:Object.keys(data.trees||{}).length,totalNodes},data};
 }
 function fetchForeverTalents(cb){
   const maxAge=6*60*60*1000;if(foreverTalentCache.payload&&Date.now()-foreverTalentCache.fetchedAt<maxAge)return cb(null,foreverTalentCache.payload);
@@ -69,9 +69,7 @@ function computeDefaultTraining(){
 
 const server=http.createServer((req,res)=>{
   let parsed,pathname;try{parsed=new URL(req.url,'http://localhost');pathname=decodeURIComponent(parsed.pathname);}catch{res.writeHead(400).end('Bad request');return;}
-  if(pathname==='/api/forever-talents'){
-    return fetchForeverTalents((err,payload)=>err?sendJson(res,502,{error:'FOREVER_TALENTS_FETCH_FAILED',message:String(err?.message||err)}):sendJson(res,200,payload));
-  }
+  if(pathname==='/api/forever-talents')return fetchForeverTalents((err,payload)=>err?sendJson(res,502,{error:'FOREVER_TALENTS_FETCH_FAILED',message:String(err?.message||err)}):sendJson(res,200,payload));
   if(pathname==='/api/rogue-training-status')return sendJson(res,200,trainingCache);
   if(pathname==='/api/rogue-variant'){
     try{const index=Math.max(0,Math.min(7,Math.trunc(Number(parsed.searchParams.get('index'))||0))),count=Math.max(100,Math.min(2500,Math.trunc(Number(parsed.searchParams.get('count'))||1000))),seed=(Number(parsed.searchParams.get('seed'))||1337)>>>0;return sendJson(res,200,runVariant(index,count,seed));}
@@ -98,7 +96,9 @@ const server=http.createServer((req,res)=>{
       if(!body.includes('armory-talents.css'))body=body.replace('</head>','<link rel="stylesheet" href="armory-talents.css">\n</head>');
       const extras=[];
       if(!body.includes('forever-talents-runtime.js'))extras.push('<script src="forever-talents-runtime.js"></script>');
+      if(!body.includes('forever-builds.js'))extras.push('<script src="forever-builds.js"></script>');
       if(!body.includes('armory-talent-tree.js'))extras.push('<script src="armory-talent-tree.js"></script>');
+      if(!body.includes('forever-qa.js'))extras.push('<script src="forever-qa.js"></script>');
       if(!body.includes('armory-3d.js'))extras.push('<script src="armory-3d.js"></script>');
       if(extras.length)body=body.replace('</body>',extras.join('\n')+'\n</body>');
       res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store','content-length':Buffer.byteLength(body)});res.end(body);
