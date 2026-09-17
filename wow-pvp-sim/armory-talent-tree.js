@@ -1,6 +1,6 @@
 (function(){
   const $=id=>document.getElementById(id);
-  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
+  const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const mode=()=>$('rulesetMode')?.value||'classic';
   function cfg(p){return{class:$(p+'c')?.value,spec:$(p+'s')?.value,build:$(p+'build')?.value||null};}
   function iconUrl(icon){return icon?`https://wow.zamimg.com/images/wow/icons/medium/${encodeURIComponent(icon)}.jpg`:'';}
@@ -42,15 +42,8 @@
     const s=cfg(p);box.innerHTML=`<div class="att-title"><span>TALENT TREE</span><b>${p==='a'?'PLAYER A':'PLAYER B'} · ${esc(mode()==='forever'?'Forever':'Classic')}</b></div>${mode()==='forever'?foreverTreeHtml(p,s.class,s.spec):classicTreeHtml(p)}`;
   }
   let obs=null,observedRoot=null,renderTimer=null;
-  function reconnectObserver(){
-    if(!obs||!observedRoot)return;
-    obs.observe(observedRoot,{childList:true,subtree:true});
-  }
-  function render(){
-    if(obs)obs.disconnect();
-    injectOne('a');injectOne('b');
-    reconnectObserver();
-  }
+  function reconnectObserver(){if(obs&&observedRoot)obs.observe(observedRoot,{childList:true,subtree:true});}
+  function render(){if(obs)obs.disconnect();injectOne('a');injectOne('b');reconnectObserver();}
   function scheduleRender(delay=20){clearTimeout(renderTimer);renderTimer=setTimeout(render,delay);}
   function handleTalentClick(e){
     if(mode()!=='forever')return;
@@ -72,10 +65,7 @@
   const start=()=>{
     observedRoot=document.querySelector('.app')||document.body;
     obs=new MutationObserver(mutations=>{
-      const relevant=mutations.some(m=>{
-        const target=m.target?.nodeType===1?m.target:m.target?.parentElement;
-        return !target?.closest?.('.armory-talent-tree');
-      });
+      const relevant=mutations.some(m=>{const target=m.target?.nodeType===1?m.target:m.target?.parentElement;return !target?.closest?.('.armory-talent-tree');});
       if(relevant)scheduleRender(50);
     });
     reconnectObserver();render();
