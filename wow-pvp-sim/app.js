@@ -11,10 +11,19 @@
     Warlock:['Affliction','Demonology','Destruction'],
     Warrior:['Arms','Fury','Protection']
   };
+  // Current public WoW Forever race/class combinations (Wowhead, 2026-09-16).
+  // Skyborne Mage is Alliance-only and Skyborne Shaman is Horde-only; faction
+  // selection will be required before either can become combat-eligible.
   const RACES={
-    Druid:['Night Elf','Tauren'],Hunter:['Dwarf','Night Elf','Orc','Tauren','Troll'],Mage:['Gnome','Human','Troll','Undead'],Paladin:['Dwarf','Human'],
-    Priest:['Dwarf','Human','Night Elf','Troll','Undead'],Rogue:['Dwarf','Gnome','Human','Night Elf','Orc','Troll','Undead'],Shaman:['Orc','Tauren','Troll'],
-    Warlock:['Gnome','Human','Orc','Undead'],Warrior:['Dwarf','Gnome','Human','Night Elf','Orc','Tauren','Troll','Undead']
+    Druid:['Night Elf','Tauren','Skyborne'],
+    Hunter:['Dwarf','Human','Night Elf','Orc','Tauren','Troll','Skyborne'],
+    Mage:['Gnome','Human','Orc','Troll','Undead','Skyborne'],
+    Paladin:['Dwarf','Human','Undead'],
+    Priest:['Dwarf','Gnome','Human','Night Elf','Troll','Undead'],
+    Rogue:['Dwarf','Gnome','Human','Night Elf','Orc','Troll','Undead','Skyborne'],
+    Shaman:['Dwarf','Orc','Tauren','Troll','Skyborne'],
+    Warlock:['Gnome','Human','Orc','Troll','Undead'],
+    Warrior:['Dwarf','Gnome','Human','Night Elf','Orc','Tauren','Troll','Undead','Skyborne']
   };
   const GEARS=['Forever PvP Loadout'];
   const state={a:{class:'Rogue',spec:'Subtlety',race:'Undead',gear:GEARS[0]},b:{class:'Mage',spec:'Frost',race:'Gnome',gear:GEARS[0]}};
@@ -32,7 +41,8 @@
     const F=window.WOW_FOREVER_TALENTS,B=window.WOW_FOREVER_BUILDS;
     const points=buildPoints(p),db=F?.db||'loading';
     const buildOk=!!B&&points===51;
-    el.innerHTML=`<span class="green">WoW Forever</span> · <span class="${buildOk?'green':'amber'}">Talents ${points}/51</span> · <span class="amber">Gear/stats verification pending</span> · <span class="muted">db ${db}</span>`;
+    const skyborneNote=state[p].race==='Skyborne'?' · <span class="amber">Skyborne faction/racial variant required for combat</span>':'';
+    el.innerHTML=`<span class="green">WoW Forever</span> · <span class="${buildOk?'green':'amber'}">Talents ${points}/51</span> · <span class="amber">Gear/stats verification pending</span>${skyborneNote} · <span class="muted">db ${db}</span>`;
   }
   function bind(p){
     const c=$(p+'c'),s=$(p+'s'),r=$(p+'r'),g=$(p+'g');
