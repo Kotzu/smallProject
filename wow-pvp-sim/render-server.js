@@ -29,23 +29,24 @@ function extractJsonObject(text,fromIndex){
     const ch=text[i];
     if(inString){
       if(escaped){escaped=false;continue;}
-      if(ch==='\\'){escaped=true;continue;}
-      if(ch==='"')inString=false;
+      if(ch==='\\\\'){escaped=true;continue;}
+      if(ch==='\"')inString=false;
       continue;
     }
-    if(ch==='"'){inString=true;continue;}
+    if(ch==='\"'){inString=true;continue;}
     if(ch==='{')depth++;
     else if(ch==='}'){depth--;if(depth===0)return text.slice(start,i+1);}
   }
   throw new Error('Forever talent JSON object is incomplete');
 }
 function parseForeverTalentJs(text,db){
-  const prefix='WH.setPageData("wow.talentCalcClassic.classicplus.data",';
+  const prefix='WH.setPageData(\"wow.talentCalcClassic.classicplus.data\",';
   const start=text.indexOf(prefix);if(start<0)throw new Error('Forever talent payload marker not found');
   const json=extractJsonObject(text,start+prefix.length);
   const data=JSON.parse(json);
   let totalNodes=0;for(const tree of Object.values(data.talents||{}))totalNodes+=Object.keys(tree||{}).length;
-  return {provenance:{source:'Wowhead Forever',calculator:'https://www.wowhead.com/forever/talent-calc',endpoint:\`https://nether.wowhead.com/forever/data/talents-classic?dv=20&db=\${db}\`,db:String(db),fetchedAt:new Date().toISOString(),status:'PROVISIONAL_UNTIL_BETA_DATAMINING',note:'Exact current Wowhead Forever calculator dataset; values may be refreshed after beta datamining.'},summary:{trees:Object.keys(data.trees||{}).length,totalNodes},data};
+  const endpoint='https://nether.wowhead.com/forever/data/talents-classic?dv=20&db='+String(db);
+  return {provenance:{source:'Wowhead Forever',calculator:'https://www.wowhead.com/forever/talent-calc',endpoint,db:String(db),fetchedAt:new Date().toISOString(),status:'PROVISIONAL_UNTIL_BETA_DATAMINING',note:'Exact current Wowhead Forever calculator dataset; values may be refreshed after beta datamining.'},summary:{trees:Object.keys(data.trees||{}).length,totalNodes},data};
 }
 function fetchForeverTalents(cb){
   const maxAge=6*60*60*1000;if(foreverTalentCache.payload&&Date.now()-foreverTalentCache.fetchedAt<maxAge)return cb(null,foreverTalentCache.payload);
