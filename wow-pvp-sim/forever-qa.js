@@ -8,7 +8,7 @@
     add('Forever live dataset loaded',F.status==='ready',`db ${F.db||'—'} · ${F.provenance?.status||'—'}`);
     add('Forever 9 classes',cov.classes===9,`${cov.classes||0}/9 classes`);
     add('Forever 27 trees',cov.totalTrees===27,`${cov.totalTrees||0}/27 trees`);
-    add('Forever 351 current nodes',cov.totalNodes===351,`${cov.totalNodes||0}/351 current Wowhead talent nodes`);
+    add('Forever live talent nodes',Number(cov.totalNodes)>0,`${cov.totalNodes||0} current Wowhead talent nodes (live dataset; count may change)`);
     add('Every class has 3 trees',EXPECTED_CLASSES.every(c=>Object.keys(F.classInfo(c)?.trees||{}).length===3),EXPECTED_CLASSES.map(c=>`${c}:${Object.keys(F.classInfo(c)?.trees||{}).length}`).join(' · '));
     add('Every Forever tree has talents',EXPECTED_CLASSES.every(c=>Object.values(F.classInfo(c)?.treeIds||{}).every(id=>F.treeById(id).length>0)),`${cov.totalNodes||0} total nodes`);
     const rogue=F.classInfo('Rogue'),mage=F.classInfo('Mage');
