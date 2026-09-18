@@ -55,12 +55,11 @@
       fillSelect(s,CLASSES[state[p].class],state[p].spec);state[p].spec=s.value;
       fillSelect(r,RACES[state[p].class],state[p].race);state[p].race=r.value;
       state[p].gear=g.value;renderStatus(p);
-      window.WOW_ARMORY_UI?.render?.();window.WOW_ARMORY_TALENTS?.render?.();
     }
     c.onchange=refreshSpecRace;
-    s.onchange=()=>{state[p].spec=s.value;renderStatus(p);window.WOW_ARMORY_UI?.render?.();window.WOW_ARMORY_TALENTS?.render?.();};
-    r.onchange=()=>{state[p].race=r.value;renderStatus(p);window.WOW_ARMORY_UI?.render?.();};
-    g.onchange=()=>{state[p].gear=g.value;renderStatus(p);window.WOW_ARMORY_UI?.render?.();};
+    s.onchange=()=>{state[p].spec=s.value;renderStatus(p);};
+    r.onchange=()=>{state[p].race=r.value;renderStatus(p);};
+    g.onchange=()=>{state[p].gear=g.value;renderStatus(p);};
     refreshSpecRace();
   }
   function openTab(id){
@@ -77,7 +76,7 @@
   ['rogueCharacter','mageCharacter','rogueStats','gearRows','ruleCards'].forEach(id=>{const el=$(id);if(el)el.innerHTML=migrationMessage;});
   ['armorOut','spellOut','meleeOut'].forEach(id=>{const el=$(id);if(el)el.textContent='—';});
 
-  document.addEventListener('wow-forever-talents-ready',()=>{renderStatus('a');renderStatus('b');window.WOW_ARMORY_UI?.render?.();});
+  document.addEventListener('wow-forever-talents-ready',()=>{renderStatus('a');renderStatus('b');});
   document.addEventListener('wow-forever-build-changed',e=>{if(e.detail?.player==='a'||e.detail?.player==='b')renderStatus(e.detail.player);});
 
   window.WOW_APP={state,config:()=>({a:{...state.a,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('a')||null},b:{...state.b,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('b')||null}}),openTab,version:'0.42-forever-armory-presets'};
