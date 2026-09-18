@@ -82,10 +82,46 @@
   function get(p){return players[p]?clone(players[p]):null;}
   function rank(p,className,nodeId){return Number(ensure(p,className).ranks[String(nodeId)]||0);}
   function pointsInTree(p,className,treeId){return treePoints(ensure(p,className),treeId);}
-  function selected(p,className){const b=ensure(p,className);return Object.entries(b.ranks).filter(([,r])=>r>0).map(([id,rank])=>({node:nodeById(id),rank})).filter(x=>x.node);}
+  function selected(p,className){
+    const b=ensure(p,className);
+    return Object.entries(b.ranks)
+      .filter(([,r])=>r>0)
+      .map(([id,rank])=>({node:nodeById(id),rank}))
+      .filter(x=>x.node);
+  }
+  function rankByName(p,className,name){
+    const hit=selected(p,className).find(x=>x.node?.name===name);
+    return Number(hit?.rank||0);
+  }
+  function hasTalent(p,className,name){return rankByName(p,className,name)>0;}
   function audit(p,className){const b=ensure(p,className),issues=[];if(b.points>MAX_POINTS)issues.push('More than 51 points');for(const {node,rank} of selected(p,className)){if(rank>node.maxRank)issues.push(`${node.name}: over max rank`);const treeId=treeForNode(node.id),spent=treePoints(b,treeId),gate=Math.max(Number(node.row||0)*5,Number(node.requiredPoints||0));if(spent<gate)issues.push(`${node.name}: tier gate invalid`);if(!prereqsMet(b,node))issues.push(`${node.name}: prerequisite invalid`);}return{pass:issues.length===0,points:b.points,remaining:MAX_POINTS-b.points,issues};}
-  function exportBuild(p){const b=get(p);if(!b)return null;return{...b,db:F()?.db||null,source:'Wowhead Forever runtime dataset',status:'USER_SELECTED_PROVISIONAL'};}
+  function exportBuild(p){
+    const b=get(p);if(!b)return null;
+    const selectedTalents=selected(p,b.className).map(({node,rank})=>({
+      id:Number(node.id),
+      name:node.name,
+      rank:Number(rank),
+      maxRank:Number(node.maxRank||0),
+      treeId:Number(treeForNode(node.id)),
+      row:Number(node.row||0),
+      col:Number(node.col||0),
+      requiredPoints:Number(node.requiredPoints||0),
+      requires:Array.isArray(node.requires)?clone(node.requires):[],
+      descriptions:clone(node.descriptions||{})
+    }));
+    const info=F()?.classInfo?.(b.className);
+    const treePoints={};
+    for(const [name,id] of Object.entries(info?.treeIds||{}))treePoints[name]=pointsInTree(p,b.className,id);
+    return{
+      ...b,
+      db:F()?.db||null,
+      source:'Wowhead Forever runtime dataset',
+      status:'USER_SELECTED_PROVISIONAL',
+      selectedTalents,
+      treePoints
+    };
+  }
   function onChange(fn){listeners.add(fn);return()=>listeners.delete(fn);}
 
-  window.WOW_FOREVER_BUILDS={MAX_POINTS,get,rank,pointsInTree,selected,audit,add,remove,clear,canAdd,canRemove,exportBuild,onChange,version:'0.31'};
+  window.WOW_FOREVER_BUILDS={MAX_POINTS,get,rank,rankByName,hasTalent,pointsInTree,selected,audit,add,remove,clear,canAdd,canRemove,exportBuild,onChange,version:'0.40-forever-named-talents'};
 })();
