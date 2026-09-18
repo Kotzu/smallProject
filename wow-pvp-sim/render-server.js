@@ -93,7 +93,7 @@ const server=http.createServer((req,res)=>{
     fs.readFile(indexPath,'utf8',(err,html)=>{
       if(err){res.writeHead(404,{'content-type':'text/plain; charset=utf-8'}).end('Not found');return;}
       let body=html;
-      if(!body.includes('armory-talents.css'))body=body.replace('</head>','<link rel="stylesheet" href="armory-talents.css">\n</head>');
+      if(!body.includes('armory-talents.css'))body=body.replace('</head>','<link rel="stylesheet" href="armory-talents.css">\n</head>');\n      if(!body.includes('forever-armory.css'))body=body.replace('</head>','<link rel="stylesheet" href="forever-armory.css">\n</head>');
       const extras=[];
       if(!body.includes('forever-talents-runtime.js'))extras.push('<script src="forever-talents-runtime.js"></script>');
       if(!body.includes('forever-builds.js'))extras.push('<script src="forever-builds.js"></script>');
@@ -108,4 +108,4 @@ const server=http.createServer((req,res)=>{
   const filePath=path.resolve(root,'.'+pathname);if(!filePath.startsWith(root+path.sep)&&filePath!==path.join(root,'index.html')){res.writeHead(403).end('Forbidden');return;}
   fs.stat(filePath,(err,stat)=>{if(err||!stat.isFile()){res.writeHead(404,{'content-type':'text/plain; charset=utf-8'}).end('Not found');return;}const ext=path.extname(filePath).toLowerCase();res.writeHead(200,{'content-type':mime[ext]||'application/octet-stream','cache-control':ext==='.html'?'no-store':'public, max-age=30'});fs.createReadStream(filePath).pipe(res);});
 });
-server.listen(port,'0.0.0.0',()=>{console.log(`WoW PvP Simulator preview listening on ${port}`);fetchForeverTalents((e,p)=>console.log(e?'FOREVER_TALENTS_WARM_FAILED '+e.message:`FOREVER_TALENTS_READY trees=${p.summary.trees} nodes=${p.summary.totalNodes} db=${p.provenance.db}`));setTimeout(computeDefaultTraining,750);});
+server.listen(port,'0.0.0.0',()=>{console.log(`WoW Forever PvP Simulator preview listening on ${port}`);fetchForeverTalents((e,p)=>console.log(e?'FOREVER_TALENTS_WARM_FAILED '+e.message:`FOREVER_TALENTS_READY trees=${p.summary.trees} nodes=${p.summary.totalNodes} db=${p.provenance.db}`));setTimeout(computeDefaultTraining,750);});
