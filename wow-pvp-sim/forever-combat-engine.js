@@ -276,7 +276,7 @@
       if(land!=='hit'){log(st,'Rogue','miss','Eviscerate '+land,d);r.coldBloodActive=false;return;}
       st.metrics.provisionalRulesUsed.add('Eviscerate AP coefficient');
       let raw=roll(st,pair[0],pair[1])+r.ap*a.apCoeffPerCp*cp;
-      raw*=1+(r.talents['Improved Eviscerate']||0===3?.20:(r.talents['Improved Eviscerate']||0)*.07);
+      const ie=Number(r.talents['Improved Eviscerate']||0);raw*=1+(ie>=3?.20:ie===2?.14:ie===1?.07:0);
       raw*=rogueDamageMods(st,{builder:false});
       const crit=r.coldBloodActive||chance(st,r.critPct);r.coldBloodActive=false;if(crit)raw*=2;
       raw*=1-physicalReduction(armorAgainstRogue(st));
