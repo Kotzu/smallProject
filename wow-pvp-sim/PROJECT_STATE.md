@@ -1,3 +1,19 @@
+## Rogue combat-logic milestone — v0.40 expert system
+- `combat/Rogue/ClassCombat.lua` is now Forever-only and no longer selects legacy Classic build IDs.
+- Design reference: uploaded TBC Anniversary Warrior profile, architecture only. No TBC spell IDs, stance/rage rules, racials or mechanics were imported.
+- Decision layers now include: hard-CC/racial recovery, movement emergency, deadline interrupt, defensive, reset, mobility, control, kill window, damage/filler, intentional HOLD.
+- Rogue maintains per-opponent memory for casts, fake-cast restarts, observed enemy abilities/racials/defensives and last decision trace.
+- High-value casts use anti-fake timing plus an emergency interrupt window; the policy can intentionally HOLD GCD/Energy rather than spam a filler.
+- Energy reservation protects future Kick/Kidney/reset windows before builders are allowed to spend.
+- DR-aware control is strict-gated: Kidney/Gouge/Blind do not assume DR state when the engine has not supplied a verified DR state.
+- Selected Forever talents are read dynamically by name/rank from the Armory build export. No fixed 21/3/27 or other Classic build is authoritative.
+- Current Forever-aware hooks include Hemorrhage, Mutilate, Cold Blood, Preparation, Improved Sprint, Improved Gouge, Initiative, Thousand Cuts, Quietus and Cutthroat. Engine math remains responsible for exact effects/procs.
+- Structured decision trace records chosen layer/action/reason/plan/reserved Energy/evidence/rejected candidates.
+- `combat/Rogue/ClassCombatQA.lua` contains deterministic decision scenarios for anti-fake Kick, emergency Kick, Improved Sprint, Evasion, Kidney reserve, Cold Blood/Evis kill flow, Energy reserve, immunity HOLD and Mutilate.
+- `combat/ForeverRacials.lua` records currently published Forever racial effects, including Skyborne faction variants; incomplete cooldowns/numerics remain nil and kernel-gated.
+- Current public Forever race/class combinations, including Skyborne and the six newly announced existing-race combinations, are reflected in the configuration UI.
+- Fight remains locked until the Forever CombatEngine, DR, racials, final stats and spell-resolution layers are independently verified.
+
 
 ## Armory milestone — v0.41 (DONE as UI/data surface)
 - Scope is WoW Forever only.
