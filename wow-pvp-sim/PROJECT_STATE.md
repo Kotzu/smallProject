@@ -1,12 +1,13 @@
 ## Armory optimization + popular pre-builds — v0.42
-- Live dev verification: Render commit `a0b81b84b5e89b03b0e7a9f2a808d606bd20ee5d`, HTTP 200, Forever QA PASS 33/33.
+- Live dev verification: Render commit `379fccffd015a352c63e15bcc6abe63f1368206c`, HTTP 200, Forever QA PASS 35/35; preset audit 12/12.
 - Legacy Classic browser bundles are no longer loaded by the Forever UI.
 - The Render preview server no longer imports/runs the old Classic headless duel/training workload at startup.
 - Armory paperdoll/item tooltips rerender only on player configuration changes. Talent point changes update lightweight talent chrome + the relevant talent tree instead of rebuilding both paperdolls.
 - Default Player A/B builds now open at 51/51 using current popular public Forever pre-builds when a verified preset exists.
-- Rogue Subtlety default: `22/3/26`, observed at ~2,077 public views on 2026-09-18.
-- Alternate Rogue Subtlety preset: `11/8/32`, observed at ~1,456 public views.
-- Mage Frost default: `18/0/33`, public build with 51 points (observed 591 views / 5 upvotes when sourced).
+- 12 exact public presets are registered and all 12/12 pass the live Forever tree audit (51 points, ranks, tiers and prerequisites).
+- Current default Player A Rogue Subtlety: `22/3/26` (~2,077 observed public views); alternate Subtlety: `11/8/32` (~1,456).
+- Current default Player B Mage Frost: `18/0/33` (591 observed views / 5 upvotes when sourced).
+- Additional popular presets cover Rogue Assassination, Mage Arcane, Warrior Fury, Paladin Protection, Hunter Survival, Priest Discipline, Shaman Enhancement, Warlock Demonology and Druid Restoration.
 - Presets are explicitly labeled public/popular pre-release builds, **not best-build recommendations**.
 - Preset application is atomic: names/ranks are resolved against the live Forever talent dataset and the candidate must pass 51-point, tier, max-rank and prerequisite audit before replacing the current build.
 - Manual changes after applying a preset mark it `CUSTOMIZED`.
