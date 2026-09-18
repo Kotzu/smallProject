@@ -1,6 +1,8 @@
 (function(){
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const P=()=>window.WOW_FOREVER_PRESETS;
+  const presetErrors={a:null,b:null};
   function cfg(p){return{class:$(p+'c')?.value,spec:$(p+'s')?.value};}
   function iconUrl(icon){return icon?`https://wow.zamimg.com/images/wow/icons/medium/${encodeURIComponent(icon)}.jpg`:'';}
   function rankDescriptions(n){
@@ -14,6 +16,21 @@
     const text=n.requiresText?`<div class="att-req">${esc(n.requiresText)}</div>`:'';
     return `<div class="att-tooltip"><strong>${esc(n.name)}</strong><span>Talent #${esc(n.id)} · ${n.maxRank} rank${n.maxRank===1?'':'s'} · selected ${rank}/${n.maxRank}</span>${cost}${desc}${req}${text}</div>`;
   }
+  function popularity(preset){
+    return P()?.popularityLabel?.(preset)||'public build';
+  }
+  function presetToolbar(p,className,spec){
+    const api=P(),build=window.WOW_FOREVER_BUILDS?.get?.(p),presets=api?.list?.(className,spec)||[];
+    if(!presets.length)return '<div class="att-preset-bar empty"><div><b>PRE-BUILDS</b><span>Niciun preset popular verificat încă pentru '+esc(className)+' '+esc(spec)+'.</span></div></div>';
+    const currentId=build?.preset?.id||'';
+    const status=build?.preset?.status||'CUSTOM';
+    let options='<option value="">Custom / manual</option>';
+    for(const x of presets)options+='<option value="'+esc(x.id)+'" '+(x.id===currentId?'selected':'')+'>'+esc(x.label)+' · '+esc(popularity(x))+'</option>';
+    const current=presets.find(x=>x.id===currentId);
+    const detail=current?(popularity(current)+' · public pre-release build · not a recommendation'):'manual allocation';
+    const error=presetErrors[p]?'<span class="att-preset-error">'+esc(presetErrors[p])+'</span>':'';
+    return '<div class="att-preset-bar"><label><b>PRE-BUILD</b><select class="att-preset-select" data-player="'+p+'" data-class="'+esc(className)+'" data-spec="'+esc(spec)+'">'+options+'</select></label><div class="att-preset-meta"><span class="'+(status==='EXACT_SOURCE'?'ok':status==='CUSTOMIZED'?'warn':'')+'">'+esc(status)+'</span><small>'+esc(detail)+'</small>'+error+'</div></div>';
+  }
   function foreverTreeHtml(p,className,selectedSpec){
     const F=window.WOW_FOREVER_TALENTS,B=window.WOW_FOREVER_BUILDS;
     if(!F||F.status==='loading')return '<div class="att-loading">Loading current WoW Forever talents…</div>';
@@ -21,7 +38,7 @@
     if(!B)return '<div class="att-error">Forever build allocator unavailable.</div>';
     const info=F.classInfo(className);if(!info)return '<div class="att-error">No WoW Forever talent data for this class.</div>';
     const trees=Object.entries(info.treeIds||{}),audit=B.audit(p,className),exported=B.exportBuild(p);
-    return `<div class="att-forever-head"><div><b>WoW Forever · ${esc(className)}</b><span>Wowhead db ${esc(F.db)} · ${audit.points}/51 selected · ${audit.remaining} remaining · PROVISIONAL until beta datamining</span></div><div class="att-head-actions"><button type="button" class="att-reset" data-player="${p}">Reset</button><div class="att-lock">FIGHT LOCKED</div></div></div><div class="att-tree-grid">${trees.map(([name,id])=>{
+    return `<div class="att-forever-head"><div><b>WoW Forever · ${esc(className)}</b><span>Wowhead db ${esc(F.db)} · ${audit.points}/51 selected · ${audit.remaining} remaining · PROVISIONAL until beta datamining</span></div><div class="att-head-actions"><button type="button" class="att-reset" data-player="${p}">Reset</button><div class="att-lock">FIGHT LOCKED</div></div></div>${presetToolbar(p,className,selectedSpec)}<div class="att-tree-grid">${trees.map(([name,id])=>{
       const nodes=F.treeById(id),active=String(name).toLowerCase()===String(selectedSpec||'').toLowerCase(),spent=B.pointsInTree(p,className,id);
       return `<section class="att-tree ${active?'active':''}"><header><b>${esc(name)}</b><span>${spent} points · ${nodes.length} talents</span></header><div class="att-node-grid">${nodes.map(n=>{
         const rank=B.rank(p,className,n.id),add=B.canAdd(p,className,n.id),remove=B.canRemove(p,className,n.id),state=rank>0?'invested':add.ok?'available':'locked';
@@ -35,8 +52,28 @@
     const s=cfg(p);box.innerHTML=`<div class="att-title"><span>WOW FOREVER TALENT TREE</span><b>${p==='a'?'PLAYER A':'PLAYER B'}</b></div>${foreverTreeHtml(p,s.class,s.spec)}`;
   }
   let renderTimer=null;
-  function render(){injectOne('a');injectOne('b');}
+  function renderPlayer(p){injectOne(p);}
+  function render(){renderPlayer('a');renderPlayer('b');}
   function scheduleRender(delay=0){clearTimeout(renderTimer);renderTimer=setTimeout(render,delay);}
+  function applyDefault(p,force){
+    const s=cfg(p),api=P(),builds=window.WOW_FOREVER_BUILDS;
+    if(!api||!builds||window.WOW_FOREVER_TALENTS?.status!=='ready')return false;
+    const preset=api.defaultFor?.(s.class,s.spec);
+    if(!preset){if(force)builds.clear(p,s.class);presetErrors[p]=null;return false;}
+    const current=builds.get?.(p);
+    if(!force&&current?.points>0)return false;
+    const result=builds.applyPreset(p,preset);
+    presetErrors[p]=result?.ok?null:(result?.reason||'Preset invalid');
+    return !!result?.ok;
+  }
+  function handlePreset(e){
+    const sel=e.target.closest?.('.att-preset-select');if(!sel)return;
+    const p=sel.dataset.player,s=cfg(p),builds=window.WOW_FOREVER_BUILDS;if(!builds)return;
+    if(!sel.value){builds.clear(p,s.class);presetErrors[p]=null;scheduleRender(0);return;}
+    const result=P()?.apply?.(p,sel.value);
+    presetErrors[p]=result?.ok?null:(result?.reason||'Preset could not be applied');
+    scheduleRender(0);
+  }
   function handleTalentClick(e){
     const node=e.target.closest('.att-node');if(!node)return;
     const B=window.WOW_FOREVER_BUILDS;if(!B)return;
@@ -49,11 +86,13 @@
   function handleReset(e){const btn=e.target.closest('.att-reset');if(!btn)return;const p=btn.dataset.player,s=cfg(p);window.WOW_FOREVER_BUILDS?.clear(p,s.class);scheduleRender(0);}
   document.addEventListener('click',e=>{handleReset(e);handleTalentClick(e);});
   document.addEventListener('contextmenu',e=>{if(e.target.closest('.att-node'))handleTalentClick(e);});
-  document.addEventListener('wow-forever-talents-ready',()=>scheduleRender(0));
+  document.addEventListener('change',handlePreset);
+  document.addEventListener('wow-forever-talents-ready',()=>setTimeout(()=>{applyDefault('a',false);applyDefault('b',false);scheduleRender(0);},0));
   document.addEventListener('wow-forever-build-changed',e=>{if(e.detail?.player==='a'||e.detail?.player==='b')scheduleRender(0);});
   document.addEventListener('wow-ruleset-changed',()=>scheduleRender(0));
-  ['ac','as','bc','bs'].forEach(id=>$(id)?.addEventListener('change',()=>scheduleRender(20)));
-  const start=()=>scheduleRender(0);
+  ['ac','as'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(()=>{applyDefault('a',true);renderPlayer('a');},0)));
+  ['bc','bs'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(()=>{applyDefault('b',true);renderPlayer('b');},0)));
+  const start=()=>{if(window.WOW_FOREVER_TALENTS?.status==='ready'){applyDefault('a',false);applyDefault('b',false);}scheduleRender(0);};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  window.WOW_ARMORY_TALENTS={render:()=>scheduleRender(0),version:'0.33-forever-only-tree'};
+  window.WOW_ARMORY_TALENTS={render:()=>scheduleRender(0),renderPlayer,applyDefault,version:'0.42-popular-presets'};
 })();
