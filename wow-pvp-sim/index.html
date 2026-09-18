@@ -8,14 +8,15 @@
 <link rel="stylesheet" href="armory.css">
 <link rel="stylesheet" href="fight.css">
 <link rel="stylesheet" href="talents.css">
-<link rel="stylesheet" href="armory-talents.css">\n<link rel="stylesheet" href="forever-armory.css">
+<link rel="stylesheet" href="armory-talents.css">
+<link rel="stylesheet" href="forever-armory.css">
 <script>const whTooltips={colorLinks:true,iconizeLinks:true,renameLinks:false,iconSize:true};</script>
 <script src="https://wow.zamimg.com/js/tooltips.js"></script>
 </head>
 <body>
 <main class="app">
   <header class="hero">
-    <div><h1>WoW Forever PvP Simulator</h1><p>Forever-only · verified gear + enchants Armory · ClassCombat.lua per class · live Forever talent data · strict accuracy</p></div>
+    <div><h1>WoW Forever PvP Simulator</h1><p>Forever-only · optimized Armory · popular pre-builds · ClassCombat.lua per class · live Forever talent data · strict accuracy</p></div>
     <div class="badge ok">WOW FOREVER ONLY</div>
   </header>
 
@@ -43,7 +44,7 @@
 
   <section id="armory" class="tab card"><div class="combat-head"><div><h2>WoW Forever Armory</h2><div class="muted">Paperdoll complet Player A/B: 17 slots, item stats, enchants, strict audit și talent tree live Forever. Final character totals rămân “—” până la auditul Forever de class scaling.</div></div><div class="badge ok">FOREVER STRICT MODE</div></div><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Armory este sursa configurației duelului. ClassCombat.lua poate citi loadout-ul și talentele, dar nu le poate modifica.</div></section>
 
-  <section id="talents" class="tab card"><div class="combat-head"><div><h2>WoW Forever Talent Builds</h2><div class="muted">Build-urile sunt create din tree-urile Forever actualizate. Niciun build Classic nu este convertit sau reutilizat.</div></div><div class="badge ok">51-POINT STRICT GATE</div></div><div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div></section>
+  <section id="talents" class="tab card"><div class="combat-head"><div><h2>WoW Forever Talent Builds</h2><div class="muted">Build-urile folosesc tree-urile Forever actualizate. Poți porni din pre-build-uri publice populare sau dintr-un build custom; niciun build Classic nu este reutilizat.</div></div><div class="badge ok">51-POINT STRICT GATE</div></div><div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div></section>
 
   <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua · WoW Forever</h2><div class="muted">Câte un ClassCombat.lua pentru fiecare clasă. Rogue este prioritatea principală. CombatEngine rămâne arbitru neutru și trebuie să folosească exclusiv mecanici Forever verificate.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>Forever Talent Build</b><br><span class="muted">talent effects</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">decizie/timing</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">Forever rules</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">Orice logică veche calibrată pe Classic este doar material de migrare și nu este eligibilă pentru duel Forever până nu este reverificată.</div></section>
 
@@ -93,7 +94,9 @@
 <script src="fight-ui.js"></script>
 <script src="combat-viewer.js"></script>
 <script src="forever-talents-runtime.js"></script>
-<script src="forever-builds.js"></script>\n<script src="forever-armory-data.js"></script>
+<script src="forever-builds.js"></script>
+<script src="forever-build-presets.js"></script>
+<script src="forever-armory-data.js"></script>
 <script src="armory-talent-tree.js"></script>
 <script src="forever-qa.js"></script>
 <script src="ruleset-ui.js"></script>
