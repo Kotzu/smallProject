@@ -29,7 +29,7 @@ function extractJsonObject(text,fromIndex){
     const ch=text[i];
     if(inString){
       if(escaped){escaped=false;continue;}
-      if(ch==='\\\\'){escaped=true;continue;}
+      if(ch==='\\'){escaped=true;continue;}
       if(ch==='"')inString=false;
       continue;
     }
@@ -45,7 +45,7 @@ function parseForeverTalentJs(text,db){
   const json=extractJsonObject(text,start+prefix.length);
   const data=JSON.parse(json);
   let totalNodes=0;for(const tree of Object.values(data.talents||{}))totalNodes+=Object.keys(tree||{}).length;
-  return {provenance:{source:'Wowhead Forever',calculator:'https://www.wowhead.com/forever/talent-calc',endpoint:`https://nether.wowhead.com/forever/data/talents-classic?dv=20&db=${db}`,db:String(db),fetchedAt:new Date().toISOString(),status:'PROVISIONAL_UNTIL_BETA_DATAMINING',note:'Exact current Wowhead Forever calculator dataset; values may be refreshed after beta datamining.'},summary:{trees:Object.keys(data.trees||{}).length,totalNodes},data};
+  return {provenance:{source:'Wowhead Forever',calculator:'https://www.wowhead.com/forever/talent-calc',endpoint:\`https://nether.wowhead.com/forever/data/talents-classic?dv=20&db=\${db}\`,db:String(db),fetchedAt:new Date().toISOString(),status:'PROVISIONAL_UNTIL_BETA_DATAMINING',note:'Exact current Wowhead Forever calculator dataset; values may be refreshed after beta datamining.'},summary:{trees:Object.keys(data.trees||{}).length,totalNodes},data};
 }
 function fetchForeverTalents(cb){
   const maxAge=6*60*60*1000;if(foreverTalentCache.payload&&Date.now()-foreverTalentCache.fetchedAt<maxAge)return cb(null,foreverTalentCache.payload);
@@ -109,13 +109,13 @@ const server=http.createServer((req,res)=>{
     fs.readFile(indexPath,'utf8',(err,html)=>{
       if(err){res.writeHead(404,{'content-type':'text/plain; charset=utf-8'}).end('Not found');return;}
       let body=html;
-      if(!body.includes('armory-talents.css'))body=body.replace('</head>','<link rel="stylesheet" href="armory-talents.css">\n</head>');\n      if(!body.includes('forever-armory.css'))body=body.replace('</head>','<link rel="stylesheet" href="forever-armory.css">\n</head>');
+      if(!body.includes('armory-talents.css'))body=body.replace('</head>','<link rel="stylesheet" href="armory-talents.css">\n</head>');
+      if(!body.includes('forever-armory.css'))body=body.replace('</head>','<link rel="stylesheet" href="forever-armory.css">\n</head>');
       const extras=[];
       if(!body.includes('forever-talents-runtime.js'))extras.push('<script src="forever-talents-runtime.js"></script>');
       if(!body.includes('forever-builds.js'))extras.push('<script src="forever-builds.js"></script>');
       if(!body.includes('armory-talent-tree.js'))extras.push('<script src="armory-talent-tree.js"></script>');
       if(!body.includes('forever-qa.js'))extras.push('<script src="forever-qa.js"></script>');
-      if(!body.includes('armory-3d.js'))extras.push('<script src="armory-3d.js"></script>');
       if(extras.length)body=body.replace('</body>',extras.join('\n')+'\n</body>');
       res.writeHead(200,{'content-type':'text/html; charset=utf-8','cache-control':'no-store','content-length':Buffer.byteLength(body)});res.end(body);
     });
