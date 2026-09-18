@@ -37,9 +37,24 @@
     add('Armory UI v0.42 optimized',window.WOW_ARMORY_UI?.version==='0.42-optimized-armory-presets',window.WOW_ARMORY_UI?.version||'missing');
     add('Armory talent UI v0.42 presets',window.WOW_ARMORY_TALENTS?.version==='0.42-popular-presets',window.WOW_ARMORY_TALENTS?.version||'missing');
     const P=window.WOW_FOREVER_PRESETS;
-    add('Popular preset registry',P?.version==='0.1-popular-public-builds',P?.version||'missing');
+    add('Popular preset registry',P?.version==='0.2-popular-public-builds',P?.version||'missing');
     add('Rogue popular Subtlety preset',P?.defaultFor?.('Rogue','Subtlety')?.distribution==='22/3/26',P?.defaultFor?.('Rogue','Subtlety')?.label||'missing');
     add('Mage popular Frost preset',P?.defaultFor?.('Mage','Frost')?.distribution==='18/0/33',P?.defaultFor?.('Mage','Frost')?.label||'missing');
+    if(P){
+      const allPresets=P.all?.()||[],pointFailures=allPresets.filter(x=>P.points?.(x)!==51);
+      add('All registered presets are 51 points',allPresets.length>=10&&pointFailures.length===0,`${allPresets.length} presets · bad: ${pointFailures.map(x=>x.id).join(', ')||'none'}`);
+      if(B){
+        const liveFailures=[];
+        for(const preset of allPresets){
+          const qp='__qa_preset_'+preset.id;
+          const applied=B.applyPreset(qp,preset);
+          const aud=applied.ok?B.audit(qp,preset.className,{requireMax:true}):null;
+          if(!applied.ok||!aud?.pass||aud.points!==51)liveFailures.push(`${preset.id}: ${applied.reason||aud?.issues?.join('; ')||'audit fail'}`);
+          B.clear(qp,preset.className);
+        }
+        add('All presets pass live Forever tree audit',liveFailures.length===0,liveFailures.join(' · ')||`${allPresets.length}/${allPresets.length} presets valid`);
+      }
+    }
     if(B&&P){
       const rp=P.defaultFor('Rogue','Subtlety'),mp=P.defaultFor('Mage','Frost');
       const rr=rp?B.applyPreset('__qa_rogue__',rp):{ok:false},mr=mp?B.applyPreset('__qa_mage__',mp):{ok:false};
