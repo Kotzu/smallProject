@@ -23,7 +23,7 @@
     add('Hemorrhage current tooltip',hemo?.descriptions?.['1']?.includes('145% if a Dagger is equipped')===true,hemo?.descriptions?.['1']||'missing');
     add('Mage updated Forever nodes present',!!iceLance,`Ice Lance #${iceLance?.id||'—'}`);
     add('Forever remains provisional',F.provenance?.status==='PROVISIONAL_UNTIL_BETA_DATAMINING',F.provenance?.status||'missing');
-    add('Legacy preset selectors are disabled',document.getElementById('abuild')?.disabled===true&&document.getElementById('bbuild')?.disabled===true,'Forever build allocation comes from the interactive talent trees');
+    add('Legacy preset selectors removed',!document.getElementById('abuild')&&!document.getElementById('bbuild'),'Forever build allocation comes only from the interactive talent trees/presets');
     add('Armory talent renderer available',!!window.WOW_ARMORY_TALENTS,'Player A + Player B Forever talent-tree renderer');
     add('Forever build allocator available',!!B&&B.MAX_POINTS===51,`allocator ${B?.version||'missing'} · cap ${B?.MAX_POINTS||'—'}`);
     add('Forever Fight remains gated',document.getElementById('runBtn')?.disabled===true&&document.getElementById('fightRunBtn')?.disabled===true,'No legacy calibration may unlock a Forever fight');
