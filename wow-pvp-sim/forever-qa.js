@@ -4,7 +4,7 @@
     const F=window.WOW_FOREVER_TALENTS,B=window.WOW_FOREVER_BUILDS;if(!F||F.status!=='ready')return null;
     const checks=[];const add=(name,pass,details)=>checks.push({name,pass:!!pass,details});
     const cov=F.coverage||{};
-    add('Forever-only ruleset',window.WOW_RULESET?.isForever?.()===true&&!document.getElementById('rulesetMode'),'No Classic/Forever mode selector; project is fixed to WoW Forever');
+    add('Forever-only ruleset',!document.getElementById('rulesetMode')&&document.title.includes('WoW Forever'),'No Classic/Forever mode selector; project is fixed to WoW Forever');
     add('Forever live dataset loaded',F.status==='ready',`db ${F.db||'—'} · ${F.provenance?.status||'—'}`);
     add('Forever 9 classes',cov.classes===9,`${cov.classes||0}/9 classes`);
     add('Forever 27 trees',cov.totalTrees===27,`${cov.totalTrees||0}/27 trees`);
@@ -27,6 +27,14 @@
     add('Armory talent renderer available',!!window.WOW_ARMORY_TALENTS,'Player A + Player B Forever talent-tree renderer');
     add('Forever build allocator available',!!B&&B.MAX_POINTS===51,`allocator ${B?.version||'missing'} · cap ${B?.MAX_POINTS||'—'}`);
     add('Forever Fight remains gated',document.getElementById('runBtn')?.disabled===true&&document.getElementById('fightRunBtn')?.disabled===true,'No legacy calibration may unlock a Forever fight');
+    const AD=window.WOW_FOREVER_ARMORY_DATA,ra=AD?.audit?.({class:'Rogue',spec:'Subtlety',race:'Undead'}),ma=AD?.audit?.({class:'Mage',spec:'Frost',race:'Gnome'});
+    add('Forever Armory data module',AD?.version==='0.41-wowhead-forever-items-enchants',AD?.version||'missing');
+    add('Rogue Armory 17/17',ra?.gearIdentityPass===true&&ra?.verifiedItems===17,`${ra?.verifiedItems||0}/17 verified Forever items`);
+    add('Mage Armory 17/17 slot state',ma?.gearIdentityPass===true&&ma?.verifiedItems===16&&ma?.emptyVerified===1,`${ma?.verifiedItems||0} items + ${ma?.emptyVerified||0} verified empty off-hand`);
+    add('Rogue Forever enchants',ra?.verifiedEnchants===11&&ra?.totalEnchants===11,`${ra?.verifiedEnchants||0}/${ra?.totalEnchants||0} verified`);
+    add('Mage Forever enchants',ma?.verifiedEnchants===9&&ma?.totalEnchants===9,`${ma?.verifiedEnchants||0}/${ma?.totalEnchants||0} verified`);
+    add('No Classic item links in Armory',!document.querySelector('#armory a[href*="/classic/"]'),'Forever item URLs only');
+    add('Armory UI v0.41',window.WOW_ARMORY_UI?.version==='0.41-forever-armory-items-enchants',window.WOW_ARMORY_UI?.version||'missing');
     if(B){
       const qp='__qa__';
       B.clear(qp,'Rogue');
