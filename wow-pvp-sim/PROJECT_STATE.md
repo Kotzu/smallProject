@@ -1,3 +1,16 @@
+
+## Armory milestone — v0.41 (DONE as UI/data surface)
+- Scope is WoW Forever only.
+- Player A/B both use the Blizzard-style paperdoll with 17 modeled equipment slots.
+- Current Rogue Subtlety/Undead reference loadout: 17/17 verified Forever item records, 11/11 listed enchant effects verified.
+- Current Mage Frost/Gnome reference loadout: 16 verified Forever item records + 1 verified empty off-hand because Soulseeker is a two-hand staff; 9/9 listed enchant effects verified.
+- Item links/tooltips use WoW Forever sources only; no /classic item fallback is allowed.
+- Live Forever talent trees remain embedded in each Armory and support independent 51-point builds for Player A/B.
+- Verified gear-contribution subtotals are displayed.
+- Final derived character stats intentionally remain `—` until Forever base stats and class conversion formulas receive their own audit. This does not permit a Fight unlock.
+- Armory runtime modules: `forever-armory-data.js`, `armory.js`, `armory-talent-tree.js`, `forever-armory.css`.
+- Dev preview verified live on Render after commit `5a07536219ce3b286ae4850aaf4d4e41f8fa1cc1`.
+
 # WoW Forever PvP Simulator — Project State
 
 Last authoritative update: 2026-09-18
