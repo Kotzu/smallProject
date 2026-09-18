@@ -8,14 +8,14 @@
 <link rel="stylesheet" href="armory.css">
 <link rel="stylesheet" href="fight.css">
 <link rel="stylesheet" href="talents.css">
-<link rel="stylesheet" href="armory-talents.css">
+<link rel="stylesheet" href="armory-talents.css">\n<link rel="stylesheet" href="forever-armory.css">
 <script>const whTooltips={colorLinks:false,iconizeLinks:false,renameLinks:false,iconSize:true};</script>
 <script src="https://wow.zamimg.com/js/tooltips.js"></script>
 </head>
 <body>
 <main class="app">
   <header class="hero">
-    <div><h1>WoW Forever PvP Simulator</h1><p>Forever-only · Blizzard-style Armory · ClassCombat.lua per class · live Forever talent data · strict accuracy</p></div>
+    <div><h1>WoW Forever PvP Simulator</h1><p>Forever-only · completed Blizzard-style Armory surface · ClassCombat.lua per class · live Forever talent data · strict accuracy</p></div>
     <div class="badge ok">WOW FOREVER ONLY</div>
   </header>
 
@@ -41,7 +41,7 @@
     <div id="fightLiveLog" class="fight-log"><div class="muted">Forever CombatEngine nu este încă deblocat.</div></div>
   </section>
 
-  <section id="armory" class="tab card"><div class="combat-head"><div><h2>WoW Forever Armory</h2><div class="muted">Paperdoll pentru Player A și Player B, gear slots, enchants, stats și talent tree. Talent tree-ul folosește datasetul Forever live; gear/stats rămân blocate pentru combat până la verificare Forever.</div></div><div class="badge ok">FOREVER STRICT MODE</div></div><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Armory este sursa configurației duelului. ClassCombat.lua poate citi loadout-ul și talentele, dar nu le poate modifica.</div></section>
+  <section id="armory" class="tab card"><div class="combat-head"><div><h2>WoW Forever Armory</h2><div class="muted">Paperdoll complet pentru Player A și Player B: 17 slots, stats schema, audit și talent tree live Forever. Valorile neverificate rămân “—”, fără fallback Classic.</div></div><div class="badge ok">FOREVER STRICT MODE</div></div><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Armory este sursa configurației duelului. ClassCombat.lua poate citi loadout-ul și talentele, dar nu le poate modifica.</div></section>
 
   <section id="talents" class="tab card"><div class="combat-head"><div><h2>WoW Forever Talent Builds</h2><div class="muted">Build-urile sunt create din tree-urile Forever actualizate. Niciun build Classic nu este convertit sau reutilizat.</div></div><div class="badge ok">51-POINT STRICT GATE</div></div><div class="talent-grid"><article id="aTalentPanel" class="talent-panel"></article><article id="bTalentPanel" class="talent-panel"></article></div></section>
 
@@ -97,6 +97,6 @@
 <script src="armory-talent-tree.js"></script>
 <script src="forever-qa.js"></script>
 <script src="ruleset-ui.js"></script>
-<script src="armory-3d.js"></script>
+
 </body>
 </html>
