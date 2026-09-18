@@ -1,3 +1,18 @@
+## Armory optimization + popular pre-builds — v0.42
+- Live dev verification: Render commit `a0b81b84b5e89b03b0e7a9f2a808d606bd20ee5d`, HTTP 200, Forever QA PASS 33/33.
+- Legacy Classic browser bundles are no longer loaded by the Forever UI.
+- The Render preview server no longer imports/runs the old Classic headless duel/training workload at startup.
+- Armory paperdoll/item tooltips rerender only on player configuration changes. Talent point changes update lightweight talent chrome + the relevant talent tree instead of rebuilding both paperdolls.
+- Default Player A/B builds now open at 51/51 using current popular public Forever pre-builds when a verified preset exists.
+- Rogue Subtlety default: `22/3/26`, observed at ~2,077 public views on 2026-09-18.
+- Alternate Rogue Subtlety preset: `11/8/32`, observed at ~1,456 public views.
+- Mage Frost default: `18/0/33`, public build with 51 points (observed 591 views / 5 upvotes when sourced).
+- Presets are explicitly labeled public/popular pre-release builds, **not best-build recommendations**.
+- Preset application is atomic: names/ranks are resolved against the live Forever talent dataset and the candidate must pass 51-point, tier, max-rank and prerequisite audit before replacing the current build.
+- Manual changes after applying a preset mark it `CUSTOMIZED`.
+- Source registry: `forever-build-presets.js`; allocator: `forever-builds.js`; selector UI: `armory-talent-tree.js`.
+- Fight remains locked; preset popularity does not imply CombatEngine parity.
+
 ## Rogue combat-logic milestone — v0.40 expert system
 - `combat/Rogue/ClassCombat.lua` is now Forever-only and no longer selects legacy Classic build IDs.
 - Design reference: uploaded TBC Anniversary Warrior profile, architecture only. No TBC spell IDs, stance/rage rules, racials or mechanics were imported.
