@@ -6,3 +6,7 @@
 .forever-armory .paperdoll-enchant{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .forever-armory .paperdoll-enchant-effect{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .forever-armory .armory-stat-list b{font-variant-numeric:tabular-nums}.forever-armory .armory-audit-pill.pass{border-color:#286844;color:#7edaa0;background:#11241a}
+
+.forever-armory{contain:layout style}.forever-armory .paperdoll-slot{contain:layout style}
+.paperdoll-model-copy small{display:block;margin-top:3px;color:#7b7269;font-size:7.5px;line-height:1.25}
+.armory-build-card em{display:block;margin-top:5px;color:#716a62;font-size:7.5px;font-style:normal}.armory-build-card em a{color:#b99761;text-decoration:none}.armory-build-card em a:hover{text-decoration:underline}
