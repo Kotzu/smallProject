@@ -8,13 +8,20 @@
   const RIGHT=['Legs','Feet','Finger 1','Finger 2','Trinket 1','Trinket 2','Ranged'];
   const WEAPONS=['Main Hand','Off Hand'];
   const RESOURCE={Rogue:'Energy',Warrior:'Rage',Hunter:'Mana',Mage:'Mana',Paladin:'Mana',Priest:'Mana',Shaman:'Mana',Warlock:'Mana',Druid:'Mana'};
+  const queued={a:false,b:false};
 
   function read(p){return{class:$(p+'c')?.value||'—',spec:$(p+'s')?.value||'—',race:$(p+'r')?.value||'—',gear:$(p+'g')?.value||'Forever PvP Loadout'};}
   function talentState(p,s){
-    const audit=B()?.audit?.(p,s.class)||{points:0,remaining:51,pass:false,issues:[]};
+    const api=B(),audit=api?.audit?.(p,s.class)||{points:0,remaining:51,pass:false,issues:[]};
     const info=F()?.classInfo?.(s.class),trees={};
-    for(const [name,id] of Object.entries(info?.treeIds||{}))trees[name]=B()?.pointsInTree?.(p,s.class,id)||0;
-    return{...audit,trees,db:F()?.db||null};
+    for(const [name,id] of Object.entries(info?.treeIds||{}))trees[name]=api?.pointsInTree?.(p,s.class,id)||0;
+    return{...audit,trees,db:F()?.db||null,preset:api?.get?.(p)?.preset||null};
+  }
+  function talentDist(t){return Object.entries(t.trees).map(([n,v])=>n+' '+v).join(' / ')||'0/51';}
+  function presetLabel(t){
+    if(!t.preset?.id)return 'Custom build';
+    const suffix=t.preset.status==='CUSTOMIZED'?' · customized':'';
+    return (t.preset.label||t.preset.id)+suffix;
   }
   function factRows(i){
     if(!i)return[];
@@ -24,7 +31,7 @@
     if(i.ap)x.push('+'+i.ap+' Attack Power');if(i.hit)x.push('+'+i.hit+'% Hit');if(i.crit)x.push('+'+i.crit+'% Crit');
     if(i.spellPower)x.push('+'+i.spellPower+' Spell Damage');if(i.spellHit)x.push('+'+i.spellHit+'% Spell Hit');if(i.spellCrit)x.push('+'+i.spellCrit+'% Spell Crit');if(i.spellPen)x.push('+'+i.spellPen+' Spell Penetration');
     if(i.dodge)x.push('+'+i.dodge+'% Dodge');if(i.shadowRes)x.push('+'+i.shadowRes+' Shadow Resistance');
-    if(i.weapon){let w=i.weapon.type+': '+i.weapon.minDamage+'–'+i.weapon.maxDamage+' Damage';if(i.weapon.schoolMin)x.push('+'+i.weapon.schoolMin+'–'+i.weapon.schoolMax+' '+(i.weapon.school||'')+' Damage');x.push(w+' · '+Number(i.weapon.speed).toFixed(2)+' Speed · '+Number(i.weapon.dps).toFixed(2)+' DPS');}
+    if(i.weapon){const w=i.weapon.type+': '+i.weapon.minDamage+'–'+i.weapon.maxDamage+' Damage';if(i.weapon.schoolMin)x.push('+'+i.weapon.schoolMin+'–'+i.weapon.schoolMax+' '+(i.weapon.school||'')+' Damage');x.push(w+' · '+Number(i.weapon.speed).toFixed(2)+' Speed · '+Number(i.weapon.dps).toFixed(2)+' DPS');}
     if(i.special)x.push(i.special);if(i.useEffect)x.push('Use: '+i.useEffect+(i.cooldownSec?' · '+(i.cooldownSec/60)+' min cooldown':''));
     if(i.set)x.push('Set: '+i.set);
     return x;
@@ -53,11 +60,10 @@
   }
   function model(s,t,a){
     const icon='https://wow.zamimg.com/images/wow/icons/large/classicon_'+encodeURIComponent(String(s.class).toLowerCase())+'.jpg';
-    const dist=Object.entries(t.trees).map(([n,v])=>n+' '+v).join(' / ')||'0/51';
     return '<div class="paperdoll-model '+esc(String(s.class).toLowerCase())+' forever-model"><div class="paperdoll-glow"></div><div class="paperdoll-character">'+
       '<div class="silhouette-head"></div><div class="silhouette-body"></div><div class="silhouette-arm left"></div><div class="silhouette-arm right"></div><div class="silhouette-leg left"></div><div class="silhouette-leg right"></div>'+
       '<img class="paperdoll-class-icon" src="'+icon+'" alt="'+esc(s.class)+'" loading="lazy"></div>'+
-      '<div class="paperdoll-model-copy"><div class="paperdoll-level">Level 60 · WoW Forever</div><strong>'+esc(s.race)+' '+esc(s.class)+'</strong><span>'+esc(s.spec)+'</span><span>'+esc(dist)+' · '+t.points+'/51</span></div>'+
+      '<div class="paperdoll-model-copy"><div class="paperdoll-level">Level 60 · WoW Forever</div><strong>'+esc(s.race)+' '+esc(s.class)+'</strong><span>'+esc(s.spec)+'</span><span data-armory-model-build>'+esc(talentDist(t))+' · '+t.points+'/51</span><small data-armory-model-preset>'+esc(presetLabel(t))+'</small></div>'+
       '<div class="armory-audit-pill '+(a.gearIdentityPass?'pass':'fail')+'">'+(a.gearIdentityPass?'GEAR VERIFIED':'PROFILE LOCKED')+'</div></div>';
   }
   function gearContributionRows(t){
@@ -72,43 +78,72 @@
     const names=['Health',RESOURCE[s.class]||'Resource','Strength','Agility','Stamina','Intellect','Spirit','Attack Power','Spell Power','Armor','Hit','Crit','Dodge','Spell Penetration'];
     return names.map(n=>'<div><span>'+esc(n)+'</span><b>—</b></div>').join('');
   }
-  function auditPanel(s,t,a){
+  function auditPanel(t,a){
     const talentOk=t.points===51&&t.pass;
     const checks=[
-      ['Forever talent dataset',F()?.status==='ready','db '+(t.db||'—')],
-      ['Talent allocation',talentOk,t.points+'/51'],
-      ['Equipment identity',a.gearIdentityPass,(a.verifiedItems+a.emptyVerified)+'/'+a.modeledSlots+' slots'],
-      ['Verified enchants',a.totalEnchants===a.verifiedEnchants,a.verifiedEnchants+'/'+a.totalEnchants],
-      ['Final derived stats',false,'gated until Forever base-stat/scaling audit'],
-      ['Fight eligibility',false,'LOCKED until CombatEngine parity']
+      ['Forever talent dataset',F()?.status==='ready','db '+(t.db||'—'),'dataset'],
+      ['Talent allocation',talentOk,t.points+'/51','talents'],
+      ['Equipment identity',a.gearIdentityPass,(a.verifiedItems+a.emptyVerified)+'/'+a.modeledSlots+' slots','gear'],
+      ['Verified enchants',a.totalEnchants===a.verifiedEnchants,a.verifiedEnchants+'/'+a.totalEnchants,'enchants'],
+      ['Final derived stats',false,'gated until Forever base-stat/scaling audit','stats'],
+      ['Fight eligibility',false,'LOCKED until CombatEngine parity','fight']
     ];
     return '<details class="armory-integrity" open><summary><span>WoW Forever data integrity</span><b class="'+(a.gearIdentityPass?'green':'red')+'">ARMORY '+(a.gearIdentityPass?'GEAR PASS':'LOCKED')+'</b></summary>'+
       '<div class="armory-integrity-copy">Items and enchants are Forever-sourced. Character totals stay “—” until Forever base stats and class conversions are independently verified.</div>'+
-      '<div class="audit-checks">'+checks.map(([n,p,v])=>'<div class="audit-check '+(p?'ok':'bad')+'"><span>'+(p?'✓':'✕')+' '+esc(n)+'</span><b>'+esc(v)+'</b></div>').join('')+'</div></details>';
+      '<div class="audit-checks">'+checks.map(([n,pass,v,key])=>'<div class="audit-check '+(pass?'ok':'bad')+'" data-armory-audit="'+key+'"><span>'+(pass?'✓':'✕')+' '+esc(n)+'</span><b>'+esc(v)+'</b></div>').join('')+'</div></details>';
+  }
+  function buildCard(t){
+    const source=t.preset?.source?'<a href="'+esc(t.preset.source)+'" target="_blank" rel="noopener">source</a>':'custom';
+    return '<span>WoW Forever Talent Build</span><strong data-armory-preset-label>'+esc(presetLabel(t))+'</strong><small data-armory-build-points>'+t.points+'/51 · '+Object.entries(t.trees).map(([n,v])=>esc(n)+' '+v).join(' · ')+'</small><em data-armory-preset-source>'+source+'</em>';
+  }
+  function refreshTooltips(){
+    setTimeout(()=>{try{window.$WowheadPower?.refreshLinks?.();}catch(_e){}try{window.WH?.Tooltips?.refreshLinks?.();}catch(_e){}},20);
+  }
+  function updateTalentChrome(p){
+    const root=$(p+'Armory')?.querySelector('.blizzard-armory');if(!root)return;
+    const s=read(p),t=talentState(p,s),ok=t.points===51&&t.pass;
+    const pill=root.querySelector('[data-armory-build-pill]');
+    if(pill){pill.textContent='TALENTS '+t.points+'/51';pill.classList.toggle('ok',ok);pill.classList.toggle('warn',!ok);}
+    const sub=root.querySelector('[data-armory-subnav-talents]');if(sub)sub.textContent='TALENTS · '+t.points+'/51;
+    const quick=root.querySelector('[data-armory-quick-talents]');if(quick)quick.textContent=t.points+'/51';
+    const modelBuild=root.querySelector('[data-armory-model-build]');if(modelBuild)modelBuild.textContent=talentDist(t)+' · '+t.points+'/51;
+    const modelPreset=root.querySelector('[data-armory-model-preset]');if(modelPreset)modelPreset.textContent=presetLabel(t);
+    const card=root.querySelector('[data-armory-build-card]');if(card)card.innerHTML=buildCard(t);
+    const audit=root.querySelector('[data-armory-audit="talents"]');
+    if(audit){audit.classList.toggle('ok',ok);audit.classList.toggle('bad',!ok);const span=audit.querySelector('span'),b=audit.querySelector('b');if(span)span.textContent=(ok?'✓':'✕')+' Talent allocation';if(b)b.textContent=t.points+'/51;}
   }
   function renderOne(p){
     const root=$(p+'Armory');if(!root)return;
     const s=read(p),db=DB(),profile=db?.profileFor?.(s),slots=db?.slotsFor?.(s)||[],a=db?.audit?.(s)||{gearIdentityPass:false,verifiedItems:0,emptyVerified:0,modeledSlots:17,verifiedEnchants:0,totalEnchants:0},t=talentState(p,s);
     if(!profile){
-      root.innerHTML='<div class="armory-empty"><b>Forever Armory profile locked</b><span>'+esc(s.race)+' '+esc(s.class)+' '+esc(s.spec)+' does not yet have a verified equipment reference profile. Talent tree remains available below.</span><div class="blizzard-armory"><div class="armory-talent-anchor"></div></div></div>';return;
+      root.innerHTML='<div class="armory-empty"><b>Forever Armory profile locked</b><span>'+esc(s.race)+' '+esc(s.class)+' '+esc(s.spec)+' does not yet have a verified equipment reference profile. Talent tree remains available below.</span><div class="blizzard-armory"><div class="armory-talent-anchor"></div></div></div>';
+      window.WOW_ARMORY_TALENTS?.renderPlayer?.(p);
+      return;
     }
     const by=Object.fromEntries(slots.map(x=>[x.slot,x])),tot=db.totalsFor(s),gearRows=gearContributionRows(tot);
     root.innerHTML='<div class="blizzard-armory forever-armory">'+
-      '<header class="blizzard-armory-header"><div class="armory-identity"><div class="armory-level-badge">60</div><div><h3>'+esc(s.race)+' '+esc(s.class)+'</h3><p>'+esc(s.spec)+' · '+esc(profile.label)+'</p></div></div><div class="armory-header-badges"><span class="build-pill '+(t.points===51?'ok':'warn')+'">TALENTS '+t.points+'/51</span><span class="audit-badge '+(a.gearIdentityPass?'pass':'fail')+'">'+(a.verifiedItems+a.emptyVerified)+'/17 SLOTS VERIFIED</span></div></header>'+
-      '<div class="armory-subnav"><span class="active">CHARACTER</span><span>TALENTS · '+t.points+'/51</span><span>PVP LOADOUT · VERIFIED</span></div>'+
+      '<header class="blizzard-armory-header"><div class="armory-identity"><div class="armory-level-badge">60</div><div><h3>'+esc(s.race)+' '+esc(s.class)+'</h3><p>'+esc(s.spec)+' · '+esc(profile.label)+'</p></div></div><div class="armory-header-badges"><span data-armory-build-pill class="build-pill '+(t.points===51&&t.pass?'ok':'warn')+'">TALENTS '+t.points+'/51</span><span class="audit-badge '+(a.gearIdentityPass?'pass':'fail')+'">'+(a.verifiedItems+a.emptyVerified)+'/17 SLOTS VERIFIED</span></div></header>'+
+      '<div class="armory-subnav"><span class="active">CHARACTER</span><span data-armory-subnav-talents>TALENTS · '+t.points+'/51</span><span>PVP LOADOUT · VERIFIED</span></div>'+
       '<div class="forever-source-strip"><span>Authority</span><b>WoW Forever / Wowhead Forever</b><em>No Classic item fallback.</em></div>'+
       '<div class="paperdoll-stage"><div class="paperdoll-column left">'+LEFT.map(x=>slotCard(by[x]||{slot:x},'left')).join('')+'</div>'+model(s,t,a)+'<div class="paperdoll-column right">'+RIGHT.map(x=>slotCard(by[x]||{slot:x},'right')).join('')+'</div><div class="paperdoll-weapons">'+WEAPONS.map(x=>slotCard(by[x]||{slot:x},'weapon')).join('')+'</div></div>'+
-      '<div class="armory-quick-stats">'+[['Verified slots',(a.verifiedItems+a.emptyVerified)+'/17'],['Enchants',a.verifiedEnchants+'/'+a.totalEnchants],['Talents',t.points+'/51'],['Forever DB',t.db||'—'],['Combat','LOCKED'],['Final stats','—']].map(([k,v])=>'<div class="armory-quick-stat"><span>'+esc(k)+'</span><b>'+esc(v)+'</b></div>').join('')+'</div>'+
+      '<div class="armory-quick-stats">'+[['Verified slots',(a.verifiedItems+a.emptyVerified)+'/17',''],['Enchants',a.verifiedEnchants+'/'+a.totalEnchants,''],['Talents',t.points+'/51',' data-armory-quick-talents'],['Forever DB',t.db||'—',''],['Combat','LOCKED',''],['Final stats','—','']].map(([k,v,attr])=>'<div class="armory-quick-stat"><span>'+esc(k)+'</span><b'+attr+'>'+esc(v)+'</b></div>').join('')+'</div>'+
       '<div class="armory-details-grid"><div class="armory-stats-pane"><h3>Verified Gear Contributions</h3><div class="armory-stat-list">'+gearRows.map(([k,v])=>'<div><span>'+esc(k)+'</span><b>'+esc(v)+'</b></div>').join('')+'</div><h3 style="margin-top:14px">Final Character Stats</h3><div class="armory-stat-list">'+finalStats(s)+'</div><div class="forever-unknown-note">Final totals are intentionally “—”: base stats and class conversion formulas must be verified specifically for WoW Forever before they become Armory authority.</div></div>'+
-      '<div class="armory-build-pane"><h3>Talent Build</h3><div class="armory-build-card"><span>WoW Forever</span><strong>'+t.points+'/51 points</strong><small>'+Object.entries(t.trees).map(([n,v])=>esc(n)+' '+v).join(' · ')+'</small></div><h3>Loadout Audit</h3><div class="armory-scaling"><div><b>Items</b><span>'+a.verifiedItems+' verified Forever item records</span></div><div><b>Empty slots</b><span>'+a.emptyVerified+' verified empty (two-hand loadout)</span></div><div><b>Enchants</b><span>'+a.verifiedEnchants+' verified Forever effects</span></div><div><b>Item tooltips</b><span>Local strict facts + Wowhead Forever links</span></div></div></div></div>'+
-      auditPanel(s,t,a)+
+      '<div class="armory-build-pane"><h3>Talent Build</h3><div class="armory-build-card" data-armory-build-card>'+buildCard(t)+'</div><h3>Loadout Audit</h3><div class="armory-scaling"><div><b>Items</b><span>'+a.verifiedItems+' verified Forever item records</span></div><div><b>Empty slots</b><span>'+a.emptyVerified+' verified empty (two-hand loadout)</span></div><div><b>Enchants</b><span>'+a.verifiedEnchants+' verified Forever effects</span></div><div><b>Item tooltips</b><span>Local strict facts + Wowhead Forever links</span></div></div></div></div>'+
+      auditPanel(t,a)+
       '<div class="armory-footnote">Armory surface is Forever-only. Gear identity, item stats and listed enchant effects are verified from Forever pages. Combat remains locked until derived character stats and combat formulas pass their own Forever audits.</div></div>';
-    setTimeout(()=>{try{window.$WowheadPower?.refreshLinks?.();}catch(_e){}try{window.WH?.Tooltips?.refreshLinks?.();}catch(_e){}window.WOW_ARMORY_TALENTS?.render?.();},40);
+    refreshTooltips();
+    setTimeout(()=>window.WOW_ARMORY_TALENTS?.renderPlayer?.(p),0);
   }
-  function render(){renderOne('a');renderOne('b');}
-  ['ac','as','ar','ag','bc','bs','br','bg'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(render,0)));
-  document.addEventListener('wow-forever-talents-ready',()=>setTimeout(render,0));
-  document.addEventListener('wow-forever-build-changed',e=>{if(e.detail?.player==='a'||e.detail?.player==='b')setTimeout(render,0);});
+  function schedulePlayer(p){
+    if(queued[p])return;queued[p]=true;
+    const run=()=>{queued[p]=false;renderOne(p);};
+    if(window.requestAnimationFrame)requestAnimationFrame(run);else setTimeout(run,0);
+  }
+  function render(){schedulePlayer('a');schedulePlayer('b');}
+  ['ac','as','ar','ag'].forEach(id=>$(id)?.addEventListener('change',()=>schedulePlayer('a')));
+  ['bc','bs','br','bg'].forEach(id=>$(id)?.addEventListener('change',()=>schedulePlayer('b')));
+  document.addEventListener('wow-forever-talents-ready',render);
+  document.addEventListener('wow-forever-build-changed',e=>{const p=e.detail?.player;if(p==='a'||p==='b')updateTalentChrome(p);});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
-  window.WOW_ARMORY_UI={render,version:'0.41-forever-armory-items-enchants'};
+  window.WOW_ARMORY_UI={render,renderPlayer:schedulePlayer,updateTalentChrome,version:'0.42-optimized-armory-presets'};
 })();
