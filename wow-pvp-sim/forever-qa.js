@@ -34,7 +34,24 @@
     add('Rogue Forever enchants',ra?.verifiedEnchants===11&&ra?.totalEnchants===11,`${ra?.verifiedEnchants||0}/${ra?.totalEnchants||0} verified`);
     add('Mage Forever enchants',ma?.verifiedEnchants===9&&ma?.totalEnchants===9,`${ma?.verifiedEnchants||0}/${ma?.totalEnchants||0} verified`);
     add('No Classic item links in Armory',!document.querySelector('#armory a[href*="/classic/"]'),'Forever item URLs only');
-    add('Armory UI v0.41',window.WOW_ARMORY_UI?.version==='0.41-forever-armory-items-enchants',window.WOW_ARMORY_UI?.version||'missing');
+    add('Armory UI v0.42 optimized',window.WOW_ARMORY_UI?.version==='0.42-optimized-armory-presets',window.WOW_ARMORY_UI?.version||'missing');
+    add('Armory talent UI v0.42 presets',window.WOW_ARMORY_TALENTS?.version==='0.42-popular-presets',window.WOW_ARMORY_TALENTS?.version||'missing');
+    const P=window.WOW_FOREVER_PRESETS;
+    add('Popular preset registry',P?.version==='0.1-popular-public-builds',P?.version||'missing');
+    add('Rogue popular Subtlety preset',P?.defaultFor?.('Rogue','Subtlety')?.distribution==='22/3/26',P?.defaultFor?.('Rogue','Subtlety')?.label||'missing');
+    add('Mage popular Frost preset',P?.defaultFor?.('Mage','Frost')?.distribution==='18/0/33',P?.defaultFor?.('Mage','Frost')?.label||'missing');
+    if(B&&P){
+      const rp=P.defaultFor('Rogue','Subtlety'),mp=P.defaultFor('Mage','Frost');
+      const rr=rp?B.applyPreset('__qa_rogue__',rp):{ok:false},mr=mp?B.applyPreset('__qa_mage__',mp):{ok:false};
+      const ra2=B.audit('__qa_rogue__','Rogue',{requireMax:true}),ma2=B.audit('__qa_mage__','Mage',{requireMax:true});
+      add('Rogue popular preset live-tree audit',rr.ok&&ra2.pass&&ra2.points===51,rr.ok?`${ra2.points}/51 · ${rp.label}`:(rr.reason||'apply failed'));
+      add('Mage popular preset live-tree audit',mr.ok&&ma2.pass&&ma2.points===51,mr.ok?`${ma2.points}/51 · ${mp.label}`:(mr.reason||'apply failed'));
+      const before=JSON.stringify(B.get('__qa_rogue__'));
+      const bad=B.applyPreset('__qa_rogue__',{id:'invalid',className:'Rogue',spec:'Subtlety',ranks:{'Definitely Missing Talent':51}});
+      const after=JSON.stringify(B.get('__qa_rogue__'));
+      add('Invalid preset is atomic',bad.ok===false&&before===after,bad.reason||'expected failure');
+      B.clear('__qa_rogue__','Rogue');B.clear('__qa_mage__','Mage');
+    }
     if(B){
       const qp='__qa__';
       B.clear(qp,'Rogue');
