@@ -1,125 +1,191 @@
-# WoW PvP Classic / Forever Simulator — Project State
+## Armory optimization + popular pre-builds — v0.42
+- Live dev verification: Render commit `379fccffd015a352c63e15bcc6abe63f1368206c`, HTTP 200, Forever QA PASS 35/35; preset audit 12/12.
+- Legacy Classic browser bundles are no longer loaded by the Forever UI.
+- The Render preview server no longer imports/runs the old Classic headless duel/training workload at startup.
+- Armory paperdoll/item tooltips rerender only on player configuration changes. Talent point changes update lightweight talent chrome + the relevant talent tree instead of rebuilding both paperdolls.
+- Default Player A/B builds now open at 51/51 using current popular public Forever pre-builds when a verified preset exists.
+- 12 exact public presets are registered and all 12/12 pass the live Forever tree audit (51 points, ranks, tiers and prerequisites).
+- Current default Player A Rogue Subtlety: `22/3/26` (~2,077 observed public views); alternate Subtlety: `11/8/32` (~1,456).
+- Current default Player B Mage Frost: `18/0/33` (591 observed views / 5 upvotes when sourced).
+- Additional popular presets cover Rogue Assassination, Mage Arcane, Warrior Fury, Paladin Protection, Hunter Survival, Priest Discipline, Shaman Enhancement, Warlock Demonology and Druid Restoration.
+- Presets are explicitly labeled public/popular pre-release builds, **not best-build recommendations**.
+- Preset application is atomic: names/ranks are resolved against the live Forever talent dataset and the candidate must pass 51-point, tier, max-rank and prerequisite audit before replacing the current build.
+- Manual changes after applying a preset mark it `CUSTOMIZED`.
+- Source registry: `forever-build-presets.js`; allocator: `forever-builds.js`; selector UI: `armory-talent-tree.js`.
+- Fight remains locked; preset popularity does not imply CombatEngine parity.
 
-Last authoritative update: 2026-09-16
+## Rogue combat-logic milestone — v0.40 expert system
+- `combat/Rogue/ClassCombat.lua` is now Forever-only and no longer selects legacy Classic build IDs.
+- Design reference: uploaded TBC Anniversary Warrior profile, architecture only. No TBC spell IDs, stance/rage rules, racials or mechanics were imported.
+- Decision layers now include: hard-CC/racial recovery, movement emergency, deadline interrupt, defensive, reset, mobility, control, kill window, damage/filler, intentional HOLD.
+- Rogue maintains per-opponent memory for casts, fake-cast restarts, observed enemy abilities/racials/defensives and last decision trace.
+- High-value casts use anti-fake timing plus an emergency interrupt window; the policy can intentionally HOLD GCD/Energy rather than spam a filler.
+- Energy reservation protects future Kick/Kidney/reset windows before builders are allowed to spend.
+- DR-aware control is strict-gated: Kidney/Gouge/Blind do not assume DR state when the engine has not supplied a verified DR state.
+- Selected Forever talents are read dynamically by name/rank from the Armory build export. No fixed 21/3/27 or other Classic build is authoritative.
+- Current Forever-aware hooks include Hemorrhage, Mutilate, Cold Blood, Preparation, Improved Sprint, Improved Gouge, Initiative, Thousand Cuts, Quietus and Cutthroat. Engine math remains responsible for exact effects/procs.
+- Structured decision trace records chosen layer/action/reason/plan/reserved Energy/evidence/rejected candidates.
+- `combat/Rogue/ClassCombatQA.lua` contains deterministic decision scenarios for anti-fake Kick, emergency Kick, Improved Sprint, Evasion, Kidney reserve, Cold Blood/Evis kill flow, Energy reserve, immunity HOLD and Mutilate.
+- `combat/ForeverRacials.lua` records currently published Forever racial effects, including Skyborne faction variants; incomplete cooldowns/numerics remain nil and kernel-gated.
+- Current public Forever race/class combinations, including Skyborne and the six newly announced existing-race combinations, are reflected in the configuration UI.
+- Fight remains locked until the Forever CombatEngine, DR, racials, final stats and spell-resolution layers are independently verified.
+
+
+## Armory milestone — v0.41 (DONE as UI/data surface)
+- Scope is WoW Forever only.
+- Player A/B both use the Blizzard-style paperdoll with 17 modeled equipment slots.
+- Current Rogue Subtlety/Undead reference loadout: 17/17 verified Forever item records, 11/11 listed enchant effects verified.
+- Current Mage Frost/Gnome reference loadout: 16 verified Forever item records + 1 verified empty off-hand because Soulseeker is a two-hand staff; 9/9 listed enchant effects verified.
+- Item links/tooltips use WoW Forever sources only; no /classic item fallback is allowed.
+- Live Forever talent trees remain embedded in each Armory and support independent 51-point builds for Player A/B.
+- Verified gear-contribution subtotals are displayed.
+- Final derived character stats intentionally remain `—` until Forever base stats and class conversion formulas receive their own audit. This does not permit a Fight unlock.
+- Armory runtime modules: `forever-armory-data.js`, `armory.js`, `armory-talent-tree.js`, `forever-armory.css`.
+- Dev preview verified live on Render after commit `5a07536219ce3b286ae4850aaf4d4e41f8fa1cc1`.
+
+# WoW Forever PvP Simulator — Project State
+
+Last authoritative update: 2026-09-18
+
+## Scope — NON-NEGOTIABLE
+This project is **WoW Forever only**.
+
+Classic Era is not a supported ruleset, not a selectable mode, not a target for future development and must never be used as an implicit source of truth for combat.
+
+Any older Classic-derived files/data that still exist in the repository are **migration fixtures only**. They may be consulted to accelerate implementation, but no value, formula, build, spell, item, talent effect, proc rate or combat behavior may become authoritative for Forever until it is re-verified against a WoW Forever source.
 
 ## Goal
-Build a WoW Classic/Forever PvP 1v1 simulator where every class has its own `ClassCombat.lua` decision layer, while `CombatEngine.lua` stays neutral and resolves WoW combat rules. The simulator must use verified class/race stats, gear, enchants, gems/sockets where applicable, talents, racials, spell ranks, coefficients, proc rules, resistances, cooldowns and PvP control rules. No invented values.
+Build a deterministic WoW Forever PvP 1v1 simulator where every class has its own `ClassCombat.lua` decision layer and `CombatEngine.lua` remains a neutral rules resolver.
 
-The project is not finished until it supports all Classic classes/specs and can run reproducible 1v1s plus large batches/self-play.
+The simulator must eventually support all WoW Forever classes/specs, verified gear/loadouts, racials, stats, talents, spell ranks, coefficients, cooldowns, proc rules, resistances, resources and PvP control mechanics. Missing or provisional mechanics must remain visibly gated.
 
 ## Core architecture
+`Forever Armory` -> owns player configuration: class, race, gear, enchants, stats and selected Forever talent build.
 
-`ClassCombat.lua` -> chooses the action and explains why.
+`Forever Talent Dataset` -> current Wowhead Forever calculator snapshot with provenance.
 
-`CombatEngine.lua` -> resolves hit/miss/dodge/crit/damage/resist/procs/resources/CC rules.
+`ClassCombat.lua` -> chooses actions/timing and explains decisions. One file per class. Rogue is the primary implementation priority.
 
-Fight UI -> replays the deterministic duel timeline.
+`CombatEngine.lua` -> resolves only verified WoW Forever combat rules.
 
-Post-fight analyzer -> explains why each side won/lost and what should improve in that class's `ClassCombat.lua`.
+`Fight UI` -> deterministic fight/timeline playback.
+
+`Post-fight analyzer` -> explains why the winner won, why the loser lost and what each class should improve in its own `ClassCombat.lua`.
 
 ## Repository
 - GitHub repo: `Kotzu/smallProject`
+- active development branch: `wow-pvp-dev`
 - simulator folder: `wow-pvp-sim/`
 
-## Live preview
-- Render public preview: https://wow-pvp-simulator-preview.onrender.com
-- Render service: `wow-pvp-simulator-preview`
-- service id: `srv-dajta2h42hec73a0al60`
+## Preview
+- dev Render service: `wow-pvp-simulator-dev`
+- URL: `https://wow-pvp-simulator-dev.onrender.com`
+- Render service id: `srv-dalf8tbl550s73b2t28g`
 - workspace id: `tea-dajt3me7bikc73ddj8h0`
 
-## Current version/state
-- UI / talent-aware duel wrapper: v0.16
-- current calibrated duel kernel: Rogue Subtlety vs Frost Mage, lvl 60 PvP BiS
-- QA was last reported PASS for the calibrated profile after talent-build integration
+Do not claim a change is live until Render actually deploys the commit and the public URL is fetched/verified.
 
-## Current active talent builds
-### Rogue
-- build id: `rogue_cb_hemo_21_3_27`
-- name: Cold Blood Hemorrhage
-- points: 21/3/27
-- calculator code: `305320115001-3-500253000332121`
-- active/calibrated for current kernel
-- important active talents/effects include Malice, Improved Eviscerate, Ruthlessness, Murder, Relentless Strikes, Lethality, Cold Blood, Dirty Deeds, Hemorrhage, Preparation, etc.
+## Forever talent source
+Current runtime source:
+- Wowhead Forever talent calculator
+- endpoint family: `https://nether.wowhead.com/forever/data/talents-classic?...`
+- current observed db token: `1789642865`
+- 9 classes
+- 27 trees
+- 351 current talent nodes
 
-### Mage
-- build id: `mage_deep_frost_17_0_34`
-- name: Deep Frost PvP
-- points: 17/0/34
-- calculator code: `23001503102--05350233102351001`
-- active/calibrated for current kernel
-- important active effects include Improved Frostbolt, Elemental Precision, Ice Shards, Improved Frost Nova, Permafrost, Piercing Ice, Shatter, Improved Cone of Cold, Arcane Resilience, Cold Snap, Ice Block, Ice Barrier, Improved Counterspell.
+The dataset is treated as `PROVISIONAL_UNTIL_BETA_DATAMINING` because Wowhead can revise values after direct beta/client datamining.
 
-## ClassCombat.lua files
+Relevant updated examples already verified from the current dataset include:
+- Rogue Subtlety: Hemorrhage, Quietus, Cutthroat, Thousand Cuts
+- Rogue Assassination: Mutilate, Venom
+- Mage Frost: Ice Lance, Fingers of Frost
+
+## Forever build system
+- 51-point cap
+- tier gates enforced
+- prerequisites enforced
+- separate build state for Player A and Player B
+- left click/tap adds a rank
+- right-click / Shift+click removes a rank
+- build export includes source db token and provenance
+- Classic builds are never auto-converted to Forever
+
+## Armory
+Armory is the canonical player configuration UI.
+
+Target: Blizzard-style 1:1 layout for Player A and Player B with:
+- character identity
+- gear slots
+- item IDs
+- enchants
+- stats
+- resistances
+- weapons
+- talent tree
+- selected Forever build X/51
+- data integrity/provenance
+
+The Forever talent tree is already wired to the live Forever runtime dataset.
+
+Any gear/stat records still sourced from older Classic calibration must be visibly treated as migration fixtures and cannot unlock combat until re-verified for Forever.
+
+## ClassCombat.lua
 There is one top-level `ClassCombat.lua` per class under `wow-pvp-sim/combat/<Class>/ClassCombat.lua`.
 
-Active logic today:
-- `combat/Rogue/ClassCombat.lua` — Subtlety active/calibrated; Assassination and Combat locked until verified.
-- `combat/Mage/ClassCombat.lua` — Frost active/calibrated; Arcane and Fire locked until verified.
+Long-term target:
+- Rogue
+- Mage
+- Warrior
+- Paladin
+- Hunter
+- Priest
+- Shaman
+- Warlock
+- Druid
 
-The other 7 class files exist but remain locked until their spells/talents/gear are verified.
+Rogue remains the priority class. Its decision logic must eventually account for the exact selected Forever build, resource state, cooldowns, DR, target state, positional requirements, reset/reopen logic, poison state and matchup-specific policy.
 
-## Fight UI
-Fight-first UI is live. It shows:
-- Start Fight
-- HP/resource bars
-- current action
-- deterministic timeline playback
-- Play / Pause / Step / Reset
-- full duel log
+## Fight gate
+WoW Forever fights remain locked until all required data for both players and the selected matchup has Forever parity.
 
-## Post-fight analysis
-At the end of a fight, a dialog explains:
+A valid fight requires:
+1. verified Forever character/loadout data
+2. selected valid Forever talent builds
+3. combat-relevant talent effects implemented
+4. verified Forever spell/ability definitions
+5. verified Forever combat mechanics in CombatEngine
+6. valid ClassCombat policies
+7. passing automated QA
+
+No old Classic calibration may bypass this gate.
+
+## Post-fight analysis requirement
+At the end of every valid fight, a dialog must explain:
 - why the winner won
-- what the winner can still improve
+- what the winner could still improve
 - why the loser lost
 - what the loser should improve
-- concrete fight facts from the timeline
-- which `ClassCombat.lua` should be changed
+- concrete evidence from the timeline
+- which class policy / `ClassCombat.lua` decision should be improved
 
-Behavior improvements belong in `ClassCombat.lua`; `CombatEngine.lua` must remain neutral.
-
-## Armory / stats
-Mini Armory exists for both sides with gear slots, item IDs, enchants, gems/socket status, primary/combat stats and class-specific stat scaling.
-
-Strict stat audit is required before a profile can run.
-
-Current calibrated profiles:
-- Undead Rogue Subtlety lvl 60 PvP BiS
-- Gnome Frost Mage lvl 60 PvP BiS
-
-## Important verified mechanics already in kernel/data
-- Classic armor reduction formula
-- same-level melee special miss
-- same-level spell miss floor
-- physical and spell crit multipliers
-- dual-wield white miss penalty
-- off-hand damage penalty
-- Crippling Poison II and Mind-numbing Poison III proc/application logic
-- binary Nature resistance for current Mage target
-- Hand of Justice proc
-- Crusader 1 PPM
-- Bonescythe 2p 1 PPM
-- Bonescythe 4p energy-on-builder-crit
-- Mage PvP 3p Blink cooldown reduction
-- Mana Shield gloves bonus
-- Ice Barrier coefficient
-- Mage Armor resistances
-- Arcane Resilience armor contribution
-- Frost talent modifiers listed above
+The analyzer must be build-aware and must never recommend a talent/ability unavailable in the selected Forever build.
 
 ## Strict data rule
-A duel/profile/build must remain locked if required data is not verified. Do not infer or invent missing spell ranks, talent modifiers, item stats, proc rates, or formulas.
+Never invent data.
 
-## Important correction for future work
-A recent Firecrawl extraction for a supposed alternate Rogue build returned Season of Discovery data and is NOT valid for this Classic project. Do not use it as a verified build.
+Unknown data must be represented as `—`, `neverificat`, `provisional`, or remain gated.
 
-## Immediate next work
-1. Keep the calibrated Rogue Subtlety vs Frost Mage matchup stable.
-2. Make Rogue `ClassCombat.lua` more matchup-aware: energy pooling, reset/reopen, cooldown conservation, DR awareness, finisher choice, Kick timing, Vanish timing.
-3. Add a second real Classic Rogue PvP build only after exact 51-point distribution and every combat-relevant modifier are verified.
-4. Extend talent build library/UI and strict gating to each additional class/spec.
-5. Add verified profiles and combat policies class by class.
-6. Eventually refactor the current 100ms JS simulation loop toward the intended event-driven architecture.
+Never call anything exact/verified unless it has source provenance and has passed the relevant audit.
 
-## User-facing rule
-When resuming after context loss, read this file first and continue from here instead of reconstructing the project from memory/chat.
+## Immediate work order
+1. Finish Forever Armory for Player A and Player B.
+2. Replace remaining Classic-derived Armory stats/loadouts with verified Forever data.
+3. Keep the live Forever talent tree and build allocator authoritative.
+4. Make Rogue `ClassCombat.lua` consume the selected Forever build rather than Classic presets.
+5. Implement combat-relevant Rogue Forever talents first.
+6. Do the same for Mage, then the remaining seven classes.
+7. Unlock Fight only after matchup-level Forever parity and QA.
+
+## Resume rule
+When resuming after context loss, read this file first. Treat any older Classic/Forever mixed documentation as superseded by this file.

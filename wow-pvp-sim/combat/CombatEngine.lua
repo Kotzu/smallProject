@@ -1,7 +1,36 @@
 local Engine = {}
 
-Engine.version = "0.22-rogue-positioning"
-Engine.scope = "Classic level 60 PvP combat rules. ClassCombat.lua chooses actions; CombatEngine resolves verified mechanics."
+Engine.version = "0.40-forever-strict-gate"
+Engine.ruleset = "Forever"
+Engine.scope = "WoW Forever PvP rules. ClassCombat.lua chooses tactics; CombatEngine resolves only mechanics independently verified for Forever."
+Engine.kernelReady = false
+Engine.status = "FOREVER_PARITY_IN_PROGRESS"
+
+-- IMPORTANT:
+-- Functions below that originated during the older Classic calibration remain
+-- migration fixtures until each one is re-audited for Forever. The public Fight
+-- gate must never use this file as proof of Forever parity merely because a
+-- function exists here.
+Engine.migration = {
+    classicDerivedFunctionsPresent = true,
+    authoritativeForForever = false,
+}
+
+Engine.verifiedForeverRules = {
+    -- Add rule IDs here only after a Forever source + QA test exists.
+}
+
+function Engine.markForeverRuleVerified(ruleId, provenance)
+    if not ruleId or type(provenance) ~= "table" or not provenance.source then
+        return false
+    end
+    Engine.verifiedForeverRules[ruleId] = provenance
+    return true
+end
+
+function Engine.isForeverRuleVerified(ruleId)
+    return Engine.verifiedForeverRules[ruleId] ~= nil
+end
 
 local TAU = math.pi * 2
 
