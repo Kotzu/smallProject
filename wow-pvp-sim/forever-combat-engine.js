@@ -26,12 +26,12 @@
     return{ready:issues.length===0,issues,status:'REFERENCE_MODEL',certifiedParity:false};
   }
 
-  function initState(seed,config){
+  function initState(seed,config,opts={}){
     const d=DATA(),s=d.scenario,ra=d.referenceProfiles.Rogue,ma=d.referenceProfiles.Mage;
     const R=rankMap(config.a.build),M=rankMap(config.b.build);
     const rand=rng(seed);
     return{
-      seed:seed>>>0,nowMs:0,range:s.startRange,maxMs:s.maxDurationMs,tickMs:s.tickMs,rand,
+      seed:seed>>>0,nowMs:0,range:s.startRange,maxMs:s.maxDurationMs,tickMs:s.tickMs,rand,compact:opts.compact===true,
       timeline:[],decisionTrace:[],events:[],
       memory:{Rogue:{fakeCastRestarts:0,lastCastSpell:null,lastCancelMs:0},Mage:{fakeCasts:0,blinkObserved:false}},
       rogue:{
@@ -64,7 +64,7 @@
     const entry={t:st.nowMs/1000,tMs:st.nowMs,actor,kind,text,
       state:{rogueHp:round(st.rogue.hp),rogueEnergy:round(st.rogue.energy),rogueCp:st.rogue.comboPoints,mageHp:round(st.mage.hp),mageMana:round(st.mage.mana),range:+st.range.toFixed(1)}};
     if(trace)entry.trace=trace;
-    st.timeline.push(entry);return entry;
+    if(!st.compact)st.timeline.push(entry);return entry;
   }
   function cdRemain(st,a,name){return Math.max(0,(a.cooldowns[name]||0)-st.nowMs);}
   function isReady(st,a,name){return cdRemain(st,a,name)<=0;}
@@ -382,7 +382,7 @@
     if(st.nowMs<a.gcdUntil)return;
     const ctx=actorCtx(st,who),d=POL().choose(who,ctx);
     if(!d)return;
-    st.decisionTrace.push(d);
+    if(!st.compact)st.decisionTrace.push(d);
     if(who==='Rogue')executeRogue(st,d);else executeMage(st,d);
   }
   function regen(st,dt){st.rogue.energy=Math.min(st.rogue.maxEnergy,st.rogue.energy+st.rogue.energyRegenPerSec*dt);st.metrics.provisionalRulesUsed.add('Rogue continuous energy regeneration');}
@@ -401,9 +401,9 @@
       scenario:DATA().scenario.id
     };
   }
-  function run(seed,config){
+  function run(seed,config,opts={}){
     const gate=supported(config);if(!gate.ready)return{error:'MATCHUP_LOCKED',missing:gate.issues,status:'LOCKED'};
-    const st=initState(seed,config);log(st,'System','start','Forever reference duel starts · range '+st.range+' yd · Rogue Stealthed · Mage Ice Barrier + Ice Armor');
+    const st=initState(seed,config,opts);log(st,'System','start','Forever reference duel starts · range '+st.range+' yd · Rogue Stealthed · Mage Ice Barrier + Ice Armor');
     while(st.nowMs<st.maxMs&&!st.rogue.dead&&!st.mage.dead)tick(st);
     log(st,'System','end',(st.rogue.dead?'Mage':st.mage.dead?'Rogue':'Timeout')+' · duel complete');
     return result(st);
@@ -416,12 +416,14 @@
   }
   async function batch(count,seed,config,onProgress){
     const gate=supported(config);if(!gate.ready)return{error:'MATCHUP_LOCKED',missing:gate.issues};
-    const out=[],chunk=50;
+    const s={fights:0,Rogue:0,Mage:0,Timeout:0,totalDuration:0},chunk=count>=100000?250:count>=10000?100:50;
     for(let i=0;i<count;i++){
-      out.push(run(((seed>>>0)+i*2654435761)>>>0,config));
-      if((i+1)%chunk===0){onProgress?.(i+1,count);await new Promise(r=>setTimeout(r,0));}
+      const r=run(((seed>>>0)+Math.imul(i,2654435761))>>>0,config,{compact:true});
+      s.fights++;s[r.winner]=(s[r.winner]||0)+1;s.totalDuration+=r.duration||0;
+      if((i+1)%chunk===0){onProgress?.(i+1,count);await new Promise(resolve=>setTimeout(resolve,0));}
     }
-    return{...summarize(out),seed,count,status:'FOREVER_REFERENCE_MODEL'};
+    s.roguePct=s.Rogue/s.fights*100;s.magePct=s.Mage/s.fights*100;s.timeoutPct=s.Timeout/s.fights*100;s.avgDuration=s.totalDuration/s.fights;
+    return{...s,seed,count,status:'FOREVER_REFERENCE_MODEL'};
   }
 
   window.WOW_FOREVER_COMBAT_ENGINE={version:'0.50-reference-engine',status:'REFERENCE_MODEL',supported,run,batch,physicalReduction};
