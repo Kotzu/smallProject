@@ -26,14 +26,14 @@ function extractJsonObject(text,fromIndex){
   const start=text.indexOf('{',fromIndex);if(start<0)throw new Error('Forever talent JSON object not found');
   let depth=0,inString=false,escaped=false;
   for(let i=start;i<text.length;i++){
-    const ch=text[i];
+    const ch=text[i],code=ch.charCodeAt(0);
     if(inString){
       if(escaped){escaped=false;continue;}
-      if(ch==='\\\\'){escaped=true;continue;}
-      if(ch==='\"')inString=false;
+      if(code===92){escaped=true;continue;}
+      if(code===34)inString=false;
       continue;
     }
-    if(ch==='\"'){inString=true;continue;}
+    if(code===34){inString=true;continue;}
     if(ch==='{')depth++;
     else if(ch==='}'){depth--;if(depth===0)return text.slice(start,i+1);}
   }
