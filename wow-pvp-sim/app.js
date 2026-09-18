@@ -41,8 +41,11 @@
     const F=window.WOW_FOREVER_TALENTS,B=window.WOW_FOREVER_BUILDS;
     const points=buildPoints(p),db=F?.db||'loading';
     const buildOk=!!B&&points===51;
+    const gearAudit=window.WOW_FOREVER_ARMORY_DATA?.audit?.(state[p]);
+    const gearOk=gearAudit?.gearIdentityPass===true;
+    const gearText=gearOk?((gearAudit.verifiedItems||0)+(gearAudit.emptyVerified||0))+'/17 gear verified':'gear profile pending';
     const skyborneNote=state[p].race==='Skyborne'?' · <span class="amber">Skyborne faction/racial variant required for combat</span>':'';
-    el.innerHTML=`<span class="green">WoW Forever</span> · <span class="${buildOk?'green':'amber'}">Talents ${points}/51</span> · <span class="amber">Gear/stats verification pending</span>${skyborneNote} · <span class="muted">db ${db}</span>`;
+    el.innerHTML=`<span class="green">WoW Forever</span> · <span class="${buildOk?'green':'amber'}">Talents ${points}/51</span> · <span class="${gearOk?'green':'amber'}">${gearText}</span> · <span class="amber">final stats gated</span>${skyborneNote} · <span class="muted">db ${db}</span>`;
   }
   function bind(p){
     const c=$(p+'c'),s=$(p+'s'),r=$(p+'r'),g=$(p+'g');
@@ -77,5 +80,5 @@
   document.addEventListener('wow-forever-talents-ready',()=>{renderStatus('a');renderStatus('b');window.WOW_ARMORY_UI?.render?.();});
   document.addEventListener('wow-forever-build-changed',e=>{if(e.detail?.player==='a'||e.detail?.player==='b')renderStatus(e.detail.player);});
 
-  window.WOW_APP={state,config:()=>({a:{...state.a,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('a')||null},b:{...state.b,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('b')||null}}),openTab,version:'0.40-forever-armory'};
+  window.WOW_APP={state,config:()=>({a:{...state.a,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('a')||null},b:{...state.b,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('b')||null}}),openTab,version:'0.42-forever-armory-presets'};
 })();
