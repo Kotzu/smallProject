@@ -104,13 +104,13 @@
     const s=read(p),t=talentState(p,s),ok=t.points===51&&t.pass;
     const pill=root.querySelector('[data-armory-build-pill]');
     if(pill){pill.textContent='TALENTS '+t.points+'/51';pill.classList.toggle('ok',ok);pill.classList.toggle('warn',!ok);}
-    const sub=root.querySelector('[data-armory-subnav-talents]');if(sub)sub.textContent='TALENTS · '+t.points+'/51;
+    const sub=root.querySelector('[data-armory-subnav-talents]');if(sub)sub.textContent='TALENTS · '+t.points+'/51';
     const quick=root.querySelector('[data-armory-quick-talents]');if(quick)quick.textContent=t.points+'/51';
-    const modelBuild=root.querySelector('[data-armory-model-build]');if(modelBuild)modelBuild.textContent=talentDist(t)+' · '+t.points+'/51;
+    const modelBuild=root.querySelector('[data-armory-model-build]');if(modelBuild)modelBuild.textContent=talentDist(t)+' · '+t.points+'/51';
     const modelPreset=root.querySelector('[data-armory-model-preset]');if(modelPreset)modelPreset.textContent=presetLabel(t);
     const card=root.querySelector('[data-armory-build-card]');if(card)card.innerHTML=buildCard(t);
     const audit=root.querySelector('[data-armory-audit="talents"]');
-    if(audit){audit.classList.toggle('ok',ok);audit.classList.toggle('bad',!ok);const span=audit.querySelector('span'),b=audit.querySelector('b');if(span)span.textContent=(ok?'✓':'✕')+' Talent allocation';if(b)b.textContent=t.points+'/51;}
+    if(audit){audit.classList.toggle('ok',ok);audit.classList.toggle('bad',!ok);const span=audit.querySelector('span'),b=audit.querySelector('b');if(span)span.textContent=(ok?'✓':'✕')+' Talent allocation';if(b)b.textContent=t.points+'/51';}
   }
   function renderOne(p){
     const root=$(p+'Armory');if(!root)return;
