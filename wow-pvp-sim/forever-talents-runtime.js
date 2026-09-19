@@ -44,9 +44,6 @@
     onReady(fn){listeners.add(fn);if(state.status==='ready')queueMicrotask(()=>fn(api));return()=>listeners.delete(fn);}
   };
   window.WOW_FOREVER_TALENTS=api;
-  if(!document.querySelector('script[data-wow-ruleset-ui]')){
-    const script=document.createElement('script');script.src='ruleset-ui.js';script.dataset.wowRulesetUi='1';document.head.appendChild(script);
-  }
   fetch('/api/forever-talents',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error(`HTTP ${r.status}`);return r.json();}).then(payload=>{
     state.data=payload.data;state.provenance=payload.provenance;state.status='ready';notify();
   }).catch(err=>{state.status='error';state.error=String(err?.message||err);console.error('[ForeverTalents]',err);notify();});

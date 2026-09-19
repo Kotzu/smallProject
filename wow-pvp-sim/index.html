@@ -25,21 +25,21 @@
     <article class="card player-card"><h2>Player B</h2><div class="field-grid"><label>Clasă<select id="bc"></select></label><label>Spec<select id="bs"></select></label><label>Race<select id="br"></select></label><label>Gear<select id="bg"></select></label></div><div id="bStatus" class="status-line"></div></article>
   </section>
 
-  <section class="card duel-bar"><label>Codul duelului<input id="duelCode" inputmode="numeric" value="1337"></label><button id="runBtn" disabled>▶ Fight</button><button id="batch1Btn" disabled>1.000</button><button id="batchBtn" disabled>10.000</button><button id="batch100Btn" disabled>100.000</button><div id="gateReason" class="gate-reason"><span class="amber">WOW FOREVER ONLY · FIGHT LOCKED până la parity completă a CombatEngine.</span></div></section>
+  <section class="card duel-bar"><label>Codul duelului<input id="duelCode" inputmode="numeric" value="1337"></label><button id="runBtn" disabled>▶ Fight</button><button id="batch1Btn" disabled>1.000</button><button id="batchBtn" disabled>10.000</button><button id="batch100Btn" disabled>100.000</button><div id="gateReason" class="gate-reason"><span class="amber">Se încarcă Forever reference combat QA…</span></div></section>
   <section id="quickResult" class="card quick-result hidden"></section>
 
   <nav class="tabs"><button data-tab="fight" class="active">Fight</button><button data-tab="armory">Armory</button><button data-tab="talents">Talents</button><button data-tab="combat">Combat.lua</button><button data-tab="duel">Duel log</button><button data-tab="technical">Technical</button></nav>
 
   <section id="fight" class="tab active card">
-    <div class="combat-head"><div><h2>Fight · WoW Forever</h2><div class="muted">Fight-ul se deblochează numai când gear, stats, spells, talents și CombatEngine sunt verificate pentru Forever. Nicio regulă Classic nu este acceptată implicit.</div></div><button id="fightRunBtn" class="fight-primary" disabled>▶ Start Fight</button></div>
+    <div class="combat-head"><div><h2>Fight · WoW Forever</h2><div class="muted">Simularea Rogue Subtlety vs Frost Mage este funcțională ca FOREVER REFERENCE MODEL: spell/talent data din clientul beta Forever, iar combat-table/stat assumptions încă neverificate sunt marcate explicit provisional.</div></div><button id="fightRunBtn" class="fight-primary" disabled>▶ Start Fight</button></div>
     <div id="fightError" class="red" style="margin:8px 0"></div>
     <div class="fight-layout">
-      <article class="fighter"><div><h3>Player A</h3><div id="fightRogueBuild" class="sub">Forever build · configurează în Armory</div></div><div class="bar-label"><span>HP</span><b id="fightRogueHp">—</b></div><div class="bar"><i id="fightRogueHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightRogueRes">—</b></div><div class="bar resource"><i style="width:0%"></i></div></article>
-      <div class="fight-center"><div class="fight-vs">VS</div><div id="fightTime" class="fight-time">0.0s</div><div id="fightAction" class="fight-action">Forever kernel locked</div></div>
-      <article class="fighter"><div><h3>Player B</h3><div id="fightMageBuild" class="sub">Forever build · configurează în Armory</div></div><div class="bar-label"><span>HP</span><b id="fightMageHp">—</b></div><div class="bar"><i id="fightMageHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightMageRes">—</b></div><div class="bar resource"><i style="width:0%"></i></div></article>
+      <article class="fighter"><div><h3>Player A</h3><div id="fightRogueBuild" class="sub">Forever build · configurează în Armory</div></div><div class="bar-label"><span>HP</span><b id="fightRogueHp">—</b></div><div class="bar"><i id="fightRogueHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightRogueRes">—</b></div><div class="bar resource"><i id="fightRogueResBar" style="width:0%"></i></div></article>
+      <div class="fight-center"><div class="fight-vs">VS</div><div id="fightTime" class="fight-time">0.0s</div><div id="fightAction" class="fight-action">Reference simulation loading</div></div>
+      <article class="fighter"><div><h3>Player B</h3><div id="fightMageBuild" class="sub">Forever build · configurează în Armory</div></div><div class="bar-label"><span>HP</span><b id="fightMageHp">—</b></div><div class="bar"><i id="fightMageHpBar"></i></div><div class="bar-label"><span>Resource</span><b id="fightMageRes">—</b></div><div class="bar resource"><i id="fightMageResBar" style="width:0%"></i></div></article>
     </div>
     <div class="fight-controls"><button id="fightPlayBtn" disabled>Replay</button><button id="fightPauseBtn" disabled>Pause</button><button id="fightStepBtn" disabled>Step</button><button id="fightResetBtn">Reset</button><label style="min-width:100px">Speed<select id="fightSpeed"><option value="1">1×</option><option value="2" selected>2×</option><option value="4">4×</option><option value="8">8×</option></select></label></div>
-    <div id="fightLiveLog" class="fight-log"><div class="muted">Forever CombatEngine nu este încă deblocat.</div></div>
+    <div id="fightLiveLog" class="fight-log"><div class="muted">Reference engine se activează după QA-ul automat al matchup-ului.</div></div>
   </section>
 
   <section id="armory" class="tab card"><div class="combat-head"><div><h2>WoW Forever Armory</h2><div class="muted">Paperdoll complet Player A/B: 17 slots, item stats, enchants, strict audit și talent tree live Forever. Final character totals rămân “—” până la auditul Forever de class scaling.</div></div><div class="badge ok">FOREVER STRICT MODE</div></div><div class="armory-grid"><article id="aArmory" class="armory-panel"></article><article id="bArmory" class="armory-panel"></article></div><div class="note">Armory este sursa configurației duelului. ClassCombat.lua poate citi loadout-ul și talentele, dar nu le poate modifica.</div></section>
@@ -48,7 +48,7 @@
 
   <section id="combat" class="tab card"><div class="combat-head"><div><h2>ClassCombat.lua · WoW Forever</h2><div class="muted">Câte un ClassCombat.lua pentru fiecare clasă. Rogue este prioritatea principală. CombatEngine rămâne arbitru neutru și trebuie să folosească exclusiv mecanici Forever verificate.</div></div><div class="combat-selector"></div></div><div class="arch-note"><div class="arch-box"><b>Forever Talent Build</b><br><span class="muted">talent effects</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>ClassCombat.lua</b><br><span class="muted">decizie/timing</span></div><div class="arch-arrow">→</div><div class="arch-box"><b>CombatEngine.lua</b><br><span class="muted">Forever rules</span></div></div><div id="combatPath" class="combat-path"></div><pre id="combatCode" class="code-view">Încarc…</pre><div class="note">ClassCombat.lua este Forever-only. CombatEngine rămâne strict blocat până când mecanicile necesare sunt verificate pentru Forever.</div></section>
 
-  <section id="duel" class="tab card"><h2>Forever Duel log</h2><div id="duelSummary" class="duel-summary"><span class="muted">Fight este blocat până la Forever parity.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline complet</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel Forever valid rulat.</div></div><div class="note">Reproducibilitatea rămâne obligatorie: același Cod al duelului + aceleași loadout-uri + aceleași build-uri + aceleași ClassCombat.lua = același rezultat.</div></section>
+  <section id="duel" class="tab card"><h2>Forever Duel log</h2><div id="duelSummary" class="duel-summary"><span class="muted">Niciun duel rulat încă. Reference simulation disponibilă după QA.</span></div><div id="batchSummary" class="batch-summary"></div><h3 class="section-title">Timeline complet</h3><div id="timeline" class="timeline"><div class="muted">Niciun duel Forever valid rulat.</div></div><div class="note">Reproducibilitatea rămâne obligatorie: același Cod al duelului + aceleași loadout-uri + aceleași build-uri + aceleași ClassCombat.lua = același rezultat.</div></section>
 
   <section id="technical" class="tab card"><div class="tech-stack">
     <section class="tech-section"><h2>Forever data diagnostics</h2><div class="note">Final character math remains gated until the Forever stat engine is independently verified.</div><div class="grid char-grid"><div><h3>Player A stat-engine status</h3><div id="rogueCharacter" class="stat-grid"></div></div><div><h3>Player B stat-engine status</h3><div id="mageCharacter" class="stat-grid"></div></div></div></section>
@@ -58,7 +58,7 @@
     <section class="tech-section"><h2>Rule lab · locked until Forever formulas</h2><div class="lab-grid"><div class="lab-card"><h3>Armor reduction</h3><label>Armor țintă<input id="armorInput" type="number" value="3000"></label><label>Level atacator<input id="levelInput" type="number" value="60"></label><output id="armorOut"></output></div><div class="lab-card"><h3>Spell miss</h3><label>Spell Hit %<input id="spellHitInput" type="number" step="0.1" value="3"></label><output id="spellOut"></output></div><div class="lab-card"><h3>Melee special miss</h3><label>Hit %<input id="meleeHitInput" type="number" step="0.1" value="5"></label><output id="meleeOut"></output></div></div></section>
   </div></section>
 
-  <div class="metrics"><div class="metric"><span>Ruleset</span><b class="green">WoW Forever only</b></div><div class="metric"><span>Talent source</span><b class="green">Forever live dataset</b></div><div class="metric"><span>Armory</span><b class="green">Player A + Player B</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 classes</b></div><div class="metric"><span>Fight</span><b class="amber">strictly gated</b></div></div>
+  <div class="metrics"><div class="metric"><span>Ruleset</span><b class="green">WoW Forever only</b></div><div class="metric"><span>Talent source</span><b class="green">Forever live dataset</b></div><div class="metric"><span>Armory</span><b class="green">Player A + Player B</b></div><div class="metric"><span>ClassCombat.lua</span><b class="green">9 classes</b></div><div class="metric"><span>Fight</span><b class="amber">reference model</b></div></div>
 </main>
 
 <!-- Forever-only runtime: legacy Classic calibration bundles are intentionally not loaded. -->
@@ -70,8 +70,13 @@
 <script src="armory.js"></script>
 <script src="talent-ui.js"></script>
 <script src="armory-talent-tree.js"></script>
+<script src="forever-combat-data.js"></script>
+<script src="forever-combat-policies.js"></script>
+<script src="forever-combat-engine.js"></script>
 <script src="ruleset-ui.js"></script>
 <script src="forever-qa.js"></script>
+<script src="forever-combat-qa.js"></script>
+<script src="fight-ui.js"></script>
 <script src="combat-viewer.js"></script>
 </body>
 </html>

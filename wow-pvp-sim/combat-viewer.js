@@ -2,7 +2,7 @@
   const $=id=>document.getElementById(id);
   const policies={
     rogue:{label:'Rogue · Forever expert',path:'combat/Rogue/ClassCombat.lua',status:'POLICY READY · KERNEL GATED'},
-    mage:{label:'Mage',path:'combat/Mage/ClassCombat.lua',status:'MIGRATION'},
+    mage:{label:'Mage · Frost Forever expert',path:'combat/Mage/ClassCombat.lua',status:'POLICY READY · REFERENCE KERNEL'},
     warrior:{label:'Warrior',path:'combat/Warrior/ClassCombat.lua',status:'LOCKED'},
     paladin:{label:'Paladin',path:'combat/Paladin/ClassCombat.lua',status:'LOCKED'},
     hunter:{label:'Hunter',path:'combat/Hunter/ClassCombat.lua',status:'LOCKED'},
@@ -36,5 +36,5 @@
   }
   document.querySelectorAll('.combat-selector button').forEach(b=>b.addEventListener('click',()=>load(b.dataset.policy)));
   load('rogue');
-  window.WOW_COMBAT_VIEWER={load,policies,version:'0.40-forever-source-viewer'};
+  window.WOW_COMBAT_VIEWER={load,policies,version:'0.41-forever-expert-source-viewer'};
 })();

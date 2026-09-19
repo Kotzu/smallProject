@@ -86,7 +86,7 @@
       ['Equipment identity',a.gearIdentityPass,(a.verifiedItems+a.emptyVerified)+'/'+a.modeledSlots+' slots','gear'],
       ['Verified enchants',a.totalEnchants===a.verifiedEnchants,a.verifiedEnchants+'/'+a.totalEnchants,'enchants'],
       ['Final derived stats',false,'gated until Forever base-stat/scaling audit','stats'],
-      ['Fight eligibility',false,'LOCKED until CombatEngine parity','fight']
+      ['Certified parity',false,'LOCKED · reference simulation available','fight']
     ];
     return '<details class="armory-integrity" open><summary><span>WoW Forever data integrity</span><b class="'+(a.gearIdentityPass?'green':'red')+'">ARMORY '+(a.gearIdentityPass?'GEAR PASS':'LOCKED')+'</b></summary>'+
       '<div class="armory-integrity-copy">Items and enchants are Forever-sourced. Character totals stay “—” until Forever base stats and class conversions are independently verified.</div>'+
@@ -109,6 +109,7 @@
     const modelBuild=root.querySelector('[data-armory-model-build]');if(modelBuild)modelBuild.textContent=talentDist(t)+' · '+t.points+'/51';
     const modelPreset=root.querySelector('[data-armory-model-preset]');if(modelPreset)modelPreset.textContent=presetLabel(t);
     const card=root.querySelector('[data-armory-build-card]');if(card)card.innerHTML=buildCard(t);
+    const combat=root.querySelector('[data-armory-quick-combat]');if(combat)combat.textContent=window.WOW_FOREVER_COMBAT_ENGINE?.supported?.(window.WOW_APP?.config?.())?.ready?'READY':'LOCKED';
     const audit=root.querySelector('[data-armory-audit="talents"]');
     if(audit){audit.classList.toggle('ok',ok);audit.classList.toggle('bad',!ok);const span=audit.querySelector('span'),b=audit.querySelector('b');if(span)span.textContent=(ok?'✓':'✕')+' Talent allocation';if(b)b.textContent=t.points+'/51';}
   }
@@ -126,11 +127,11 @@
       '<div class="armory-subnav"><span class="active">CHARACTER</span><span data-armory-subnav-talents>TALENTS · '+t.points+'/51</span><span>PVP LOADOUT · VERIFIED</span></div>'+
       '<div class="forever-source-strip"><span>Authority</span><b>WoW Forever / Wowhead Forever</b><em>No Classic item fallback.</em></div>'+
       '<div class="paperdoll-stage"><div class="paperdoll-column left">'+LEFT.map(x=>slotCard(by[x]||{slot:x},'left')).join('')+'</div>'+model(s,t,a)+'<div class="paperdoll-column right">'+RIGHT.map(x=>slotCard(by[x]||{slot:x},'right')).join('')+'</div><div class="paperdoll-weapons">'+WEAPONS.map(x=>slotCard(by[x]||{slot:x},'weapon')).join('')+'</div></div>'+
-      '<div class="armory-quick-stats">'+[['Verified slots',(a.verifiedItems+a.emptyVerified)+'/17',''],['Enchants',a.verifiedEnchants+'/'+a.totalEnchants,''],['Talents',t.points+'/51',' data-armory-quick-talents'],['Forever DB',t.db||'—',''],['Combat','LOCKED',''],['Final stats','—','']].map(([k,v,attr])=>'<div class="armory-quick-stat"><span>'+esc(k)+'</span><b'+attr+'>'+esc(v)+'</b></div>').join('')+'</div>'+
+      '<div class="armory-quick-stats">'+[['Verified slots',(a.verifiedItems+a.emptyVerified)+'/17',''],['Enchants',a.verifiedEnchants+'/'+a.totalEnchants,''],['Talents',t.points+'/51',' data-armory-quick-talents'],['Forever DB',t.db||'—',''],['Reference sim',(window.WOW_FOREVER_COMBAT_ENGINE?.supported?.(window.WOW_APP?.config?.())?.ready?'READY':'LOCKED'),' data-armory-quick-combat'],['Final stats','—','']].map(([k,v,attr])=>'<div class="armory-quick-stat"><span>'+esc(k)+'</span><b'+attr+'>'+esc(v)+'</b></div>').join('')+'</div>'+
       '<div class="armory-details-grid"><div class="armory-stats-pane"><h3>Verified Gear Contributions</h3><div class="armory-stat-list">'+gearRows.map(([k,v])=>'<div><span>'+esc(k)+'</span><b>'+esc(v)+'</b></div>').join('')+'</div><h3 style="margin-top:14px">Final Character Stats</h3><div class="armory-stat-list">'+finalStats(s)+'</div><div class="forever-unknown-note">Final totals are intentionally “—”: base stats and class conversion formulas must be verified specifically for WoW Forever before they become Armory authority.</div></div>'+
       '<div class="armory-build-pane"><h3>Talent Build</h3><div class="armory-build-card" data-armory-build-card>'+buildCard(t)+'</div><h3>Loadout Audit</h3><div class="armory-scaling"><div><b>Items</b><span>'+a.verifiedItems+' verified Forever item records</span></div><div><b>Empty slots</b><span>'+a.emptyVerified+' verified empty (two-hand loadout)</span></div><div><b>Enchants</b><span>'+a.verifiedEnchants+' verified Forever effects</span></div><div><b>Item tooltips</b><span>Local strict facts + Wowhead Forever links</span></div></div></div></div>'+
       auditPanel(t,a)+
-      '<div class="armory-footnote">Armory surface is Forever-only. Gear identity, item stats and listed enchant effects are verified from Forever pages. Combat remains locked until derived character stats and combat formulas pass their own Forever audits.</div></div>';
+      '<div class="armory-footnote">Armory surface is Forever-only. Gear identity, item stats and listed enchant effects are verified from Forever pages. Reference simulation is available for the exact audited Rogue/Mage presets. Certified parity remains locked until derived stats and combat formulas pass their Forever audits.</div></div>';
     refreshTooltips();
     setTimeout(()=>window.WOW_ARMORY_TALENTS?.renderPlayer?.(p),0);
   }
@@ -145,5 +146,5 @@
   document.addEventListener('wow-forever-talents-ready',render);
   document.addEventListener('wow-forever-build-changed',e=>{const p=e.detail?.player;if(p==='a'||p==='b')updateTalentChrome(p);});
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',render,{once:true});else render();
-  window.WOW_ARMORY_UI={render,renderPlayer:schedulePlayer,updateTalentChrome,version:'0.42-optimized-armory-presets'};
+  window.WOW_ARMORY_UI={render,renderPlayer:schedulePlayer,updateTalentChrome,version:'0.44-reference-runtime-aware-armory'};
 })();
