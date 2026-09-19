@@ -106,7 +106,7 @@
     }
 
     const cp=me.comboPoints||0;
-    const blinkUnavailable=cd(ctx,'Blink')>0||e.blinkUsedRecently===true;
+    const blinkUnavailable=e.blinkUnavailable===true||e.blinkUsedRecently===true;
     if(cp>=5&&!e.stunned&&e.stunDRMultiplier>0&&ready(ctx,'Kidney Shot')){
       const need=rogueCost(ctx,'Kidney Shot')+35;
       if((me.energy||0)>=need&&blinkUnavailable)
