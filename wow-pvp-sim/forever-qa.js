@@ -35,8 +35,8 @@
     add('Rogue Forever enchants',ra?.verifiedEnchants===11&&ra?.totalEnchants===11,`${ra?.verifiedEnchants||0}/${ra?.totalEnchants||0} verified`);
     add('Mage Forever enchants',ma?.verifiedEnchants===9&&ma?.totalEnchants===9,`${ma?.verifiedEnchants||0}/${ma?.totalEnchants||0} verified`);
     add('No Classic item links in Armory',!document.querySelector('#armory a[href*="/classic/"]'),'Forever item URLs only');
-    add('Armory UI v0.43 reference-aware',window.WOW_ARMORY_UI?.version==='0.43-reference-combat-aware-armory',window.WOW_ARMORY_UI?.version||'missing');
-    add('Armory talent UI v0.43 reference-aware',window.WOW_ARMORY_TALENTS?.version==='0.43-reference-combat-aware-presets',window.WOW_ARMORY_TALENTS?.version||'missing');
+    add('Armory UI v0.44 runtime-aware',window.WOW_ARMORY_UI?.version==='0.44-reference-runtime-aware-armory',window.WOW_ARMORY_UI?.version||'missing');
+    add('Armory talent UI v0.44 runtime-aware',window.WOW_ARMORY_TALENTS?.version==='0.44-reference-runtime-aware-presets',window.WOW_ARMORY_TALENTS?.version||'missing');
     const P=window.WOW_FOREVER_PRESETS;
     add('Popular preset registry',P?.version==='0.2-popular-public-builds',P?.version||'missing');
     add('Rogue popular Subtlety preset',P?.defaultFor?.('Rogue','Subtlety')?.distribution==='22/3/26',P?.defaultFor?.('Rogue','Subtlety')?.label||'missing');
@@ -79,7 +79,7 @@
     }
     const failed=checks.filter(x=>!x.pass).length;
     window.WOW_FOREVER_QA={checks,passed:checks.length-failed,failed,pass:failed===0,db:F.db,totalNodes:cov.totalNodes,totalTrees:cov.totalTrees};
-    const root=document.getElementById('qaReport');if(root){let old=root.querySelector('.forever-qa-block');if(old)old.remove();const block=document.createElement('section');block.className='forever-qa-block';block.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">FOREVER DATA QA ${failed?'FAIL':'PASS'} · ${checks.length-failed}/${checks.length}</div><div class="result-meta">Forever-only · live Wowhead db ${F.db} · ${cov.totalNodes} nodes · ${cov.totalTrees} trees · combat strictly gated.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;root.prepend(block);}
+    const root=document.getElementById('qaReport');if(root){let old=root.querySelector('.forever-qa-block');if(old)old.remove();const block=document.createElement('section');block.className='forever-qa-block';block.innerHTML=`<div class="duel-summary"><div class="${failed?'red':'winner'}">FOREVER DATA QA ${failed?'FAIL':'PASS'} · ${checks.length-failed}/${checks.length}</div><div class="result-meta">Forever-only · live Wowhead db ${F.db} · ${cov.totalNodes} nodes · ${cov.totalTrees} trees · certified parity gated; reference simulation is separately QA-gated.</div></div><div class="rule-grid" style="margin-top:10px">${checks.map(c=>`<div class="rule-card"><h3 class="${c.pass?'green':'red'}">${c.pass?'✓':'✗'} ${c.name}</h3><p>${String(c.details??'')}</p></div>`).join('')}</div>`;root.prepend(block);}
     return window.WOW_FOREVER_QA;
   }
   document.addEventListener('wow-forever-talents-ready',()=>setTimeout(run,0));
