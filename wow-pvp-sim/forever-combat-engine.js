@@ -78,6 +78,7 @@
     const x=.1*Math.max(0,armor)/(8.5*level+40);
     return clamp(x/(1+x),0,.75);
   }
+  function meleeRange(){return Number(DATA().inherited.effectiveMeleeRangeYards?.value||5);}
   function armorAgainstRogue(st){
     const ignore=(st.rogue.talents['Serrated Blades']||0)*3/100;
     return st.mage.armor*(1-ignore);
@@ -184,7 +185,7 @@
         blinkUnavailable:enemy===st.mage&&(!isReady(st,st.mage,'Blink')||st.mage.mana<castCost(st,st.mage,'Blink')),
         kickReady:enemy===st.rogue&&isReady(st,st.rogue,'Kick')
       },
-      range:st.range,memory,
+      range:st.range,meleeRange:meleeRange(),memory,
       talentRank:name=>talentRank(st,self,name),
       ready:name=>isReady(st,self,name),
       cooldownRemaining:name=>cdRemain(st,self,name),
@@ -349,24 +350,24 @@
     if(m.slowUntil&&st.nowMs>=m.slowUntil){m.slowUntil=0;m.slowPct=0;}
   }
   function movement(st,dt){
-    const r=st.rogue,m=st.mage,d=DATA(),base=d.inherited.movementSpeedYps.value;st.metrics.provisionalRulesUsed.add('movement speed');
+    const r=st.rogue,m=st.mage,d=DATA(),base=d.inherited.movementSpeedYps.value;st.metrics.provisionalRulesUsed.add('movement speed');st.metrics.provisionalRulesUsed.add('combat reach tolerance');
     if(r.stealthed){
-      if(!controlled(st,r)&&!rooted(st,r)&&st.range>5){
+      if(!controlled(st,r)&&!rooted(st,r)&&st.range>meleeRange()){
         const stealthPenalty=(r.talents.Camouflage||0)>=5?.15:.30,sprint=st.nowMs<r.sprintUntil?1.7:1;
-        st.range=Math.max(5,st.range-base*(1-stealthPenalty)*sprint*dt);
+        st.range=Math.max(meleeRange(),st.range-base*(1-stealthPenalty)*sprint*dt);
       }
       return;
     }
     let rSpeed=base*(1-(slowed(st,r)?r.slowPct/100:0))*(st.nowMs<r.sprintUntil?1.7:1);
     let mSpeed=base*(1-(slowed(st,m)?m.slowPct/100:0));
     const rCan=!controlled(st,r)&&!rooted(st,r),mCan=!controlled(st,m)&&!rooted(st,m)&&!m.cast&&st.nowMs>=m.iceBlockUntil;
-    if(rCan&&st.range>5)st.range-=rSpeed*dt;
+    if(rCan&&st.range>meleeRange())st.range-=rSpeed*dt;
     if(mCan&&st.range<28)st.range+=mSpeed*dt;
     st.range=clamp(st.range,0,40);
   }
   function whiteSwing(st,hand){
     const r=st.rogue,m=st.mage,w=r[hand];
-    if(r.stealthed||controlled(st,r)||rooted(st,r)||st.range>5||st.nowMs<m.iceBlockUntil)return;
+    if(r.stealthed||controlled(st,r)||rooted(st,r)||st.range>meleeRange()||st.nowMs<m.iceBlockUntil)return;
     const land=whiteLands(st);if(land!=='hit'){log(st,'Rogue','swing',hand.toUpperCase()+' swing '+land);return;}
     let raw=weaponDamage(st,hand)*(hand==='oh'?.5:1)*rogueDamageMods(st,{builder:false});
     const crit=chance(st,r.critPct);if(crit)raw*=2;raw*=1-physicalReduction(armorAgainstRogue(st));
