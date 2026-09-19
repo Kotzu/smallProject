@@ -139,7 +139,7 @@
       log(st,'Rogue','proc','Crippling Poison applied · Mage slowed '+p.slowPct+'% for 12s');
     }else{
       st.mage.mindNumbingUntil=st.nowMs+p.durationMs;
-      log(st,'Rogue','proc','Mind-numbing Poison applied · cast time +'+p.castTimeIncreasePct+'% for 14s');
+      log(st,'Rogue','proc','Mind-numbing Poison applied · cast time +'+p.castTimeIncreasePct+'% for '+(p.durationMs/1000)+'s');
     }
   }
   function rogueCritMultiplier(st,name){
@@ -181,6 +181,7 @@
         castThreatSoonMs:enemy===st.mage&&!st.mage.cast&&st.range<=30?1200:0,
         stunDRMultiplier:1,incapDRMultiplier:1,disorientDRMultiplier:1,facingRogue:true,
         blinkUsedRecently:enemy===st.mage&&cdRemain(st,st.mage,'Blink')>0,
+        blinkUnavailable:enemy===st.mage&&(!isReady(st,st.mage,'Blink')||st.mage.mana<castCost(st,st.mage,'Blink')),
         kickReady:enemy===st.rogue&&isReady(st,st.rogue,'Kick')
       },
       range:st.range,memory,
