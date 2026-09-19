@@ -13,7 +13,7 @@
     FIGHT_IDS.forEach(id=>{const el=$(id);if(el)el.disabled=!ready;});
     const reason=$('gateReason');
     if(reason){
-      if(ready)reason.innerHTML='<span class="green">FOREVER REFERENCE SIM READY</span> · <span class="amber">not parity-certified</span> · beta-client spells/talents + explicitly disclosed provisional combat-table/stat assumptions.';
+      if(ready)reason.innerHTML='<span class="green">FOREVER REFERENCE SIM READY</span> · <span class="amber">not parity-certified</span> · beta client 1.60.1.69913 · expert Rogue/Mage policies · provisional stat/combat-table/DR assumptions disclosed.';
       else reason.innerHTML='<span class="amber">REFERENCE SIM LOCKED</span> · '+[...(gate.issues||[]),qa&&!qa.pass?'combat QA failed':''].filter(Boolean).join(' · ');
     }
     if(!announced){announced=true;document.dispatchEvent(new CustomEvent('wow-ruleset-changed',{detail:{mode:'forever'}}));}
@@ -30,5 +30,5 @@
     schedule(100);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  window.WOW_RULESET={mode:'forever',isForever:()=>true,apply:()=>schedule(0),refresh,version:'0.50-forever-reference-gate'};
+  window.WOW_RULESET={mode:'forever',isForever:()=>true,apply:()=>schedule(0),refresh,version:'0.51-forever-reference-gate'};
 })();
