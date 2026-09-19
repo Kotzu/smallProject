@@ -55,8 +55,8 @@ function parseForeverTalentJs(text,db){
   return {
     provenance:{
       source:'Wowhead Forever',calculator:'https://www.wowhead.com/forever/talent-calc',endpoint,db:String(db),
-      fetchedAt:new Date().toISOString(),status:'PROVISIONAL_UNTIL_BETA_DATAMINING',
-      note:'Current Wowhead Forever calculator dataset; refreshed independently of legacy Classic calibration.'
+      fetchedAt:new Date().toISOString(),status:'LIVE_WOWHEAD_FOREVER_DATASET',
+      note:'Current Wowhead Forever calculator dataset. Combat spell/talent facts are independently cross-checked against Forever beta client build 1.60.1.69913.'
     },
     summary:{trees:Object.keys(data.trees||{}).length,totalNodes},
     data
