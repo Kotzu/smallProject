@@ -51,8 +51,8 @@
     return'PRESSURE';
   }
   function interruptDecision(ctx,memory,reserve){
-    const e=ctx.enemy;
-    if(!e.casting||!e.castHighValue||!ready(ctx,'Kick')||ctx.range>5)return null;
+    const e=ctx.enemy,melee=Number(ctx.meleeRange||5);
+    if(!e.casting||!e.castHighValue||!ready(ctx,'Kick')||ctx.range>melee)return null;
     const remain=e.castRemainingMs,elapsed=e.castElapsedMs,dur=e.castDurationMs;
     if(remain==null)return hold('Rogue',ctx,'cast deadline unknown; preserve Kick','INTERRUPT',reserve,['high-value cast']);
     if(remain<=250)return trace('Rogue','DEADLINE_INTERRUPT','Kick','emergency interrupt window','DENY_CAST',ctx,{priority:900,reserveResource:reserve,evidence:[e.castSpell,remain+'ms remaining']});
@@ -80,9 +80,10 @@
     if(e.iceBlockActive)return hold('Rogue',ctx,'Ice Block active; do not spend Energy','WAIT_IMMUNITY',reserve,['target immune']);
 
     if(me.stealthed){
+      const melee=Number(ctx.meleeRange||5);
       if(has(ctx,'Premeditation')&&ready(ctx,'Premeditation')&&(me.comboPoints||0)<=3&&ctx.range<=20)
         return trace('Rogue','CONTROL','Premeditation','bank 2 combo points before opener','OPEN_CONTROL',ctx,{priority:720,evidence:['stealthed','Premeditation selected']});
-      if(ctx.range>5)return trace('Rogue','MOBILITY','MOVE_TO','close from Stealth without consuming cooldown','OPEN',ctx,{priority:700,targetRange:5});
+      if(ctx.range>melee)return trace('Rogue','MOBILITY','MOVE_TO','close from Stealth without consuming cooldown','OPEN',ctx,{priority:700,targetRange:melee});
       const cs=rogueCost(ctx,'Cheap Shot');
       if(me.energy>=cs)return trace('Rogue','CONTROL','Cheap Shot','verified stealth stun opener','OPEN_CONTROL',ctx,{priority:680,evidence:['cost '+cs,'Initiative '+rank(ctx,'Initiative')+'/3']});
       return hold('Rogue',ctx,'pool Energy for Cheap Shot','OPEN',cs);
@@ -93,16 +94,16 @@
       return trace('Rogue','DEFENSIVE','Preparation','recover Vanish for emergency reset','RESET_COOLDOWNS',ctx,{priority:840});
 
     if(plan==='RESET'){
-      if(ctx.range<=5&&e.facingRogue&&ready(ctx,'Gouge')&&e.incapDRMultiplier>0&&me.energy>=rogueCost(ctx,'Gouge'))
+      if(ctx.range<=Number(ctx.meleeRange||5)&&e.facingRogue&&ready(ctx,'Gouge')&&e.incapDRMultiplier>0&&me.energy>=rogueCost(ctx,'Gouge'))
         return trace('Rogue','RESET','Gouge','create break-on-damage reset window','RESET_REOPEN',ctx,{priority:800,reserveResource:reserve});
       if(ctx.range<=10&&ready(ctx,'Blind')&&e.disorientDRMultiplier>0&&me.energy>=rogueCost(ctx,'Blind'))
         return trace('Rogue','RESET','Blind','create long reset window','RESET_REOPEN',ctx,{priority:790,reserveResource:reserve});
       if(ready(ctx,'Vanish'))return trace('Rogue','RESET','Vanish','direct reset/reopen','RESET_REOPEN',ctx,{priority:780});
     }
 
-    if(ctx.range>5){
+    if(ctx.range>Number(ctx.meleeRange||5)){
       if(ctx.range>=7&&ready(ctx,'Sprint')&&!me.sprintActive)return trace('Rogue','MOBILITY','Sprint','reconnect after Mage separation','RECONNECT',ctx,{priority:700});
-      return trace('Rogue','MOBILITY','MOVE_TO','recover melee range','RECONNECT',ctx,{priority:690,targetRange:5});
+      return trace('Rogue','MOBILITY','MOVE_TO','recover melee range','RECONNECT',ctx,{priority:690,targetRange:Number(ctx.meleeRange||5)});
     }
 
     const cp=me.comboPoints||0;
@@ -189,7 +190,7 @@
       return trace('Mage','DAMAGE','Fire Blast','instant pressure while kiting','PRESSURE',ctx,{priority:560});
 
     if(ctx.range<=30&&me.mana>=ctx.cost('Frostbolt')){
-      const canFake=e.kickReady===true&&ctx.range<=5&&(m.fakeCasts||0)<2;
+      const canFake=e.kickReady===true&&ctx.range<=Number(ctx.meleeRange||5)&&(m.fakeCasts||0)<2;
       return trace('Mage','DAMAGE','Frostbolt',canFake?'start Frostbolt with deliberate fake-cast plan':'primary ranged pressure','CONTROL_PRESSURE',ctx,{
         priority:520,
         fakeAtMs:canFake?450+150*(m.fakeCasts||0):null,
