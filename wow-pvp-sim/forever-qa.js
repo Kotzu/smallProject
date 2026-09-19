@@ -22,7 +22,7 @@
     add('Rogue updated Forever nodes present',!!hemo&&!!thousand&&!!venom,`Hemorrhage #${hemo?.id||'—'} · Thousand Cuts #${thousand?.id||'—'} · Venom #${venom?.id||'—'}`);
     add('Hemorrhage current tooltip',hemo?.descriptions?.['1']?.includes('145% if a Dagger is equipped')===true,hemo?.descriptions?.['1']||'missing');
     add('Mage updated Forever nodes present',!!iceLance,`Ice Lance #${iceLance?.id||'—'}`);
-    add('Forever remains provisional',F.provenance?.status==='PROVISIONAL_UNTIL_BETA_DATAMINING',F.provenance?.status||'missing');
+    add('Forever talent dataset provenance',F.provenance?.status==='LIVE_WOWHEAD_FOREVER_DATASET',F.provenance?.status||'missing');
     add('Legacy preset selectors removed',!document.getElementById('abuild')&&!document.getElementById('bbuild'),'Forever build allocation comes only from the interactive talent trees/presets');
     add('Armory talent renderer available',!!window.WOW_ARMORY_TALENTS,'Player A + Player B Forever talent-tree renderer');
     add('Forever build allocator available',!!B&&B.MAX_POINTS===51,`allocator ${B?.version||'missing'} · cap ${B?.MAX_POINTS||'—'}`);
