@@ -70,7 +70,7 @@
   bind('a');bind('b');
 
   ['runBtn','batch1Btn','batchBtn','batch100Btn','fightRunBtn','fightPlayBtn','fightPauseBtn','fightStepBtn'].forEach(id=>{const el=$(id);if(el)el.disabled=true;});
-  const gate=$('gateReason');if(gate)gate.innerHTML='<span class="amber">WOW FOREVER ONLY · FIGHT LOCKED · Armory poate fi configurat, dar duelul se deblochează numai după gear/stat/spell/CombatEngine parity verificată.</span>';
+  const gate=$('gateReason');if(gate)gate.innerHTML='<span class="amber">WOW FOREVER ONLY · reference combat engine loading · parity certificată rămâne separată.</span>';
 
   const migrationMessage='<div class="armory-migration-note">Legacy Classic fixtures are not used as Forever authority. These diagnostics stay blank until a verified Forever module replaces them.</div>';
   ['rogueCharacter','mageCharacter','rogueStats','gearRows','ruleCards'].forEach(id=>{const el=$(id);if(el)el.innerHTML=migrationMessage;});
@@ -79,5 +79,5 @@
   document.addEventListener('wow-forever-talents-ready',()=>{renderStatus('a');renderStatus('b');});
   document.addEventListener('wow-forever-build-changed',e=>{if(e.detail?.player==='a'||e.detail?.player==='b')renderStatus(e.detail.player);});
 
-  window.WOW_APP={state,config:()=>({a:{...state.a,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('a')||null},b:{...state.b,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('b')||null}}),openTab,version:'0.42-forever-armory-presets'};
+  window.WOW_APP={state,config:()=>({a:{...state.a,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('a')||null},b:{...state.b,build:window.WOW_FOREVER_BUILDS?.exportBuild?.('b')||null}}),openTab,version:'0.51-forever-reference-combat'};
 })();
