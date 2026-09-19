@@ -201,7 +201,7 @@
   }
 
   window.WOW_FOREVER_COMBAT_POLICIES={
-    version:'0.50-expert-policies',
+    version:'0.51-expert-policies-beta69913',
     chooseRogue,chooseMage,
     choose(className,ctx){return className==='Rogue'?chooseRogue(ctx):className==='Mage'?chooseMage(ctx):hold(className,ctx,'class policy unavailable','LOCKED');}
   };
