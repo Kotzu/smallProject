@@ -1,16 +1,22 @@
 local Engine = {}
 
-Engine.version = "0.40-forever-strict-gate"
+Engine.version = "0.41-forever-reference-contract"
 Engine.ruleset = "Forever"
 Engine.scope = "WoW Forever PvP rules. ClassCombat.lua chooses tactics; CombatEngine resolves only mechanics independently verified for Forever."
 Engine.kernelReady = false
-Engine.status = "FOREVER_PARITY_IN_PROGRESS"
+Engine.status = "FOREVER_REFERENCE_RUNTIME_AVAILABLE_PARITY_IN_PROGRESS"
 
 -- IMPORTANT:
 -- Functions below that originated during the older Classic calibration remain
 -- migration fixtures until each one is re-audited for Forever. The public Fight
 -- gate must never use this file as proof of Forever parity merely because a
 -- function exists here.
+Engine.referenceRuntime = {
+    browser = "forever-combat-engine.js",
+    status = "FUNCTIONAL_REFERENCE_NOT_PARITY_CERTIFIED",
+    clientBuild = "1.60.1.69913",
+}
+
 Engine.migration = {
     classicDerivedFunctionsPresent = true,
     authoritativeForForever = false,
@@ -183,7 +189,8 @@ function Engine.rogueBackstabRaw(args)
     local normalized = Engine.normalizedWeaponDamage(
         args.minDamage, args.maxDamage, args.attackPower, "Dagger", args.roll01 or 0.5, args.flatWeaponDamage
     )
-    local damage = normalized * 1.50 + 210
+    -- Forever beta 1.60.1.69913, level-60 Backstab rank 9: 150% weapon +150.
+    local damage = normalized * 1.50 + 150
     damage = damage * (1 + (args.opportunityDamagePct or 0) / 100)
     return damage
 end
@@ -219,7 +226,9 @@ function Engine.breakIncapacitateOnDamage(state, nowMs)
 end
 
 function Engine.rogueInitiativeExtraCombo(procRoll01, initiativeRank)
-    local chance = 25 * (initiativeRank or 0)
+    -- Forever ranks: 33% / 67% / 100%.
+    local chances = { [1] = 33, [2] = 67, [3] = 100 }
+    local chance = chances[initiativeRank or 0] or 0
     if chance <= 0 then return 0 end
     return ((procRoll01 or 1) * 100 < chance) and 1 or 0
 end
@@ -241,8 +250,13 @@ function Engine.consumeManaShield(state, incomingPhysicalDamage)
     return incomingPhysicalDamage - absorb, absorb
 end
 
-function Engine.energyTick(state)
-    state.energy = math.min(state.maxEnergy, state.energy + 20)
+function Engine.regenEnergy(state, dtSeconds, energyPerSecond)
+    -- Forever uses continuous Energy gain in the reference runtime.
+    -- The exact rate remains a separately-audited input; do not hardcode a Classic tick.
+    local dt = math.max(0, dtSeconds or 0)
+    local rate = math.max(0, energyPerSecond or 0)
+    state.energy = math.min(state.maxEnergy, state.energy + rate * dt)
+    return state.energy
 end
 
 return Engine
