@@ -38,13 +38,13 @@
     if(!B)return '<div class="att-error">Forever build allocator unavailable.</div>';
     const info=F.classInfo(className);if(!info)return '<div class="att-error">No WoW Forever talent data for this class.</div>';
     const trees=Object.entries(info.treeIds||{}),audit=B.audit(p,className),exported=B.exportBuild(p);
-    return `<div class="att-forever-head"><div><b>WoW Forever · ${esc(className)}</b><span>Wowhead db ${esc(F.db)} · ${audit.points}/51 selected · ${audit.remaining} remaining · PROVISIONAL until beta datamining</span></div><div class="att-head-actions"><button type="button" class="att-reset" data-player="${p}">Reset</button><div class="att-lock">FIGHT LOCKED</div></div></div>${presetToolbar(p,className,selectedSpec)}<div class="att-tree-grid">${trees.map(([name,id])=>{
+    return `<div class="att-forever-head"><div><b>WoW Forever · ${esc(className)}</b><span>Wowhead db ${esc(F.db)} · ${audit.points}/51 selected · ${audit.remaining} remaining · PROVISIONAL until beta datamining</span></div><div class="att-head-actions"><button type="button" class="att-reset" data-player="${p}">Reset</button><div class="att-lock">REFERENCE SIM · PARITY LOCKED</div></div></div>${presetToolbar(p,className,selectedSpec)}<div class="att-tree-grid">${trees.map(([name,id])=>{
       const nodes=F.treeById(id),active=String(name).toLowerCase()===String(selectedSpec||'').toLowerCase(),spent=B.pointsInTree(p,className,id);
       return `<section class="att-tree ${active?'active':''}"><header><b>${esc(name)}</b><span>${spent} points · ${nodes.length} talents</span></header><div class="att-node-grid">${nodes.map(n=>{
         const rank=B.rank(p,className,n.id),add=B.canAdd(p,className,n.id),remove=B.canRemove(p,className,n.id),state=rank>0?'invested':add.ok?'available':'locked';
         return `<button type="button" class="att-node ${state}" style="--row:${n.row+1};--col:${n.col+1}" data-player="${p}" data-class="${esc(className)}" data-node="${esc(n.id)}" data-can-remove="${remove.ok?'1':'0'}" aria-label="${esc(n.name)} ${rank}/${n.maxRank}"><div class="att-node-icon"><img src="${iconUrl(n.icon)}" alt="" loading="lazy"><span>${rank}/${n.maxRank}</span></div><small>${esc(n.name)}</small>${talentTooltip(n,rank)}${!add.ok&&rank===0?`<i class="att-why">${esc(add.reason)}</i>`:''}</button>`;
       }).join('')}</div></section>`;
-    }).join('')}</div><div class="att-build-summary"><b>Selected Forever build:</b> ${audit.points}/51 · ${B.selected(p,className).map(x=>`${esc(x.node.name)} ${x.rank}/${x.node.maxRank}`).join(' · ')||'No points selected yet.'}</div><div class="att-provenance">Tap/click adds a rank. Right click or Shift+click removes a rank. Tier and prerequisite rules are enforced. Snapshot source: Wowhead Forever db ${esc(exported?.db||F.db)}. Combat stays locked until every selected effect has Forever CombatEngine parity.</div>`;
+    }).join('')}</div><div class="att-build-summary"><b>Selected Forever build:</b> ${audit.points}/51 · ${B.selected(p,className).map(x=>`${esc(x.node.name)} ${x.rank}/${x.node.maxRank}`).join(' · ')||'No points selected yet.'}</div><div class="att-provenance">Tap/click adds a rank. Right click or Shift+click removes a rank. Tier and prerequisite rules are enforced. Snapshot source: Wowhead Forever db ${esc(exported?.db||F.db)}. Reference simulation is available only for the exact audited presets; certified parity stays locked until every selected effect has Forever CombatEngine parity.</div>`;
   }
   function injectOne(p){
     const root=$(p+'Armory')?.querySelector('.blizzard-armory');if(!root)return;
@@ -94,5 +94,5 @@
   ['bc','bs'].forEach(id=>$(id)?.addEventListener('change',()=>setTimeout(()=>{applyDefault('b',true);renderPlayer('b');},0)));
   const start=()=>{if(window.WOW_FOREVER_TALENTS?.status==='ready'){applyDefault('a',false);applyDefault('b',false);}scheduleRender(0);};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  window.WOW_ARMORY_TALENTS={render:()=>scheduleRender(0),renderPlayer,applyDefault,version:'0.42-popular-presets'};
+  window.WOW_ARMORY_TALENTS={render:()=>scheduleRender(0),renderPlayer,applyDefault,version:'0.43-reference-combat-aware-presets'};
 })();
