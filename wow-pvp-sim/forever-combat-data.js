@@ -14,17 +14,18 @@
     'Kick':{cost:25,range:5,gcdMs:0,cooldownMs:10000,damage:80,lockMs:5000,confidence:V,source:SRC.rogue},
     'Kidney Shot':{cost:25,range:5,gcdMs:1000,cooldownMs:20000,durationsMs:[0,2000,3000,4000,5000,6000],finisher:true,confidence:V,source:SRC.rogue},
     'Eviscerate':{cost:35,range:5,gcdMs:1000,finisher:true,baseByCp:[[0,0],[199,295],[350,446],[501,597],[652,748],[803,899]],apCoeffPerCp:0.03,apCoeffConfidence:P,confidence:V,source:SRC.rogue},
-    'Hemorrhage':{cost:35,range:5,gcdMs:1000,weaponPct:1.00,daggerPct:1.45,combo:1,ruptureTakenPct:15,debuffMs:15000,confidence:V,source:'https://wowforevertalents.com/rogue/talents/hemorrhage/'},
+    'Hemorrhage':{cost:35,range:5,gcdMs:1000,weaponPct:1.00,daggerPct:1.45,combo:1,ruptureTakenPct:15,debuffMs:15000,confidence:V,source:'https://foreverchanges.pro/talents/rogue#hemorrhage/'},
     'Gouge':{cost:45,range:5,gcdMs:1000,cooldownMs:10000,damage:75,combo:1,incapMs:4000,breakOnDamage:true,requiresFacing:true,confidence:V,source:SRC.rogue},
     'Blind':{cost:30,range:10,gcdMs:1000,cooldownMs:300000,disorientMs:10000,breakOnDamage:true,confidence:V,source:SRC.rogue},
     'Vanish':{cost:0,gcdMs:0,cooldownMs:300000,stealthMs:10000,breakMovement:true,confidence:V,source:SRC.rogue},
     'Sprint':{cost:0,gcdMs:0,cooldownMs:300000,speedPct:70,durationMs:15000,confidence:V,source:SRC.rogue},
     'Evasion':{cost:0,gcdMs:0,cooldownMs:300000,dodgePct:50,durationMs:15000,confidence:V,source:SRC.rogue},
-    'Preparation':{cost:0,gcdMs:0,cooldownMs:600000,resetOtherRogue:true,confidence:V,source:'https://wowforevertalents.com/rogue/talents/preparation/'},
-    'Cold Blood':{cost:0,gcdMs:0,cooldownMs:180000,critBonusPct:100,confidence:V,source:'https://wowforevertalents.com/rogue/talents/cold-blood/'},
-    'Premeditation':{cost:0,range:20,gcdMs:0,cooldownMs:120000,combo:2,comboExpiryMs:20000,confidence:V,source:'https://wowforevertalents.com/rogue/talents/premeditation/'},
+    'Preparation':{cost:0,gcdMs:0,cooldownMs:600000,resetOtherRogue:true,confidence:V,source:'https://foreverchanges.pro/talents/rogue#preparation/'},
+    'Cold Blood':{cost:0,gcdMs:0,cooldownMs:180000,critBonusPct:100,confidence:V,source:'https://foreverchanges.pro/talents/rogue#cold-blood/'},
+    'Premeditation':{cost:0,range:20,gcdMs:0,cooldownMs:120000,combo:2,comboExpiryMs:20000,confidence:V,source:'https://foreverchanges.pro/talents/rogue#premeditation/'},
     'Backstab':{cost:60,range:5,gcdMs:1000,weaponPct:1.50,flat:150,combo:1,requiresDagger:true,requiresBehind:true,confidence:V,source:SRC.rogue},
     'Ambush':{cost:60,range:5,gcdMs:1000,weaponPct:2.50,flat:290,combo:1,requiresDagger:true,requiresBehind:true,stealth:true,confidence:V,source:SRC.rogue},
+    'Mutilate':{cost:60,range:5,gcdMs:1000,weaponPct:.75,flat:50,combo:2,poisonedDamagePct:20,requiresDualWeapons:true,confidence:V,source:SRC.rogue},
     'Crippling Poison':{procPct:30,slowPct:50,durationMs:12000,confidence:V,source:SRC.rogue},
     'Mind-numbing Poison':{procPct:20,castTimeIncreasePct:40,durationMs:10000,confidence:V,source:SRC.rogue}
   };
@@ -40,8 +41,8 @@
     'Mana Shield':{cost:140,gcdMs:1500,cooldownMs:0,absorb:570,durationMs:60000,manaPerDamage:2,manaPerDamageConfidence:P,confidence:V,source:SRC.mage},
     'Polymorph':{cost:150,range:30,gcdMs:1500,castMs:1500,disorientMs:10000,pvpDurationConfidence:P,breakOnDamage:true,school:'Arcane',confidence:V,source:SRC.mage},
     'Counterspell':{cost:100,range:30,gcdMs:0,cooldownMs:30000,lockMs:10000,confidence:V,source:SRC.mage},
-    'Ice Block':{cost:15,gcdMs:0,cooldownMs:300000,durationMs:10000,immuneAll:true,confidence:V,source:'https://wowforevertalents.com/mage/talents/ice-block/'},
-    'Cold Snap':{cost:0,gcdMs:0,cooldownMs:600000,resetFrost:true,confidence:V,source:'https://wowforevertalents.com/mage/talents/cold-snap/'}
+    'Ice Block':{cost:15,gcdMs:0,cooldownMs:300000,durationMs:10000,immuneAll:true,confidence:V,source:'https://foreverchanges.pro/talents/mage#ice-block/'},
+    'Cold Snap':{cost:0,gcdMs:0,cooldownMs:600000,resetFrost:true,confidence:V,source:'https://foreverchanges.pro/talents/mage#cold-snap/'}
   };
 
   const talents={
