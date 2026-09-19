@@ -13,10 +13,29 @@
     const E=window.WOW_FOREVER_COMBAT_ENGINE,D=window.WOW_FOREVER_COMBAT_DATA,P=window.WOW_FOREVER_COMBAT_POLICIES,c=config();
     if(!E||!D||!P||!c){return null;}
     const gate=E.supported(c),checks=[];
+    checks.push(check('Current beta combat dataset',D.clientBuild==='1.60.1.69913',D.clientBuild+' · '+D.version));
+    checks.push(check('Rogue poison beta refresh',D.abilities.Rogue['Crippling Poison']?.slowPct===50&&D.abilities.Rogue['Mind-numbing Poison']?.castTimeIncreasePct===40&&D.abilities.Rogue['Mind-numbing Poison']?.durationMs===10000,'Crippling 50%/12s · Mind-numbing +40%/10s'));
+    checks.push(check('Mage spell beta refresh',D.abilities.Mage['Ice Lance']?.min===133&&D.abilities.Mage['Ice Lance']?.max===157&&D.abilities.Mage['Ice Barrier']?.absorb===811&&D.abilities.Mage['Fire Blast']?.max===474,'Ice Lance 133–157 · Barrier 811 · Fire Blast max 474'));
+    checks.push(check('Forever talent beta refresh',D.talents.Rogue['Improved Eviscerate']?.evisDamageByRankPct?.[2]===13&&D.talents.Mage['Fingers of Frost']?.procChanceByRankPct?.[2]===30&&D.talents.Mage['Fingers of Frost']?.charges===1,'Improved Evis R2 13% · FoF R2 30% / 1 charge'));
     checks.push(check('Reference matchup gate',gate.ready,gate.ready?'Undead Subtlety Rogue vs Gnome Frost Mage · gear + 51-point builds':gate.issues.join(' · ')));
     if(!gate.ready){
       last={pass:false,checks,gate,status:'WAITING_CONFIG'};window.WOW_FOREVER_COMBAT_QA=last;return last;
     }
+    const policyBase={
+      nowMs:10000,range:4,memory:{fakeCastRestarts:0,fakeCasts:0},
+      talentRank:()=>0,cooldownRemaining:()=>0,
+      ready:()=>true,cost:name=>name==='Blink'?2100:name==='Kick'?25:name==='Frostbolt'?290:0,
+      self:{energy:100,mana:6258,baseMana:6258,healthPct:100,comboPoints:0,iceBarrierAbsorb:811,manaShieldAbsorb:0,fingersOfFrostCharges:0},
+      enemy:{healthPct:100,casting:false,castHighValue:false,stunDRMultiplier:1,incapDRMultiplier:1,disorientDRMultiplier:1}
+    };
+    const early=P.chooseRogue({...policyBase,self:{...policyBase.self},enemy:{...policyBase.enemy,casting:true,castHighValue:true,castSpell:'Frostbolt',castDurationMs:2500,castElapsedMs:100,castRemainingMs:2400}});
+    checks.push(check('Rogue anti-fake HOLD policy',early.action==='HOLD'&&String(early.reason).includes('anti-fake'),early.action+' · '+early.reason));
+    const emergency=P.chooseRogue({...policyBase,self:{...policyBase.self},enemy:{...policyBase.enemy,casting:true,castHighValue:true,castSpell:'Frostbolt',castDurationMs:2500,castElapsedMs:2320,castRemainingMs:180}});
+    checks.push(check('Rogue emergency Kick policy',emergency.action==='Kick',emergency.action+' · '+emergency.reason));
+    const mageBlink=P.chooseMage({...policyBase,self:{...policyBase.self,mana:6258,baseMana:6258,stunned:true},enemy:{...policyBase.enemy},range:4});
+    checks.push(check('Mage emergency Blink policy',mageBlink.action==='Blink',mageBlink.action+' · '+mageBlink.reason));
+    const mageFake=P.chooseMage({...policyBase,self:{...policyBase.self,mana:6258,baseMana:6258,iceBarrierAbsorb:811},enemy:{...policyBase.enemy,kickReady:true},range:4,memory:{fakeCasts:0}});
+    checks.push(check('Mage anti-Kick fake-cast policy',mageFake.action==='Frostbolt'&&Number(mageFake.fakeAtMs)>0,mageFake.action+' · fakeAtMs='+String(mageFake.fakeAtMs)));
     const a=E.run(1337,c),b=E.run(1337,c),alt=E.run(7331,c);
     checks.push(check('Deterministic seed',stableSignature(a)===stableSignature(b),a.winner+' · '+a.duration.toFixed(2)+'s · '+a.timeline.length+' events'));
     checks.push(check('Fight terminates',a.winner==='Rogue'||a.winner==='Mage'||a.winner==='Timeout',a.winner+' @ '+a.duration.toFixed(2)+'s'));
