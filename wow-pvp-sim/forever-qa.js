@@ -26,7 +26,8 @@
     add('Legacy preset selectors removed',!document.getElementById('abuild')&&!document.getElementById('bbuild'),'Forever build allocation comes only from the interactive talent trees/presets');
     add('Armory talent renderer available',!!window.WOW_ARMORY_TALENTS,'Player A + Player B Forever talent-tree renderer');
     add('Forever build allocator available',!!B&&B.MAX_POINTS===51,`allocator ${B?.version||'missing'} · cap ${B?.MAX_POINTS||'—'}`);
-    add('Forever Fight remains gated',document.getElementById('runBtn')?.disabled===true&&document.getElementById('fightRunBtn')?.disabled===true,'No legacy calibration may unlock a Forever fight');
+    const CE=window.WOW_FOREVER_COMBAT_ENGINE;
+    add('Certified parity remains gated',CE?.status==='REFERENCE_MODEL'&&CE?.supported?.(window.WOW_APP?.config?.())?.certifiedParity===false,'Functional reference fight may run; certified parity remains false');
     const AD=window.WOW_FOREVER_ARMORY_DATA,ra=AD?.audit?.({class:'Rogue',spec:'Subtlety',race:'Undead'}),ma=AD?.audit?.({class:'Mage',spec:'Frost',race:'Gnome'});
     add('Forever Armory data module',AD?.version==='0.41-wowhead-forever-items-enchants',AD?.version||'missing');
     add('Rogue Armory 17/17',ra?.gearIdentityPass===true&&ra?.verifiedItems===17,`${ra?.verifiedItems||0}/17 verified Forever items`);
@@ -34,8 +35,8 @@
     add('Rogue Forever enchants',ra?.verifiedEnchants===11&&ra?.totalEnchants===11,`${ra?.verifiedEnchants||0}/${ra?.totalEnchants||0} verified`);
     add('Mage Forever enchants',ma?.verifiedEnchants===9&&ma?.totalEnchants===9,`${ma?.verifiedEnchants||0}/${ma?.totalEnchants||0} verified`);
     add('No Classic item links in Armory',!document.querySelector('#armory a[href*="/classic/"]'),'Forever item URLs only');
-    add('Armory UI v0.42 optimized',window.WOW_ARMORY_UI?.version==='0.42-optimized-armory-presets',window.WOW_ARMORY_UI?.version||'missing');
-    add('Armory talent UI v0.42 presets',window.WOW_ARMORY_TALENTS?.version==='0.42-popular-presets',window.WOW_ARMORY_TALENTS?.version||'missing');
+    add('Armory UI v0.43 reference-aware',window.WOW_ARMORY_UI?.version==='0.43-reference-combat-aware-armory',window.WOW_ARMORY_UI?.version||'missing');
+    add('Armory talent UI v0.43 reference-aware',window.WOW_ARMORY_TALENTS?.version==='0.43-reference-combat-aware-presets',window.WOW_ARMORY_TALENTS?.version||'missing');
     const P=window.WOW_FOREVER_PRESETS;
     add('Popular preset registry',P?.version==='0.2-popular-public-builds',P?.version||'missing');
     add('Rogue popular Subtlety preset',P?.defaultFor?.('Rogue','Subtlety')?.distribution==='22/3/26',P?.defaultFor?.('Rogue','Subtlety')?.label||'missing');
