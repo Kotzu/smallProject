@@ -47,7 +47,7 @@
         spellPower:ma.spellPower,frostSpellPower:ma.frostSpellPower,critPct:ma.spellCritPct,hitPct:ma.spellHitPct,
         armor:ma.armor+(s.mageStartsIceArmor?560:0),dodgePct:ma.dodgePct,talents:M,
         gcdUntil:0,cooldowns:{},stunUntil:0,rootUntil:0,disorientUntil:0,incapUntil:0,slowUntil:0,slowPct:0,
-        iceBarrierAbsorb:s.mageStartsIceBarrier?819:0,manaShieldAbsorb:0,iceBlockUntil:0,
+        iceBarrierAbsorb:s.mageStartsIceBarrier?DATA().abilities.Mage['Ice Barrier'].absorb:0,manaShieldAbsorb:0,iceBlockUntil:0,
         cast:null,schoolLockUntil:{Frost:0,Fire:0,Arcane:0},fingersOfFrostCharges:0,fingersOfFrostUntil:0,clearcasting:false,
         dead:false
       },
@@ -209,9 +209,11 @@
       st.rogue.rootUntil=Math.max(st.rogue.rootUntil,st.nowMs+5000);
       log(st,'Mage','proc','Frostbite proc · Rogue frozen 5s');
     }
-    if((st.mage.talents['Fingers of Frost']||0)>=2&&chance(st,15)){
-      st.mage.fingersOfFrostCharges=2;st.mage.fingersOfFrostUntil=st.nowMs+15000;
-      log(st,'Mage','proc','Fingers of Frost proc · 2 charges');
+    const fofRank=Number(st.mage.talents['Fingers of Frost']||0),fof=DATA().talents.Mage['Fingers of Frost'];
+    const fofChance=Number(fof?.procChanceByRankPct?.[fofRank]||0);
+    if(fofChance>0&&chance(st,fofChance)){
+      st.mage.fingersOfFrostCharges=Number(fof.charges||1);st.mage.fingersOfFrostUntil=st.nowMs+Number(fof.durationMs||15000);
+      log(st,'Mage','proc','Fingers of Frost proc · '+st.mage.fingersOfFrostCharges+' charge');
     }
   }
   function resolveMageSpell(st,spell,decision){
@@ -276,7 +278,7 @@
       if(land!=='hit'){log(st,'Rogue','miss','Eviscerate '+land,d);r.coldBloodActive=false;return;}
       st.metrics.provisionalRulesUsed.add('Eviscerate AP coefficient');
       let raw=roll(st,pair[0],pair[1])+r.ap*a.apCoeffPerCp*cp;
-      const ie=Number(r.talents['Improved Eviscerate']||0);raw*=1+(ie>=3?.20:ie===2?.14:ie===1?.07:0);
+      const ie=Number(r.talents['Improved Eviscerate']||0),iePct=Number(DATA().talents.Rogue['Improved Eviscerate']?.evisDamageByRankPct?.[ie]||0);raw*=1+iePct/100;
       raw*=rogueDamageMods(st,{builder:false});
       const crit=r.coldBloodActive||chance(st,r.critPct);r.coldBloodActive=false;if(crit)raw*=2;
       raw*=1-physicalReduction(armorAgainstRogue(st));
@@ -426,5 +428,5 @@
     return{...s,seed,count,status:'FOREVER_REFERENCE_MODEL'};
   }
 
-  window.WOW_FOREVER_COMBAT_ENGINE={version:'0.50-reference-engine',status:'REFERENCE_MODEL',supported,run,batch,physicalReduction};
+  window.WOW_FOREVER_COMBAT_ENGINE={version:'0.51-beta-69913-reference-engine',status:'REFERENCE_MODEL',supported,run,batch,physicalReduction};
 })();
