@@ -1,3 +1,18 @@
+## Functional combat reference milestone — v0.51
+- Scope: exact reference matchup only — Undead Rogue Subtlety `Popular Subtlety 22/3/26` vs Gnome Frost Mage `Popular Frost 18/0/33`.
+- Browser runtime modules: `forever-combat-data.js`, `forever-combat-policies.js`, `forever-combat-engine.js`, `forever-combat-qa.js`, `fight-ui.js`.
+- Current client-data provenance is WoW Forever beta build `1.60.1.69913` from ForeverChanges beta-client extraction pages.
+- Rogue and Frost Mage both have expert-system policies: state read, opponent memory, emergency actions, control/defensive plan, anti-interrupt/fake-cast handling, resource reservation, pressure, and intentional HOLD.
+- Canonical policy documentation remains in `combat/Rogue/ClassCombat.lua` and `combat/Mage/ClassCombat.lua`; the browser JS policies are the fast deterministic reference-simulation mirror.
+- Mage Lua was refactored from a simple priority list to the same expert-system architecture used for Rogue.
+- Functional fight loop includes deterministic seeded RNG, timeline, cooldowns, resource state, movement/range, casts, Mage fake-casts, Rogue anti-fake Kick logic, auto-attacks, poisons, absorbs, control, Vanish/Preparation, Blink, Frost control and post-fight evidence.
+- Replay/pause/step and 1,000 / 10,000 / 100,000 batch controls are wired in `fight-ui.js`.
+- Reference fights are enabled only after `FOREVER COMBAT REFERENCE QA` passes and the exact two audited presets/loadouts are active.
+- The model is explicitly `FOREVER_REFERENCE_MODEL` with `certifiedParity=false`. It must never be presented as exact WoW Forever balance.
+- Current beta corrections include Rogue poison effects, Mutilate rank 4, Improved Eviscerate rank 2, Eviscerate rank 9, current Mage Frost spell ranks, Ice Barrier 811 and Fingers of Frost rank 2.
+- Still provisional/not parity-certified: final base-stat reconstruction, armor/hit/resist combat tables, spell coefficients, Rogue Energy rate, Mage Spirit/5-second-rule inheritance, effective combat reach, and Forever PvP DR categories.
+- A 1,000-seed local smoke run completed deterministically with 17 timeout scenarios; this is a runtime stability check only, not a balance result.
+
 ## Armory optimization + popular pre-builds — v0.42
 - Live dev verification: Render commit `379fccffd015a352c63e15bcc6abe63f1368206c`, HTTP 200, Forever QA PASS 35/35; preset audit 12/12.
 - Legacy Classic browser bundles are no longer loaded by the Forever UI.
