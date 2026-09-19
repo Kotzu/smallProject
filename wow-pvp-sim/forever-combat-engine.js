@@ -44,11 +44,11 @@
       },
       mage:{
         name:'Mage',hp:ma.health,maxHp:ma.health,mana:ma.mana,maxMana:ma.mana,baseMana:ma.baseMana,
-        spellPower:ma.spellPower,frostSpellPower:ma.frostSpellPower,critPct:ma.spellCritPct,hitPct:ma.spellHitPct,
+        spellPower:ma.spellPower,frostSpellPower:ma.frostSpellPower,critPct:ma.spellCritPct,hitPct:ma.spellHitPct,spirit:ma.spirit||0,
         armor:ma.armor+(s.mageStartsIceArmor?560:0),dodgePct:ma.dodgePct,talents:M,
         gcdUntil:0,cooldowns:{},stunUntil:0,rootUntil:0,disorientUntil:0,incapUntil:0,slowUntil:0,slowPct:0,
         iceBarrierAbsorb:s.mageStartsIceBarrier?DATA().abilities.Mage['Ice Barrier'].absorb:0,manaShieldAbsorb:0,iceBlockUntil:0,
-        cast:null,schoolLockUntil:{Frost:0,Fire:0,Arcane:0},fingersOfFrostCharges:0,fingersOfFrostUntil:0,clearcasting:false,
+        cast:null,schoolLockUntil:{Frost:0,Fire:0,Arcane:0},fingersOfFrostCharges:0,fingersOfFrostUntil:0,clearcasting:false,lastManaSpendMs:-999999,nextManaRegenTickMs:2000,
         dead:false
       },
       metrics:{
@@ -156,6 +156,25 @@
     if(st.mage.clearcasting&&['Frostbolt','Ice Lance','Cone of Cold','Fire Blast'].includes(name))return 0;
     return data.cost||0;
   }
+  function spendMana(st,amount){
+    const n=Math.max(0,Number(amount||0));
+    if(n<=0)return 0;
+    const spent=Math.min(st.mage.mana,n);
+    st.mage.mana-=spent;
+    st.mage.lastManaSpendMs=st.nowMs;
+    return spent;
+  }
+  function regenMageMana(st){
+    const rule=DATA().inherited.mageManaRegen;if(!rule)return;
+    while(st.nowMs>=st.mage.nextManaRegenTickMs){
+      if(st.mage.nextManaRegenTickMs-st.mage.lastManaSpendMs>=rule.fiveSecondRuleMs){
+        const gain=13+(st.mage.spirit||0)/4;
+        st.mage.mana=Math.min(st.mage.maxMana,st.mage.mana+gain);
+      }
+      st.mage.nextManaRegenTickMs+=rule.tickMs;
+    }
+    st.metrics.provisionalRulesUsed.add('Classic Mage spirit mana regeneration / five-second rule');
+  }
   function talentRank(st,actor,name){return Number(actor.talents[name]||0);}
   function actorCtx(st,who){
     const self=who==='Rogue'?st.rogue:st.mage,enemy=who==='Rogue'?st.mage:st.rogue,memory=st.memory[who];
@@ -201,7 +220,7 @@
     if(spell==='Frostbolt')castMs-=100*(st.mage.talents['Improved Frostbolt']||0);
     if(st.nowMs<(st.mage.mindNumbingUntil||0))castMs*=1.6;
     if(castMs<=0)return false;
-    st.mage.mana-=castCost(st,st.mage,spell);
+    spendMana(st,castCost(st,st.mage,spell));
     st.mage.cast={spell,startMs:st.nowMs,durationMs:castMs,endMs:st.nowMs+castMs,fakeAtMs:decision.fakeAtMs?st.nowMs+decision.fakeAtMs:null,decision};
     st.mage.gcdUntil=Math.max(st.mage.gcdUntil,st.nowMs+(d.gcdMs||1500));
     log(st,'Mage','cast',spell+' cast started · '+(castMs/1000).toFixed(2)+'s',decision);return true;
@@ -316,7 +335,7 @@
     if(d.action==='MOVE_TO'){m.moveTarget=d.targetRange||30;return;}
     const cost=castCost(st,m,d.action);if(m.mana+1e-6<cost)return;
     if(a.castMs){startMageCast(st,d.action,d);return;}
-    m.mana-=cost;if(m.clearcasting&&['Ice Lance','Cone of Cold','Fire Blast'].includes(d.action))m.clearcasting=false;
+    spendMana(st,cost);if(m.clearcasting&&['Ice Lance','Cone of Cold','Fire Blast'].includes(d.action))m.clearcasting=false;
     setCd(st,m,d.action,a.cooldownMs||0);m.gcdUntil=Math.max(m.gcdUntil,st.nowMs+(a.gcdMs||0));
     if(d.action==='Blink'){
       m.stunUntil=0;m.rootUntil=0;st.range=clamp(st.range+a.distance,0,40);st.metrics.mage.blinks++;st.memory.Mage.blinkObserved=true;
@@ -391,7 +410,7 @@
   }
   function regen(st,dt){st.rogue.energy=Math.min(st.rogue.maxEnergy,st.rogue.energy+st.rogue.energyRegenPerSec*dt);st.metrics.provisionalRulesUsed.add('Rogue continuous energy regeneration');}
   function tick(st){
-    const dt=st.tickMs/1000;st.nowMs+=st.tickMs;expire(st);regen(st,dt);processMageCast(st);movement(st,dt);processSwings(st);
+    const dt=st.tickMs/1000;st.nowMs+=st.tickMs;expire(st);regen(st,dt);regenMageMana(st);processMageCast(st);movement(st,dt);processSwings(st);
     decide(st,'Mage');decide(st,'Rogue');
   }
   function result(st){
