@@ -32,9 +32,9 @@
     checks.push(check('Rogue anti-fake HOLD policy',early.action==='HOLD'&&String(early.reason).includes('anti-fake'),early.action+' · '+early.reason));
     const emergency=P.chooseRogue({...policyBase,self:{...policyBase.self},enemy:{...policyBase.enemy,casting:true,castHighValue:true,castSpell:'Frostbolt',castDurationMs:2500,castElapsedMs:2320,castRemainingMs:180}});
     checks.push(check('Rogue emergency Kick policy',emergency.action==='Kick',emergency.action+' · '+emergency.reason));
-    const mageBlink=P.chooseMage({...policyBase,self:{...policyBase.self,mana:6258,baseMana:6258,stunned:true},enemy:{...policyBase.enemy},range:4});
+    const mageBlink=P.chooseMage({...policyBase,ready:name=>name==='Blink',self:{...policyBase.self,mana:6258,baseMana:6258,stunned:true},enemy:{...policyBase.enemy},range:4});
     checks.push(check('Mage emergency Blink policy',mageBlink.action==='Blink',mageBlink.action+' · '+mageBlink.reason));
-    const mageFake=P.chooseMage({...policyBase,self:{...policyBase.self,mana:6258,baseMana:6258,iceBarrierAbsorb:811},enemy:{...policyBase.enemy,kickReady:true},range:4,memory:{fakeCasts:0}});
+    const mageFake=P.chooseMage({...policyBase,ready:name=>name==='Frostbolt',self:{...policyBase.self,mana:6258,baseMana:6258,iceBarrierAbsorb:811},enemy:{...policyBase.enemy,kickReady:true,rooted:false},range:4,memory:{fakeCasts:0}});
     checks.push(check('Mage anti-Kick fake-cast policy',mageFake.action==='Frostbolt'&&Number(mageFake.fakeAtMs)>0,mageFake.action+' · fakeAtMs='+String(mageFake.fakeAtMs)));
     const a=E.run(1337,c),b=E.run(1337,c),alt=E.run(7331,c);
     checks.push(check('Deterministic seed',stableSignature(a)===stableSignature(b),a.winner+' · '+a.duration.toFixed(2)+'s · '+a.timeline.length+' events'));
