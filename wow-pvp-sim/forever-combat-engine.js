@@ -20,6 +20,8 @@
     if(b?.class!=='Mage'||b?.spec!=='Frost'||b?.race!=='Gnome')issues.push('Player B must be Gnome Mage Frost for the current reference matchup');
     if(Number(a?.build?.points)!==51)issues.push('Player A requires a valid 51-point Forever build');
     if(Number(b?.build?.points)!==51)issues.push('Player B requires a valid 51-point Forever build');
+    if(a?.build?.preset?.id!=='rogue_sub_popular_22_3_26_20260918'||a?.build?.preset?.status==='CUSTOMIZED')issues.push('Current reference runtime is certified only for the exact Rogue Popular Subtlety 22/3/26 preset');
+    if(b?.build?.preset?.id!=='mage_frost_popular_18_0_33_19163a'||b?.build?.preset?.status==='CUSTOMIZED')issues.push('Current reference runtime is certified only for the exact Mage Popular Frost 18/0/33 preset');
     const AD=window.WOW_FOREVER_ARMORY_DATA;
     if(!AD?.audit?.(a)?.gearIdentityPass)issues.push('Player A Forever gear profile is not verified');
     if(!AD?.audit?.(b)?.gearIdentityPass)issues.push('Player B Forever gear profile is not verified');
