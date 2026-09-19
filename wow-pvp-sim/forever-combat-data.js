@@ -86,7 +86,7 @@
     },
     Mage:{
       class:'Mage',spec:'Frost',race:'Gnome',level:60,
-      health:4280,mana:6258,baseMana:6258,stamina:299,intellect:355,
+      health:4280,mana:6258,baseMana:6258,stamina:299,intellect:355,spirit:166,
       spellPower:596,frostSpellPower:616,spellCritPct:14.16,spellHitPct:5,spellPen:101,
       armor:1122,dodgePct:5.15,
       resist:{Arcane:15,Fire:5,Frost:5,Nature:5,Shadow:5},
@@ -102,6 +102,7 @@
     dualWieldWhiteBaseMissPct:{value:24,confidence:P},
     movementSpeedYps:{value:7,confidence:P},
     effectiveMeleeRangeYards:{value:5.5,confidence:P,note:'Reference combat-reach tolerance; exact Forever unit combat reach is not yet client-audited.'},
+    mageManaRegen:{confidence:P,tickMs:2000,fiveSecondRuleMs:5000,formula:'13 + Spirit/4 per 2s tick',note:'Classic level-60 Mage spirit regen used only by the reference model until Forever base/combat tables are audited.'},
     evisApCoefficient:{value:'3% AP per combo point',confidence:P},
     spellCoefficients:{confidence:P,note:'Classic inherited coefficients; client tooltips do not expose coefficients.'},
     pvpControlDiminishingReturns:{confidence:P,note:'Forever-specific DR table is not yet client-audited; reference simulation uses conservative category rules.'}
