@@ -13,7 +13,7 @@
     'Cheap Shot':{cost:60,range:5,gcdMs:1000,stunMs:4000,combo:2,stealth:true,confidence:V,source:SRC.rogue},
     'Kick':{cost:25,range:5,gcdMs:0,cooldownMs:10000,damage:80,lockMs:5000,confidence:V,source:SRC.rogue},
     'Kidney Shot':{cost:25,range:5,gcdMs:1000,cooldownMs:20000,durationsMs:[0,2000,3000,4000,5000,6000],finisher:true,confidence:V,source:SRC.rogue},
-    'Eviscerate':{cost:35,range:5,gcdMs:1000,finisher:true,baseByCp:[[0,0],[199,295],[350,446],[501,597],[652,748],[803,899]],apCoeffPerCp:0.03,apCoeffConfidence:P,confidence:V,source:SRC.rogue},
+    'Eviscerate':{cost:35,range:5,gcdMs:1000,finisher:true,rank:9,baseByCp:[[0,0],[224,332],[394,502],[564,672],[734,842],[904,1012]],apCoeffPerCp:0.03,apCoeffConfidence:V,confidence:V,source:SRC.rogue,note:'Forever beta page reports only rank 6 differs from Classic; rank 9 therefore retains the verified Classic rank-9 values.'},
     'Hemorrhage':{cost:35,range:5,gcdMs:1000,weaponPct:1.00,daggerPct:1.45,combo:1,ruptureTakenPct:15,debuffMs:15000,confidence:V,source:'https://foreverchanges.pro/talents/rogue#hemorrhage/'},
     'Gouge':{cost:45,range:5,gcdMs:1000,cooldownMs:10000,damage:75,combo:1,incapMs:4000,breakOnDamage:true,requiresFacing:true,confidence:V,source:SRC.rogue},
     'Blind':{cost:30,range:10,gcdMs:1000,cooldownMs:300000,disorientMs:10000,breakOnDamage:true,confidence:V,source:SRC.rogue},
