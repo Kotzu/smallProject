@@ -101,6 +101,7 @@
     meleeSpecialBaseMissPct:{value:5,confidence:P},
     dualWieldWhiteBaseMissPct:{value:24,confidence:P},
     movementSpeedYps:{value:7,confidence:P},
+    effectiveMeleeRangeYards:{value:5.5,confidence:P,note:'Reference combat-reach tolerance; exact Forever unit combat reach is not yet client-audited.'},
     evisApCoefficient:{value:'3% AP per combo point',confidence:P},
     spellCoefficients:{confidence:P,note:'Classic inherited coefficients; client tooltips do not expose coefficients.'},
     pvpControlDiminishingReturns:{confidence:P,note:'Forever-specific DR table is not yet client-audited; reference simulation uses conservative category rules.'}
